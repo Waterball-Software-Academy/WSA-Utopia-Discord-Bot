@@ -1,4 +1,4 @@
-package com.example.test.gamification.commands
+package tw.waterballsa.alpha.wsabot.gamification.commands
 
 import me.jakejmattson.discordkt.commands.commands
 

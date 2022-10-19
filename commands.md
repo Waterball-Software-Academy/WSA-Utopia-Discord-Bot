@@ -12,12 +12,12 @@
 | info     |           | Bot info for WSA-ALPHA-BotExampleBot |
 
 ## gamification
-| Commands     | Arguments | Description                     |
-|--------------|-----------|---------------------------------|
-| gamification |           | A 'Hello gamification' command. |
+| Commands     | Arguments | Description               |
+|--------------|-----------|---------------------------|
+| gamification |           | A 'gamification' command. |
 
 ## knowledgeking
-| Commands      | Arguments | Description                      |
-|---------------|-----------|----------------------------------|
-| knowledgeking |           | A 'Hello knowledgeking' command. |
+| Commands      | Arguments | Description                |
+|---------------|-----------|----------------------------|
+| knowledgeking |           | A 'knowledgeking' command. |
 

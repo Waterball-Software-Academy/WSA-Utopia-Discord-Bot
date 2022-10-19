@@ -4,16 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.example</groupId>
-    <artifactId>test</artifactId>
+    <groupId>tw.waterballsa.alpha</groupId>
+    <artifactId>wsa-bot</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>test</name>
+    <name>wsa-alpha-bot</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.8.1</junit.version>
         <kotlin.version>1.5.31</kotlin.version>
         <discordKt.version>0.23.4</discordKt.version>
+        <logback-classic-version>1.4.4</logback-classic-version>
+        <kotlin-logging-jvm-version>2.0.11</kotlin-logging-jvm-version>
     </properties>
 
     <dependencies>
@@ -21,6 +23,12 @@
             <groupId>me.jakejmattson</groupId>
             <artifactId>DiscordKt</artifactId>
             <version>${discordKt.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -33,6 +41,16 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback-classic-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.microutils</groupId>
+            <artifactId>kotlin-logging-jvm</artifactId>
+            <version>${kotlin-logging-jvm-version}</version>
         </dependency>
     </dependencies>
 

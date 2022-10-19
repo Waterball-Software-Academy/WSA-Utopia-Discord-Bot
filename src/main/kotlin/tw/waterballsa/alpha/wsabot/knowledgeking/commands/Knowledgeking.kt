@@ -1,4 +1,4 @@
-package com.example.test.knowledgeking.commands
+package tw.waterballsa.alpha.wsabot.knowledgeking.commands
 
 import me.jakejmattson.discordkt.commands.commands
 

@@ -1,8 +1,9 @@
-package com.example.test
+package tw.waterballsa.alpha.wsabot
 
 import dev.kord.core.event.message.MessageCreateEvent
 import me.jakejmattson.discordkt.dsl.bot
 import me.jakejmattson.discordkt.dsl.listeners
+import mu.KotlinLogging
 import java.util.*
 
 // 1. declare commands
