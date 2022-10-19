@@ -1,6 +1,9 @@
 package tw.waterballsa.alpha.wsabot
 
 import dev.kord.core.event.message.MessageCreateEvent
+import dev.kord.gateway.Intent
+import dev.kord.gateway.Intents
+import dev.kord.gateway.PrivilegedIntent
 import me.jakejmattson.discordkt.dsl.bot
 import me.jakejmattson.discordkt.dsl.listeners
 import mu.KotlinLogging
@@ -12,6 +15,9 @@ import java.util.*
 fun main(args: Array<String>) {
     bot(getBotToken()) {
         prefix { "+" } // ?
+        configure {
+            intents = Intents(Intent.GuildMessageReactions, Intent.DirectMessagesReactions)
+        }
     }
 }
 
