@@ -8,6 +8,6 @@ fun knowledgeking() = commands("knowledgeking") {
             respond("Start knowledgeking!")
         }
     }
-
+    //test
 
 }
