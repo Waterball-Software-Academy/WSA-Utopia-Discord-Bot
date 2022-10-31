@@ -9,5 +9,5 @@ fun knowledgeking() = commands("knowledgeking") {
         }
     }
     //test
-
+//intellj test
 }
