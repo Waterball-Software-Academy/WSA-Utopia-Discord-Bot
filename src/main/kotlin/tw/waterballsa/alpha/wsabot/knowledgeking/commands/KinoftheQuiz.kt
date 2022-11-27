@@ -54,6 +54,7 @@ class Competition {
     }
 }
 
+
 class AnswerSheet(_userid : String, _useranswer : Int, _responetime : Int)
 {
     val userid = _userid
