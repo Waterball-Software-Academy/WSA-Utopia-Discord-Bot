@@ -2,12 +2,6 @@ package tw.waterballsa.alpha.wsabot.knowledgeking.commands
 
 import me.jakejmattson.discordkt.commands.commands
 
-val token = "MTAxMjM3NzI3MzI2NzE0NjgxMg.G_Ges8.l_00dt08GLKeBDCei2XUHpU8XScuSi-t-HbBro"
-bot(token) {
-    prefix { "+" }
-    demo()
-    demoListeners()
-}
 val referee = KingoftheQuiz()
 val solutions = listOf<Solution>(
     Solution("1 == 2 的結果是?", listOf<String>("1 == 2","string","true","false"),4, 10),
