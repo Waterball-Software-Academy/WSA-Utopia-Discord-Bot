@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.8.1</junit.version>
-        <kotlin.version>1.5.31</kotlin.version>
+        <kotlin.version>1.7.20</kotlin.version>
         <discordKt.version>0.23.4</discordKt.version>
         <logback-classic-version>1.4.4</logback-classic-version>
         <kotlin-logging-jvm-version>2.0.11</kotlin-logging-jvm-version>
