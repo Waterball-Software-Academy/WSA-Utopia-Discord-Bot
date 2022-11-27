@@ -17,6 +17,9 @@
         <logback-classic-version>1.4.4</logback-classic-version>
         <kotlin-logging-jvm-version>2.0.11</kotlin-logging-jvm-version>
         <main.class>tw.waterballsa.alpha.wsabot.MainKt</main.class>
+        <maven-assembly-plugin.version>2.6</maven-assembly-plugin.version>
+        <kord-core.version>0.8.0-M17</kord-core.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     </properties>
 
     <dependencies>
@@ -35,7 +38,7 @@
         <dependency>
             <groupId>dev.kord</groupId>
             <artifactId>kord-core</artifactId>
-            <version>0.8.0-M17</version>
+            <version>${kord-core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -66,7 +69,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>18</source>
                     <target>18</target>
@@ -113,7 +116,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
+                <version>${maven-assembly-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>make-assembly</id>
