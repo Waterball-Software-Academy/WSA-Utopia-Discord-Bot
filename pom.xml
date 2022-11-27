@@ -30,6 +30,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--TO Fix gateway events created with buildJsonObject failing to be deserialized-->
+        <dependency>
+            <groupId>dev.kord</groupId>
+            <artifactId>kord-core</artifactId>
+            <version>0.8.0-M17</version>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
