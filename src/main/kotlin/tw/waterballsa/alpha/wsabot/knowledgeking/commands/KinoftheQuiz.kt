@@ -54,7 +54,6 @@ class Competition {
     }
 }
 
-
 class AnswerSheet(_userid : String, _useranswer : Int, _responetime : Int)
 {
     val userid = _userid
@@ -91,14 +90,19 @@ class KingoftheQuiz {
 
     }
 
-    fun GetCompetition() : Competition
+    fun GetAnswerList() : AnswerList
     {
-        return competition;
+        return competition.GetAnswerList();
     }
 
     fun Restart()
     {
         competition = Competition()
         limittime = 0;
+    }
+
+    fun Score() : String
+    {
+        return "player..."
     }
 }
