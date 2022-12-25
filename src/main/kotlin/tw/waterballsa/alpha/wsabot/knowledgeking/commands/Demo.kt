@@ -10,6 +10,7 @@ import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.edit
 import dev.kord.core.behavior.interaction.respondEphemeral
+import dev.kord.core.behavior.interaction.response.EphemeralMessageInteractionResponseBehavior
 import dev.kord.core.behavior.interaction.response.respond
 import dev.kord.core.entity.Message
 import dev.kord.core.entity.channel.MessageChannel
@@ -20,6 +21,8 @@ import dev.kord.rest.builder.message.EmbedBuilder.Limits.title
 import dev.kord.rest.builder.message.create.actionRow
 import dev.kord.rest.route.Route
 import dev.kord.x.emoji.Emojis
+import dev.kord.x.emoji.Emojis.a
+import dev.kord.x.emoji.Emojis.b
 import dev.kord.x.emoji.Emojis.id
 import dev.kord.x.emoji.Emojis.m
 import dev.kord.x.emoji.Emojis.new
@@ -33,10 +36,12 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull.content
+import me.jakejmattson.discordkt.Discord
 
 import me.jakejmattson.discordkt.arguments.*
 import me.jakejmattson.discordkt.commands.commands
 import me.jakejmattson.discordkt.conversations.conversation
+import me.jakejmattson.discordkt.conversations.responders.ChannelResponder
 import me.jakejmattson.discordkt.dsl.*
 import me.jakejmattson.discordkt.extensions.DiscordRegex.user
 import me.jakejmattson.discordkt.extensions.TimeStamp
@@ -63,9 +68,18 @@ class Game(_channel : MessageChannel)
     private var solutions : List<Solution>? = null
     private var current = -1
     private var playerRank = mutableMapOf<String, Int>()
-    suspend fun CreateMenu() : Snowflake
+    suspend fun CreateMenu(dc: Discord) : MessageChannelBehavior
     {
         solutions = GooleSheet().ReadSolution()
+        gamemessage = channel.createMessage("loading")
+        var b = dc.kord.rest.channel.startThreadWithMessage(
+            channel.id,
+            gamemessage!!.id,
+            name = "123",
+            ArchiveDuration.Day
+        ) {}.id
+
+        val m = MessageChannelBehavior(b, dc.kord)
         gamemenu = menu {
             var count = 0
             var c = listOf("A", "B", "C", "D")
@@ -98,16 +112,18 @@ class Game(_channel : MessageChannel)
                     actionButton("", emo[i - 1], ButtonStyle.Primary) {
 
                         val result = kingoftheQuiz.RsponeAnswer(user.id.toString(), num)
-
-                        this.respondEphemeral {
-                            this.content = result
+                        respondEphemeral {  }
+                        m.createMessage {
+                            content = result
                         }
                     }
                 }
             }
         }
-        gamemessage = channel.createMessage("loading").edit(gamemenu!!)
-        return gamemessage!!.id
+        gamemessage!!.edit(gamemenu!!)
+
+
+        return m
     }
 
     suspend fun CreateRanking()
@@ -164,20 +180,12 @@ var game : Game? = null
 //1 1 2 3 5 8 13
 
 fun demo() = commands("Demo") {
-    slash("run", ) {
-        execute {
+    slash("run","開始遊戲" ) {
+        execute() {
             game = Game(channel)
             game!!.CreateRanking()
-            val a = game!!.CreateMenu()
-            var b = discord.kord.rest.channel.startThreadWithMessage(
-                channel.id,
-                a,
-                name = "123",
-                ArchiveDuration.Day
-            ) {}
+            val c = game!!.CreateMenu(discord)
 
-
-            var c = MessageChannelBehavior(b.id, discord.kord)
 
             c.createMessage("等待5秒後開始")
             delay(5000)
