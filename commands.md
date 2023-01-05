@@ -16,8 +16,3 @@
 |--------------|-----------|---------------------------|
 | gamification |           | A 'gamification' command. |
 
-## knowledgeking
-| Commands      | Arguments | Description                |
-|---------------|-----------|----------------------------|
-| knowledgeking |           | A 'knowledgeking' command. |
-

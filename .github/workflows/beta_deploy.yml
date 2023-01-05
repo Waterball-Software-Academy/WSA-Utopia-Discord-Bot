@@ -1,0 +1,21 @@
+name: deploy_fly_beta
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-app-beta:
+    name: Deploy app to Fly.io develop
+    environment: beta
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: |
+          flyctl deploy --config fly-beta.toml --remote-only -e \
+          BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - run: echo "Deploy to fly beta"
