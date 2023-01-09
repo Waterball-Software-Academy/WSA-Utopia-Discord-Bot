@@ -193,6 +193,7 @@ var game : Game? = null
 fun KingofQuizCommand() = commands("Demo") {
     slash("run","開始遊戲" ) {
         execute() {
+            channel.createMessage("開始計時")
 
             scheduleTaskAtEightPM {
 
