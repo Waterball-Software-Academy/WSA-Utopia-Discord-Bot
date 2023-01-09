@@ -1,7 +1,6 @@
 package tw.waterballsa.alpha.wsabot.knowledgeking.commands
 
 import dev.kord.common.entity.*
-import dev.kord.common.entity.optional.value
 import dev.kord.core.behavior.channel.*
 import dev.kord.core.behavior.edit
 import dev.kord.core.behavior.interaction.respondEphemeral
@@ -14,7 +13,6 @@ import me.jakejmattson.discordkt.Discord
 
 import me.jakejmattson.discordkt.arguments.*
 import me.jakejmattson.discordkt.commands.commands
-import me.jakejmattson.discordkt.conversations.conversation
 import me.jakejmattson.discordkt.dsl.*
 
 import java.util.concurrent.TimeUnit
@@ -72,7 +70,7 @@ class Game(_channel : MessageChannel)
     {
         solutions = GooleSheet().ReadSolution()
         gamemessage = channel.createMessage("loading")
-        var b = dc.kord.rest.channel.startThreadWithMessage(
+        val b = dc.kord.rest.channel.startThreadWithMessage(
             channel.id,
             gamemessage!!.id,
             name = "123",
@@ -82,7 +80,7 @@ class Game(_channel : MessageChannel)
         val m = MessageChannelBehavior(b, dc.kord)
         gamemenu = menu {
             var count = 0
-            var c = listOf("A", "B", "C", "D")
+            val c = listOf("A", "B", "C", "D")
 
             page {
                 title = "準備中..."
@@ -100,7 +98,7 @@ class Game(_channel : MessageChannel)
             }
 
             buttons {
-                var emo = listOf(
+                val emo = listOf(
                     Emojis.regionalIndicatorA,
                     Emojis.regionalIndicatorB,
                     Emojis.regionalIndicatorC,
@@ -145,7 +143,7 @@ class Game(_channel : MessageChannel)
             //(答對(1or0)*5+LN(1/答題時間)*2)*10
             val isCorrect = player.useranswer.compareTo(currentsolution.correctanswer)
             val timeweight = ln(1/player.responetime.toDouble())
-            var score = (isCorrect * 5 - timeweight) * 10
+            val score = (isCorrect * 5 - timeweight) * 10
             println("${player.useranswer}   \n ${currentsolution.correctanswer}   \n 得分${score.toInt()} ")
             if(score > 0) playerRank.merge(player.userid, score.toInt(), Int::plus)
 
@@ -195,6 +193,7 @@ var game : Game? = null
 fun KingofQuizCommand() = commands("Demo") {
     slash("run","開始遊戲" ) {
         execute() {
+            //怎麼我commit就不用pr了?
             scheduleTaskAtEightPM {
 
                 channel.createMessage("知識王比賽10分鐘後開始囉")
@@ -225,31 +224,7 @@ fun KingofQuizCommand() = commands("Demo") {
         }
     }
 
-    slash("printComptition")
-    {
-        execute {
-            game!!.Show()
-        }
-    }
 
-    slash("update") {
-        execute {
-            game!!.UpdateRanking()
-            game!!.Next()
-        }
-    }
-
-
-
-    slash("next") {
-        execute {
-            var i = VoiceChannelBehavior(Snowflake(1038654765896310804), Snowflake(1039191460408463421), discord.kord)
-
-            channel.createMessage("aaa"+ i.asChannel().data.member.value)
-            print(channel.data.messageCount.value)
-            return@execute
-        }
-    }
 
     slash("Add", "Add two numbers together.") {
         execute(IntegerArg("First"), IntegerArg("Second")) {
@@ -258,21 +233,6 @@ fun KingofQuizCommand() = commands("Demo") {
         }
     }
 
-    slash("SendFrom", "Add two numbers together.") {
-        execute {
-            val mychannel = MessageChannelBehavior(Snowflake(1038665145687212114), discord.kord)
-
-            conversation(exitString = "exit") {
-                val age = this.promptButton<String> {  }
-                respond(age)
-            }.startPrivately(discord, author) //val result = demoConversation().startPublicly(discord, author, channel)
-
-        }
-    }
 
 }
 
-fun demoListeners() = listeners {
-
-
-}
