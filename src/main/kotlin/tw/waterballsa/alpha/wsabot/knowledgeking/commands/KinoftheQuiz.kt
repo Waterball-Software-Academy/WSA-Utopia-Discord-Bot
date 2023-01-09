@@ -35,6 +35,7 @@ fun scheduleTaskAtEightPM(task: suspend () -> Unit) {
         //
         //最后，使用 timeInMillis 属性计算出每天晚上 8 点的毫秒数，并使用 timeInMillis 属性计算出当前时间的毫秒数，并计算两者之差，得到从当前时间到每天晚上 8 点之间的时间差，存储在 delay 变量中。
         val now = Calendar.getInstance()
+        now.add(Calendar.HOUR, 16)
         val eightPM = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 20)
             set(Calendar.MINUTE, 0)
@@ -209,7 +210,7 @@ fun KingofQuizCommand() = commands("Demo") {
                 delay(10000)
 
                 while (!game!!.IsEndGame()) {
-                    c.createMessage("開始下一提")
+                    c.createMessage("開始下一題")
                     game!!.Next()
                     delay(10500)
                     c.createMessage("答題結束 等待兩秒開始")
