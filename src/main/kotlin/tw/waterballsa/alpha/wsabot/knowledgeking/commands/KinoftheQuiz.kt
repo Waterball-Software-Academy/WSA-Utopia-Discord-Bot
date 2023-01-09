@@ -193,7 +193,7 @@ var game : Game? = null
 fun KingofQuizCommand() = commands("Demo") {
     slash("run","開始遊戲" ) {
         execute() {
-            //怎麼我commit就不用pr了?
+
             scheduleTaskAtEightPM {
 
                 channel.createMessage("知識王比賽10分鐘後開始囉")
