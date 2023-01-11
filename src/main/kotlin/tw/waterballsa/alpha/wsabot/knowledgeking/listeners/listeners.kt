@@ -12,14 +12,14 @@ import me.jakejmattson.discordkt.extensions.fullName
 import mu.KotlinLogging
 import tw.waterballsa.alpha.wsabot.gamification.services.StatisticsService
 import tw.waterballsa.alpha.wsabot.knowledgeking.commands.Game
-import tw.waterballsa.alpha.wsabot.knowledgeking.commands.game
 import tw.waterballsa.alpha.wsabot.knowledgeking.commands.scheduleTaskAtEightPM
 
+var game : Game? = null
 fun Listener(service: StatisticsService) = listeners {
 
     on<ReadyEvent> {
         val c = MessageChannelBehavior(Snowflake(1038657903437037590),discord.kord).asChannel();
-        c.createMessage("知識王")
+        c.createMessage("知識王已啟動")
 
         scheduleTaskAtEightPM {
 

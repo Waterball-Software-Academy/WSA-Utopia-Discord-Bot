@@ -187,7 +187,7 @@ class Game(_channel : MessageChannel)
     }
 }
 
-var game : Game? = null
+
 //1 1 2 3 5 8 13
 
 fun KingofQuizCommand() = commands("Demo") {
