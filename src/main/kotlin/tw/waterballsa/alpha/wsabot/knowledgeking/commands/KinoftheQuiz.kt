@@ -10,7 +10,7 @@ import dev.kord.core.entity.channel.MessageChannel
 import dev.kord.x.emoji.Emojis
 import kotlinx.coroutines.delay
 import me.jakejmattson.discordkt.Discord
-
+import java.util.TimeZone
 import me.jakejmattson.discordkt.arguments.*
 import me.jakejmattson.discordkt.commands.commands
 import me.jakejmattson.discordkt.dsl.*
@@ -32,15 +32,15 @@ fun scheduleTaskAtEightPM(task: suspend () -> Unit) {
         //接着，使用 if 语句检查当前时间是否在每天晚上 8 点之后。如果是，则使用 add 函数将 eightPM 对象的日期字段加 1，以便表示第二天晚上 8 点。
         //
         //最后，使用 timeInMillis 属性计算出每天晚上 8 点的毫秒数，并使用 timeInMillis 属性计算出当前时间的毫秒数，并计算两者之差，得到从当前时间到每天晚上 8 点之间的时间差，存储在 delay 变量中。
-        val now = Calendar.getInstance()
-        now.add(Calendar.HOUR, -8)
+        val now = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         val eightPM = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 20)
+            set(Calendar.HOUR_OF_DAY, 12)
             set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
         }
         if (now.after(eightPM)) eightPM.add(Calendar.DATE, 1)
         val delay = eightPM.timeInMillis - now.timeInMillis
+
 
         // 等待时间差
         delay(delay)
@@ -193,33 +193,7 @@ var game : Game? = null
 fun KingofQuizCommand() = commands("Demo") {
     slash("run","開始遊戲" ) {
         execute() {
-            channel.createMessage("開始計時")
 
-            scheduleTaskAtEightPM {
-
-                channel.createMessage("知識王比賽10分鐘後開始囉")
-                delay(300000)
-                channel.createMessage("知識王比賽5分鐘後開始囉")
-                delay(300000)
-
-                game = Game(channel)
-
-                game!!.CreateRanking()
-                val c = game!!.CreateMenu(discord)
-                c.createMessage("知識王比賽已準備好 10秒後開始答題")
-                delay(10000)
-
-                while (!game!!.IsEndGame()) {
-                    c.createMessage("開始下一題")
-                    game!!.Next()
-                    delay(10500)
-                    c.createMessage("答題結束 等待兩秒開始")
-                    game!!.UpdateRanking()
-                    delay(2000)
-                }
-                c.createMessage("遊戲結束!!")
-
-            }
 
             //channel.getLastMessage()!!.addReaction(Emojis.a)
         }
@@ -236,4 +210,5 @@ fun KingofQuizCommand() = commands("Demo") {
 
 
 }
+
 
