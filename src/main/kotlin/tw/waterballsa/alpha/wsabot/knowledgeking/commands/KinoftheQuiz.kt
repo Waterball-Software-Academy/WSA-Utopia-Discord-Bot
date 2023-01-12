@@ -136,7 +136,7 @@ class Game(_channel : MessageChannel)
         if (current == -1) return
         val playerdata = kingoftheQuiz.GetAnswerList()
         val currentsolution = solutions?.get(current)!!
-        var rankstr = "Rnak:\n"
+        var rankstr = "Rank:\n"
 
         for (player in playerdata.table[currentsolution]!!)
         {
@@ -145,13 +145,13 @@ class Game(_channel : MessageChannel)
             val timeweight = ln(1/player.responetime.toDouble())
             val score = (isCorrect * 5 - timeweight) * 10
             println("${player.useranswer}   \n ${currentsolution.correctanswer}   \n 得分${score.toInt()} ")
-            if(score > 0) playerRank.merge(player.userid, score.toInt(), Int::plus)
+            if(score > 0) playerRank.merge(player.userid, score.toInt(), Int::plus) //高難度 倒扣分機制
 
         }
 
         for( p in playerRank.keys)
         {
-            rankstr += "${p} 獲得 ${playerRank[p]} 分\n"
+            rankstr += "<@${p}> 獲得 ${playerRank[p]} 分\n"
         }
 
         gamerank!!.edit {
