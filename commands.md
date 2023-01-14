@@ -6,14 +6,10 @@
 | [Argument]  | Argument is not required.      |
 
 ## Demo
-| Commands        | Arguments     | Description               |
-|-----------------|---------------|---------------------------|
-| Add             | First, Second | Add two numbers together. |
-| SendFrom        |               | Add two numbers together. |
-| next            |               |                           |
-| printComptition |               |                           |
-| run             |               | 開始遊戲                      |
-| update          |               |                           |
+| Commands | Arguments     | Description               |
+|----------|---------------|---------------------------|
+| Add      | First, Second | Add two numbers together. |
+| run      |               | 開始遊戲                      |
 
 ## Utility
 | Commands | Arguments | Description                          |
