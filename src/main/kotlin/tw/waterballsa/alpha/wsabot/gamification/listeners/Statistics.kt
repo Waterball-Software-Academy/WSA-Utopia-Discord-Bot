@@ -16,7 +16,7 @@ fun statisticsListener(service: StatisticsService) = listeners {
         val author = message.asMessage().author!!
         val count = service.incrementReaction(author)
         val message = "${author.fullName} 目前總共獲得 $count 個表情。"
-        channel.createMessage(message)
+//        channel.createMessage(message)
         val channelName = channel.asChannel().data.name.value
         logger.info { "Messaging to '$channelName': \"$message\"" }
     }

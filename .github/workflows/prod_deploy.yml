@@ -1,0 +1,21 @@
+name: deploy_fly_prod
+
+on:
+  push:
+    branches:
+      - 'release/**'
+
+jobs:
+  deploy-app-prod:
+    name: Deploy app to Fly.io prod
+    environment: prod
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: |
+          flyctl deploy --config fly-prod.toml --remote-only -e \
+          BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - run: echo "Deploy to fly prod"
