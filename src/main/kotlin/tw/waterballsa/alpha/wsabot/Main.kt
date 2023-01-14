@@ -13,7 +13,6 @@ import tw.waterballsa.alpha.wsabot.knowledgeking.commands.KingofQuizCommand
 // 3. control bot
 fun main(args: Array<String>) {
     bot(getEnv("BOT_TOKEN")) {
-        prefix { "+" } // ?
         configure {
             intents = Intents(Intent.GuildMessageReactions, Intent.DirectMessagesReactions)
         }
