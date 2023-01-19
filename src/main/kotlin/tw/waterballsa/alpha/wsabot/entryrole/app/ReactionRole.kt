@@ -22,7 +22,7 @@ fun reactionRole() = listeners {
         }
 
         val guildId = message.asMessage().getGuild().id
-        val user = message.asMessage().author!!
+        val user = user.asUser()
         val givenRoles = givenRoles(guildId)
         val removeRoles = removeRoles(guildId)
         addRoleToGuildMember(discord, guildId, user, givenRoles)
