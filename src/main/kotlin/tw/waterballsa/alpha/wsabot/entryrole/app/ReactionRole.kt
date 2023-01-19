@@ -77,7 +77,7 @@ private fun givenRoles(guildId: Snowflake): List<Snowflake> {
         -> {
             listOf(
                 Snowflake("1038661590985228298"), // 學院公民
-                Snowflake("1038661590985228298"), // 技術演講吐司會訂閱者
+                Snowflake("1038661795507863623"), // 技術演講吐司會訂閱者
                 Snowflake("1038661611889631262")  // 遊戲微服務計畫訂閱者
             )
         }
@@ -85,7 +85,7 @@ private fun givenRoles(guildId: Snowflake): List<Snowflake> {
         GuildEnvironment.PROD.guildId
         -> {
             listOf(
-                Snowflake("1038661590985228298"), // 學院公民
+                Snowflake("954669665588756480"), // 學院公民
                 Snowflake("1038933719723020318"), // 純函式咖啡訂閱者
                 Snowflake("1042774972717871176"), // 遊戲微服務計畫訂閱者
                 Snowflake("1042775110630780958"), // 技術演講吐司會訂閱者
