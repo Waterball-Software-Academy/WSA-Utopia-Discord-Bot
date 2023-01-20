@@ -71,6 +71,21 @@ fun removeAbandonedEvent() =
         }
     }
 
+fun removeCompletedEvent() =
+    listeners {
+        on<GuildScheduledEventUpdateEvent> {
+            scheduledEvent
+                .let { event ->
+                    gaasEvents.removeIf {
+                        gaasEvents.haveThisEvent(event) && it.status == GuildScheduledEventStatus.Completed
+                    }
+                }
+                .also {
+                    logger.info { "[${scheduledEvent.name}] 已經從 GaaS Event 列表移除, 它的 ID 是 [${scheduledEvent.id}]" }
+                }
+        }
+    }
+
 private fun List<GuildScheduledEvent>.haveThisEvent(event: GuildScheduledEvent): Boolean =
     any { it.id.value == event.id.value }
 
