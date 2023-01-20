@@ -3,9 +3,7 @@ package tw.waterballsa.alpha.wsabot
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Permissions
 import dev.kord.core.event.message.MessageCreateEvent
-import dev.kord.gateway.Intent
-import dev.kord.gateway.Intents
-import dev.kord.gateway.PrivilegedIntent
+import dev.kord.gateway.*
 import me.jakejmattson.discordkt.dsl.bot
 import me.jakejmattson.discordkt.dsl.listeners
 import java.util.*
@@ -22,15 +20,18 @@ fun main(args: Array<String>) {
                 Intent.GuildMessageReactions,
                 Intent.DirectMessagesReactions,
                 Intent.GuildScheduledEvents,
+                Intent.GuildVoiceStates,
                 Intent.GuildMembers,
+                Intent.Guilds,
             )
             defaultPermissions = Permissions(
                 Permission.All,
                 Permission.ViewGuildInsights,
                 Permission.ViewChannel,
-                Permission.ManageChannels,
+                Permission.ManageChannels
             )
         }
+
     }
 }
 
