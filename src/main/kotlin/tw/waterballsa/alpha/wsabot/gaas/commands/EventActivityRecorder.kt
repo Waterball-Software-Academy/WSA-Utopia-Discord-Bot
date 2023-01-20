@@ -99,10 +99,7 @@ fun scheduleTaskAtSpecifyHour(hour: Int, task: suspend () -> Unit) {
         with(Calendar.getInstance()) {
             timeZone = TimeZone.getTimeZone("Asia/Taipei")
             while (Calendar.getInstance() in startHour..endHour) {
-                println("CurrentTime: ${Calendar.getInstance().time}")
-                println("startHour: ${startHour.time}")
-                println("endHour: ${endHour.time}")
-                println("Duration: ${oneMinute.inWholeSeconds}")
+                logger.info { "CurrentTime: ${Calendar.getInstance().time}" }
                 logger.info { "Bot collection data..." }
                 task()
                 delay(oneMinute)
