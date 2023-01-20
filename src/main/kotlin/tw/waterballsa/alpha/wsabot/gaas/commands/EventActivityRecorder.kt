@@ -17,19 +17,20 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 val logger = KotlinLogging.logger {}
-val gaasEvents = mutableListOf<GuildScheduledEvent>()
+val gaasEvents = HashMap<ULong, Boolean>() // <event, isStartLogging?>
 
-//val betaConferenceRoom = (1039191460408463421).toULong() // beta - beta conf 遊戲微服務 200264140512690176
+//遊戲微服務
+//val partyChannelId = (992631653954502716).toULong() // WSA - 學院節目區
 val partyChannelId = (1040672621609619596).toULong() // beta - party
 
 fun catchGaasEvent() = listeners {
     on<GuildScheduledEventCreateEvent> {
         scheduledEvent
             .takeIf { it.name.contains("遊戲微服務") }
-            ?.let { gaasEvents.add(it) }
+            ?.run { gaasEvents.putIfAbsent(id.value, false) }
             .also {
-                logger.info { "[${scheduledEvent.name}] 已經加入 GaaS Event 清單, 它的 ID 是 [${scheduledEvent.id}]" }
-                logger.info { "活動建立時間: ${scheduledEvent.scheduledStartTime}" }
+                logger.info { "[${scheduledEvent.name}] 已經加入 GaaS Event 清單，它的 ID 是 [${scheduledEvent.id}]" }
+                logger.info { "活動建立時間：${scheduledEvent.scheduledStartTime}" }
             }
     }
 }
@@ -40,34 +41,44 @@ fun scheduledEventUpdateListeners() =
     * 然而要更新 VoiceState 物件，Bot 必須要有能力接收 VoiceStateUpdateEvent
     * 故，請記得再 Bot Intent Config 加上 Intent.GuildVoiceStates，才能及時更新
     * */
-
     listeners {
         on<GuildScheduledEventUpdateEvent> {
             scheduledEvent
-                .takeIf { gaasEvents.haveThisEvent(it) && it.status == GuildScheduledEventStatus.Active }
-                ?.let { event ->
-                    scheduleTaskAtSpecifyHour(event.getStartHour()) {
-                        val membersInEventChannel =
-                            event.getGuild()
-                                .members
-                                .filter { it.getVoiceStateOrNull()?.channelId?.value == partyChannelId }
-                                .map { it.fullName }
-                                .toList()
-                        logger.info { "活動頻道成員列表: $membersInEventChannel" }
-                        logger.info { "活動頻道成員數量: ${membersInEventChannel.size}" }
+                .takeIf {
+                    gaasEvents.contains(it.id.value)
+                }
+                ?.run {
+                    if (!gaasEvents[id.value]!! && status == GuildScheduledEventStatus.Active) {
+                        scheduleTaskAtSpecifyHour(getStartHour()) {
+                            val membersInEventChannel =
+                                getGuild().members
+                                    .filter { it.getVoiceStateOrNull()?.channelId?.value == partyChannelId }
+                                    .map { it.fullName }
+                                    .toList()
+
+                            logger.info { "活動頻道成員列表：$membersInEventChannel" }
+                            logger.info { "活動頻道成員數量：${membersInEventChannel.size}" }
+                        }
+                        gaasEvents[id.value] = true
                     }
                 }
         }
     }
 
+private fun GuildScheduledEvent.getStartHour(): Int =
+    scheduledStartTime.toJavaInstant().atZone(ZoneOffset.ofHours(8)).hour
+
 fun removeAbandonedEvent() =
     listeners {
         on<GuildScheduledEventDeleteEvent> {
-            scheduledEvent
-                .let { event -> gaasEvents.removeIf { gaasEvents.haveThisEvent(event) } }
-                .also {
-                    logger.info { "[${scheduledEvent.name}] 已經從 GaaS Event 列表移除, 它的 ID 是 [${scheduledEvent.id}]" }
+            scheduledEvent.run {
+                if (gaasEvents.contains(id.value)) {
+                    gaasEvents.remove(id.value)
+                    logger.info {
+                        "[$name] 已經被刪除並從 GaaS Event 列表移除，它的 ID 是 [$id]"
+                    }
                 }
+            }
         }
     }
 
@@ -75,26 +86,20 @@ fun removeCompletedEvent() =
     listeners {
         on<GuildScheduledEventUpdateEvent> {
             scheduledEvent
-                .let { event ->
-                    gaasEvents.removeIf {
-                        gaasEvents.haveThisEvent(event) && it.status == GuildScheduledEventStatus.Completed
+                .takeIf { gaasEvents.contains(it.id.value) }
+                ?.run {
+                    if (gaasEvents[id.value]!! && status == GuildScheduledEventStatus.Completed) {
+                        gaasEvents.remove(id.value)
+                        logger.info {
+                            "[$name] 已經圓滿結束並從 GaaS Event 列表移除，它的 ID 是 [$id]"
+                        }
                     }
-                }
-                .also {
-                    logger.info { "[${scheduledEvent.name}] 已經從 GaaS Event 列表移除, 它的 ID 是 [${scheduledEvent.id}]" }
                 }
         }
     }
 
-private fun List<GuildScheduledEvent>.haveThisEvent(event: GuildScheduledEvent): Boolean =
-    any { it.id.value == event.id.value }
-
-private fun GuildScheduledEvent.getStartHour(): Int =
-    scheduledStartTime.toJavaInstant().atZone(ZoneOffset.ofHours(8)).hour
-
 @OptIn(DelicateCoroutinesApi::class)
-fun scheduleTaskAtSpecifyHour(hour: Int, task: suspend () -> Unit) {
-
+fun scheduleTaskAtSpecifyHour(hour: Int, task: suspend () -> Unit) =
     GlobalScope.launch {
         val startHour = Calendar.getInstance().apply {
             timeZone = TimeZone.getTimeZone("Asia/Taipei")
@@ -114,12 +119,12 @@ fun scheduleTaskAtSpecifyHour(hour: Int, task: suspend () -> Unit) {
         with(Calendar.getInstance()) {
             timeZone = TimeZone.getTimeZone("Asia/Taipei")
             while (Calendar.getInstance() in startHour..endHour) {
-                logger.info { "CurrentTime: ${Calendar.getInstance().time}" }
-                logger.info { "Bot collection data..." }
+                logger.info { "現在時間：${Calendar.getInstance().time}" }
+                logger.info { "WaterGPT 蒐集資料中......" }
                 task()
                 delay(oneMinute)
             }
         }
     }
-}
+
 
