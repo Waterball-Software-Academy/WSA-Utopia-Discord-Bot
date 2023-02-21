@@ -58,6 +58,7 @@ fun scheduleTaskAtEightPM(task: suspend () -> Unit) {
 
 class Game(_channel : MessageChannel)
 {
+
     private var gamemenu : Menu? = null
     private var gamerank : Message? = null
     private var gamemessage : Message? = null
