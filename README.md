@@ -7,5 +7,5 @@ mvn clean package
 ```
 run jar
 ```sh
-java -jar target/wsa-bot-1.0-SNAPSHOT-jar-with-dependencies.jar
+java -jar bot/target/bot-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
