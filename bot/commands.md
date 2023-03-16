@@ -22,8 +22,3 @@
 |--------------|-----------|---------------------------|
 | gamification |           | A 'gamification' command. |
 
-## two-sum
-| Commands | Arguments     | Description               |
-|----------|---------------|---------------------------|
-| two-sum  | First, Second | Add two numbers together. |
-
