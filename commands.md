@@ -23,7 +23,9 @@
 | gamification |           | A 'gamification' command. |
 
 ## two-sum
-| Commands | Arguments     | Description               |
-|----------|---------------|---------------------------|
-| two-sum  | First, Second | Add two numbers together. |
+| Commands    | Arguments     | Description                |
+|-------------|---------------|----------------------------|
+| mongo-query | id            | query something from mongo |
+| mongo-save  | note          | save something into mongo  |
+| two-sum     | First, Second | Add two numbers together.  |
 

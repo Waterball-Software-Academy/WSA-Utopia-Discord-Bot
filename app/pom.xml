@@ -16,6 +16,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <kotlin.version>1.7.20</kotlin.version>
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <mongodb-driver-sync.version>4.9.0</mongodb-driver-sync.version>
   </properties>
 
   <dependencies>
@@ -24,6 +25,11 @@
       <artifactId>domain</artifactId>
       <version>1.0-SNAPSHOT</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-driver-sync</artifactId>
+      <version>${mongodb-driver-sync.version}</version>
     </dependency>
   </dependencies>
 
