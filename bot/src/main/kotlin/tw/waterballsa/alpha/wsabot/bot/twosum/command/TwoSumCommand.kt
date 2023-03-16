@@ -11,7 +11,7 @@ fun twoSum() = commands("two-sum") {
         execute(IntegerArg("First"), IntegerArg("Second")) {
             val (first, second) = args
             val twoSumUseCase: TwoSumUseCase = TwoSumUseCase()
-            respond(twoSumUseCase.sum(first, second, author))
+            respond(twoSumUseCase.sum(first, second))
         }
     }
 }

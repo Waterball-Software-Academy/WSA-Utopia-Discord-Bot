@@ -13,6 +13,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <discordKt.version>0.23.4</discordKt.version>
+    <kord-core.version>0.8.0-M17</kord-core.version>
     <kotlin.version>1.7.20</kotlin.version>
     <main.class>tw.waterballsa.alpha.wsabot.bot.MainKt</main.class>
     <maven-assembly-plugin.version>2.6</maven-assembly-plugin.version>
@@ -25,6 +27,23 @@
       <artifactId>app</artifactId>
       <version>1.0-SNAPSHOT</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>me.jakejmattson</groupId>
+      <artifactId>DiscordKt</artifactId>
+      <version>${discordKt.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!--TO Fix gateway events created with buildJsonObject failing to be deserialized-->
+    <dependency>
+      <groupId>dev.kord</groupId>
+      <artifactId>kord-core</artifactId>
+      <version>${kord-core.version}</version>
     </dependency>
   </dependencies>
 
