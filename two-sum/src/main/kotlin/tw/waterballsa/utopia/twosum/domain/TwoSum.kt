@@ -1,4 +1,4 @@
-package tw.waterballsa.alpha.wsabot.domain
+package tw.waterballsa.utopia.twosum.domain
 
 class TwoSum(var a: Int, var b: Int) {
     fun sum(username: String): String {

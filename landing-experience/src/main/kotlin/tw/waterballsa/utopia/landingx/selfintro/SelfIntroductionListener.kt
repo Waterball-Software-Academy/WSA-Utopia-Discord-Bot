@@ -1,12 +1,13 @@
-package tw.waterballsa.utopia.selfintroduction
+package tw.waterballsa.utopia.landingx.selfintro
 
 import dev.kord.common.entity.ArchiveDuration
 import dev.kord.core.event.message.MessageCreateEvent
 import me.jakejmattson.discordkt.dsl.listeners
 import mu.KotlinLogging
+val logger = KotlinLogging.logger {}
 
-fun autoThreadListener() = listeners {
-    val logger = KotlinLogging.logger {}
+fun selfIntroListener() = listeners {
+
 
     on<MessageCreateEvent> {
         val channelIdValue = message.channelId.value

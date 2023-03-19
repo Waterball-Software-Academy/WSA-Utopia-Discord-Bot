@@ -8,7 +8,7 @@
     <artifactId>root</artifactId>
     <packaging>pom</packaging>
     <version>${revision}</version>
-    <name>烏托邦計畫</name>
+    <name>The Utopia Project: The most highly automated and gamified discord server is -- now -- COMING TRUE!</name>
 
     <modules>
         <module>two-sum</module>
@@ -18,7 +18,7 @@
         <module>knowledge-king</module>
         <module>gamification</module>
         <module>main</module>
-        <module>self-introduction</module>
+        <module>landing-experience</module>
     </modules>
 
     <properties>
@@ -31,7 +31,7 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <discordKt.version>0.23.4</discordKt.version>
         <kord-core.version>0.8.0-M17</kord-core.version>
-        <kotlin.version>1.5.31</kotlin.version>
+<!--        <kotlin.version>1.5.31</kotlin.version>-->
         <koin.version>3.3.3</koin.version>
     </properties>
 

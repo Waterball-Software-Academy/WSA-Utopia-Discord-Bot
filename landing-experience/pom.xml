@@ -6,6 +6,6 @@
         <groupId>tw.waterballsa.utopia</groupId>
         <version>${revision}</version>
     </parent>
-    <artifactId>self-introduction</artifactId>
-    <name>Features supported in the Self-introduction channel</name>
+    <artifactId>landing-experience</artifactId>
+    <name>Features supported in order to improve the landing experience of every new WSA member.</name>
 </project>
