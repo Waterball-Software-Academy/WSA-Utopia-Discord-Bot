@@ -36,8 +36,8 @@ private fun matchEmoji(emojiName: String): Boolean {
 
 private fun matchEntryMessage(messageId: Snowflake): Boolean {
     return listOf(
-        Snowflake("1042776102734663740"),
-        Snowflake("1038667013259792455")
+        Snowflake("1042776102734663740"), // WSA 解鎖學院訊息 ID
+        Snowflake("1038667013259792455") // WSA-BETA 解鎖學院訊息 ID
     ).contains(messageId)
 }
 

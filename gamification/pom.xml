@@ -1,0 +1,16 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>root</artifactId>
+        <groupId>tw.waterballsa.utopia</groupId>
+        <version>${revision}</version>
+    </parent>
+    <artifactId>gamification</artifactId>
+    <name>Gamification of Waterball Software Academy -- Let's build an MMORPG world within our discord server to make people feel alive in every moment!</name>
+
+    <dependencies>
+    </dependencies>
+
+
+</project>
