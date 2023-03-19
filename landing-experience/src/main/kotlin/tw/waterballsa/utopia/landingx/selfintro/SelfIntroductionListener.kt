@@ -4,16 +4,14 @@ import dev.kord.common.entity.ArchiveDuration
 import dev.kord.core.event.message.MessageCreateEvent
 import me.jakejmattson.discordkt.dsl.listeners
 import mu.KotlinLogging
-val logger = KotlinLogging.logger {}
+import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 
-fun selfIntroListener() = listeners {
+val log = KotlinLogging.logger {}
 
-
+fun autoCreateThreadWheneverMemberCreateMessageInSelfIntroChannel(wsa: WsaDiscordProperties) = listeners {
     on<MessageCreateEvent> {
         val channelIdValue = message.channelId.value
-        val betaSelfIntroductionChannelId = 1039196068455399474u
-        val prodSelfIntroductionChannelId = 937992281837961257u
-        if (!listOf(betaSelfIntroductionChannelId, prodSelfIntroductionChannelId).contains(channelIdValue)) {
+        if (wsa.selfIntroChannelId != channelIdValue) {
             return@on
         }
         val author = message.asMessage().author!!
@@ -24,6 +22,6 @@ fun selfIntroListener() = listeners {
             name = threadName,
             ArchiveDuration.Week
         ) {}
-        logger.info { "Thread $threadName created" }
+        log.info { "[Auto create a thread on new message] {\"threadName\":\"$threadName\"}" }
     }
 }

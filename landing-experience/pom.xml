@@ -8,4 +8,11 @@
     </parent>
     <artifactId>landing-experience</artifactId>
     <name>Features supported in order to improve the landing experience of every new WSA member.</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>commons</artifactId>
+        </dependency>
+    </dependencies>
 </project>

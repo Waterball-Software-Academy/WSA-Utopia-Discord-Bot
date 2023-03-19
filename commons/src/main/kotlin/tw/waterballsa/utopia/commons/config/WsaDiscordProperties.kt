@@ -6,8 +6,11 @@ import tw.waterballsa.utopia.commons.utils.loadProperties
 
 @Service
 class WsaDiscordProperties() {
-    private var guildId: String
-    private var unlockEntryMessageId: String
+    var guildId: ULong
+    var unlockEntryMessageId: ULong
+    var selfIntroChannelId: ULong
+    var wsaGuestRoleId: ULong
+    var wsaCitizenRoleId: ULong
 
     init {
         val properties = when (val env = getEnv("deployment.env")) {
@@ -16,8 +19,11 @@ class WsaDiscordProperties() {
             else -> throw IllegalArgumentException("doesn't support the env name ${env}.")
         }
 
-        guildId = properties.getProperty("guild-id")
-        unlockEntryMessageId = properties.getProperty("unlock-entry-message-id")
+        guildId = properties.getProperty("guild-id").toULong()
+        unlockEntryMessageId = properties.getProperty("unlock-entry-message-id").toULong()
+        selfIntroChannelId = properties.getProperty("self-intro-channel-id").toULong()
+        wsaGuestRoleId = properties.getProperty("wsa-guest-role-id").toULong()
+        wsaCitizenRoleId = properties.getProperty("wsa-citizen-role-id").toULong()
     }
 }
 
