@@ -77,11 +77,6 @@
             <artifactId>kord-core</artifactId>
             <version>${kord-core.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>io.insert-koin</groupId>-->
-<!--            <artifactId>koin-core</artifactId>-->
-<!--            <version>${koin.version}</version>-->
-<!--        </dependency>-->
     </dependencies>
 
     <dependencyManagement>
