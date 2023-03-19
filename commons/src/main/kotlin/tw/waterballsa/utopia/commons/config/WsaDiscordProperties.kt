@@ -13,7 +13,7 @@ class WsaDiscordProperties() {
     var wsaCitizenRoleId: ULong
 
     init {
-        val properties = when (val env = getEnv("deployment.env")) {
+        val properties = when (val env = getEnv("DEPLOYMENT_ENV")) {
             "beta" -> loadProperties("wsa.beta.properties")
             "prod" -> loadProperties("wsa.prod.properties")
             else -> throw IllegalArgumentException("doesn't support the env name ${env}.")
