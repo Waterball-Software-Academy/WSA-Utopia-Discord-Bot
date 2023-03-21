@@ -18,7 +18,7 @@ jobs:
           BOT_TOKEN=${{ secrets.BOT_TOKEN }},\
           MONGO_USERNAME=${{ secrets.MONGO_USERNAME }},\
           MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }},\
-          MONGO_HOST=${{ secrets.MONGO_HOST }}
+          MONGO_HOST=${{ secrets.MONGO_HOST }},\
           DEPLOYMENT_ENV=beta
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
