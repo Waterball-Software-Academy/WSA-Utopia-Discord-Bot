@@ -16,7 +16,7 @@ jobs:
       - run: |
           flyctl deploy --config fly-prod.toml --remote-only -e \
           BOT_TOKEN=${{ secrets.BOT_TOKEN }}
-          DEPLOYMENT_ENV=${{ env.DEPLOYMENT_ENV }}
+          DEPLOYMENT_ENV=prod
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       - run: echo "Deploy to fly prod"
