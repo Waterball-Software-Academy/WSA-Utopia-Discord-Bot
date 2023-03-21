@@ -1,13 +1,6 @@
 # Part 1: Build the app using Maven
 FROM maven:3.8.3-openjdk-17-slim
 
-## download dependencies
-ADD pom.xml /
-ADD domain/pom.xml domain/pom.xml
-ADD app/pom.xml app/pom.xml
-ADD bot/pom.xml bot/pom.xml
-
-RUN mvn verify
 ADD ./ /
 ## build after dependencies are down so it wont redownload unless the POM changes
 RUN mvn package
