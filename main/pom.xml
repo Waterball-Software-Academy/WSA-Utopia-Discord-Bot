@@ -9,6 +9,11 @@
     <artifactId>main</artifactId>
     <name>The entry point of the discord bot APP.</name>
 
+    <properties>
+        <maven-assembly-plugin.version>2.6</maven-assembly-plugin.version>
+        <main.class>tw.waterballsa.utopia.MainKt</main.class>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
@@ -23,4 +28,33 @@
             <artifactId>landing-experience</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven-assembly-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>${main.class}</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
