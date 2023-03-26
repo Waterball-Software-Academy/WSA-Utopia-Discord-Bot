@@ -19,6 +19,7 @@
 <!--        <module>gamification</module>-->
         <module>landing-experience</module>
         <module>chatgpt-api</module>
+        <module>forum-experience</module>
     </modules>
 
     <properties>
@@ -36,6 +37,7 @@
         <reflections.version>0.10.2</reflections.version>
         <assertj-core.version>3.24.2</assertj-core.version>
         <jackson.version>2.14.0</jackson.version>
+        <javax.inject.version>1</javax.inject.version>
     </properties>
 
     <dependencies>
@@ -72,6 +74,12 @@
             <artifactId>kotlinx-coroutines-core</artifactId>
             <version>${kotlinx-coroutines-core.version}</version>
         </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${javax.inject.version}</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -120,6 +128,16 @@
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
                 <version>${reflections.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>forum-experience</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>chatgpt-api</artifactId>
+                <version>${revision}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

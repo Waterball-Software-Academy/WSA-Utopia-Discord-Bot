@@ -28,6 +28,10 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>discord-impl-jda</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>forum-experience</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

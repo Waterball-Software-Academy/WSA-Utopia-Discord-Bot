@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners.*
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.jda.JdaInstance.compositeListener
 import java.lang.reflect.Method
@@ -106,6 +107,8 @@ internal fun loadListenersFromAllUtopiaModules(wsa: WsaDiscordProperties?): List
 
 
 fun runJda(wsa: WsaDiscordProperties) {
+    val context = AnnotationConfigApplicationContext()
+
     val listeners = loadListenersFromAllUtopiaModules(wsa)
     for (listener in listeners) {
         registerListener(listener)
