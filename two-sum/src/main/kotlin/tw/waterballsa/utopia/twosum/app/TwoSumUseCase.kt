@@ -1,10 +1,8 @@
 package tw.waterballsa.utopia.twosum.app
 
-import me.jakejmattson.discordkt.annotations.Service
 import mu.KotlinLogging
 import tw.waterballsa.utopia.twosum.domain.TwoSum
 
-@Service
 class TwoSumUseCase {
     private val logger = KotlinLogging.logger {}
     fun sum(a: Int, b: Int): String {

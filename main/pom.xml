@@ -15,6 +15,7 @@
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>commons</artifactId>
@@ -26,6 +27,10 @@
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>landing-experience</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>discord-impl-jda</artifactId>
         </dependency>
     </dependencies>
 

@@ -11,28 +11,30 @@
     <name>The Utopia Project: The most highly automated and gamified discord server is -- now -- COMING TRUE!</name>
 
     <modules>
+        <module>main</module>
         <module>two-sum</module>
         <module>discord-api</module>
-        <module>discord-impl-kord</module>
+        <module>discord-impl-jda</module>
         <module>commons</module>
         <module>knowledge-king</module>
         <module>gamification</module>
-        <module>main</module>
         <module>landing-experience</module>
     </modules>
 
     <properties>
-        <kotlin.version>1.7.20</kotlin.version>
         <revision>1.0-SNAPSHOT</revision>
+        <kotlin.version>1.8.10</kotlin.version>
+        <kotlinx-coroutines-core.version>1.6.1</kotlinx-coroutines-core.version>
+        <koin.version>3.3.3</koin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.9.2</junit.version>
         <logback-classic-version>1.4.6</logback-classic-version>
         <kotlin-logging-jvm-version>3.0.5</kotlin-logging-jvm-version>
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <discordKt.version>0.23.4</discordKt.version>
-        <kord-core.version>0.8.0-M17</kord-core.version>
-<!--        <kotlin.version>1.5.31</kotlin.version>-->
-        <koin.version>3.3.3</koin.version>
+        <JDA.version>5.0.0-beta.1</JDA.version>
+        <kotlin-reflect.version>1.8.10</kotlin-reflect.version>
+        <reflections.version>0.10.2</reflections.version>
+        <assertj-core.version>3.24.2</assertj-core.version>
     </properties>
 
     <dependencies>
@@ -49,6 +51,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj-core.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback-classic-version}</version>
@@ -58,29 +66,20 @@
             <artifactId>kotlin-logging-jvm</artifactId>
             <version>${kotlin-logging-jvm-version}</version>
         </dependency>
-
         <dependency>
-            <groupId>me.jakejmattson</groupId>
-            <artifactId>DiscordKt</artifactId>
-            <version>${discordKt.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-
-        </dependency>
-        <!--TODO: Fix gateway events created with buildJsonObject failing to be deserialized-->
-        <dependency>
-            <groupId>dev.kord</groupId>
-            <artifactId>kord-core</artifactId>
-            <version>${kord-core.version}</version>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-core</artifactId>
+            <version>${kotlinx-coroutines-core.version}</version>
         </dependency>
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>net.dv8tion</groupId>
+                <artifactId>JDA</artifactId>
+                <version>${JDA.version}</version>
+            </dependency>
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>two-sum</artifactId>
@@ -93,7 +92,7 @@
             </dependency>
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
-                <artifactId>discord-impl-kord</artifactId>
+                <artifactId>discord-impl-jda</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
@@ -105,6 +104,16 @@
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>landing-experience</artifactId>
                 <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-reflect</artifactId>
+                <version>${kotlin-reflect.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.reflections</groupId>
+                <artifactId>reflections</artifactId>
+                <version>${reflections.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -160,6 +169,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>

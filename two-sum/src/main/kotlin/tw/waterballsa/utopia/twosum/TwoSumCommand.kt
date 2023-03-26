@@ -1,18 +1,19 @@
 package tw.waterballsa.utopia.twosum
 
-import me.jakejmattson.discordkt.arguments.IntegerArg
-import me.jakejmattson.discordkt.commands.commands
 import mu.KotlinLogging
-import tw.waterballsa.utopia.twosum.app.TwoSumUseCase
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
+import tw.waterballsa.utopia.jda.listener
 
 val log = KotlinLogging.logger {}
 
-fun twoSum(usecase: TwoSumUseCase) = commands("two-sum") {
-    slash("two-sum", "Add two numbers together.") {
-        execute(IntegerArg("First"), IntegerArg("Second")) {
-            val (first, second) = args
-            log.info { "[Two Sum] $first + $second" }
-            respond(usecase.sum(first, second))
-        }
+fun twoSum(wsa: WsaDiscordProperties) = listener("Two Sum") {
+    on<MessageReceivedEvent> {
+        log.info { "New message: $message" }
     }
+    on<MessageDeleteEvent> {
+        log.info { "Delete message: $messageId" }
+    }
+
 }
