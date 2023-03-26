@@ -12,7 +12,6 @@
 
     <modules>
         <module>main</module>
-        <module>two-sum</module>
         <module>discord-api</module>
         <module>discord-impl-jda</module>
         <module>commons</module>

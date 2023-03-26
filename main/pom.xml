@@ -22,10 +22,6 @@
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
-            <artifactId>two-sum</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>landing-experience</artifactId>
         </dependency>
         <dependency>
