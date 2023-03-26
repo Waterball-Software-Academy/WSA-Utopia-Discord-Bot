@@ -3,8 +3,9 @@ package tw.waterballsa.utopia.landingx.selfintro
 import mu.KotlinLogging
 
 val log = KotlinLogging.logger {}
+
 //
-//fun autoCreateThreadWheneverMemberCreateMessageInSelfIntroChannel(wsa: WsaDiscordProperties) = listeners {
+//fun autoCreateThreadWheneverMemberCreateMessageInSelfIntroChannel(wsa: WsaDiscordProperties) = listener("") {
 //    on<MessageCreateEvent> {
 //        val channelIdValue = message.channelId.value
 //        if (wsa.selfIntroChannelId != channelIdValue) {

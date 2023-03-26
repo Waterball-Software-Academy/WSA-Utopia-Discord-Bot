@@ -17,14 +17,14 @@ class CompositeListenerTest {
 
     @Test
     fun `register adds listener to the list`() {
-        val listener = listener("test") {}
+        val listener = listener {}
         compositeListener.register(listener)
         assertThat(compositeListener.listeners).containsExactly(listener)
     }
 
     @Test
     fun `unregister removes listener from the list`() {
-        val listener = listener("test") {}
+        val listener = listener {}
         compositeListener.register(listener)
         compositeListener.unregister(listener)
         assertThat(compositeListener.listeners).isEmpty()
@@ -33,8 +33,8 @@ class CompositeListenerTest {
     @Test
     fun `onEvent dispatches event to all listeners`() {
         var count = 0
-        val listener1 = listener("listener1") { count += 1 }
-        val listener2 = listener("listener2") { count += 1 }
+        val listener1 = listener { count += 1 }
+        val listener2 = listener { count += 1 }
         compositeListener.register(listener1)
         compositeListener.register(listener2)
         compositeListener.onEvent(mockEvent())

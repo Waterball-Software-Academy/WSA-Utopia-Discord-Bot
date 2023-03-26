@@ -52,7 +52,8 @@ private object JdaInstance {
     }
 }
 
-open class UtopiaListener(val name: String) : EventListener {
+open class UtopiaListener : EventListener {
+    var name: String? = null
     val declarations: MutableMap<Class<out GenericEvent>, (GenericEvent.() -> Unit)> = mutableMapOf()
 
     override fun onEvent(e: GenericEvent) {
@@ -68,8 +69,8 @@ open class UtopiaListener(val name: String) : EventListener {
 
 private fun registerListener(e: UtopiaListener): Unit = compositeListener.register(e)
 
-fun listener(name: String, listenerDeclaration: UtopiaListener.() -> Unit): UtopiaListener {
-    val listener = UtopiaListener(name)
+fun listener(listenerDeclaration: UtopiaListener.() -> Unit): UtopiaListener {
+    val listener = UtopiaListener()
     listenerDeclaration.invoke(listener)
     return listener
 }
@@ -95,6 +96,7 @@ internal fun loadListenersFromAllUtopiaModules(wsa: WsaDiscordProperties?): List
             }
         }
         val listener = listenerFunction.invoke(null, *parameters) as UtopiaListener
+        listener.name = listenerFunction.name
         listeners.add(listener)
     }
 
