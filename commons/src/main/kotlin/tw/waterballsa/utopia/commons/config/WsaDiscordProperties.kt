@@ -8,19 +8,19 @@ const val ENV_BETA = "beta"
 const val ENV_PROD = "prod"
 
 open class WsaDiscordProperties(properties: Properties) {
-    val guildId: ULong
-    val unlockEntryMessageId: ULong
-    val selfIntroChannelId: ULong
-    val wsaGuestRoleId: ULong
-    val wsaCitizenRoleId: ULong
+    val guildId: String
+    val unlockEntryMessageId: String
+    val selfIntroChannelId: String
+    val wsaGuestRoleId: String
+    val wsaCitizenRoleId: String
 
     init {
         logger.info { properties }
-        guildId = properties.getProperty("guild-id").toULong()
-        unlockEntryMessageId = properties.getProperty("unlock-entry-message-id").toULong()
-        selfIntroChannelId = properties.getProperty("self-intro-channel-id").toULong()
-        wsaGuestRoleId = properties.getProperty("wsa-guest-role-id").toULong()
-        wsaCitizenRoleId = properties.getProperty("wsa-citizen-role-id").toULong()
+        guildId = properties.getProperty("guild-id")
+        unlockEntryMessageId = properties.getProperty("unlock-entry-message-id")
+        selfIntroChannelId = properties.getProperty("self-intro-channel-id")
+        wsaGuestRoleId = properties.getProperty("wsa-guest-role-id")
+        wsaCitizenRoleId = properties.getProperty("wsa-citizen-role-id")
     }
 }
 

@@ -93,6 +93,8 @@ internal fun loadListenersFromAllUtopiaModules(wsa: WsaDiscordProperties?): List
         parameterTypes.forEachIndexed { i, parameterType ->
             if (parameterType.isAssignableFrom(WsaDiscordProperties::class.java)) {
                 parameters[i] = wsa
+            } else if (parameterType.isAssignableFrom(JDA::class.java)) {
+                parameters[i] = JdaInstance.instance
             }
         }
         val listener = listenerFunction.invoke(null, *parameters) as UtopiaListener

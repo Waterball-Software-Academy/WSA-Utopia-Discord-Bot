@@ -14,5 +14,9 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>commons</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>discord-impl-jda</artifactId>
+        </dependency>
     </dependencies>
 </project>
