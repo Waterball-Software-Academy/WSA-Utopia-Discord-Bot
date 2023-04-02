@@ -8,8 +8,10 @@ import tw.waterballsa.utopia.commons.config.ENV_BETA
 import tw.waterballsa.utopia.commons.config.ENV_PROD
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.commons.config.logger
+import tw.waterballsa.utopia.commons.utils.createDirectoryIfNotExists
 import tw.waterballsa.utopia.commons.utils.loadProperties
 import tw.waterballsa.utopia.jda.runJda
+import java.io.File
 
 val log = KotlinLogging.logger {}
 
@@ -36,8 +38,11 @@ open class MyDependencyInjectionConfig {
     }
 }
 
+private const val DATABASE_DIRECTORY = "data"
+
 fun main() {
     val context = AnnotationConfigApplicationContext(MyDependencyInjectionConfig::class.java)
+    File(DATABASE_DIRECTORY).createDirectoryIfNotExists()
     runJda(context)
 }
 

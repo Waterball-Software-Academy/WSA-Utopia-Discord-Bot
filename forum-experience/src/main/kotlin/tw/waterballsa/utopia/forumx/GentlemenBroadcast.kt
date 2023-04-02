@@ -9,12 +9,12 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import tw.waterballsa.utopia.chatgpt.ChatGptAPI
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
+import tw.waterballsa.utopia.commons.utils.createFileIfNotExists
 import tw.waterballsa.utopia.jda.listener
+import java.io.File
 import java.nio.file.Files.lines
 import java.nio.file.Files.writeString
-import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.exists
 
 val log = KotlinLogging.logger {}
 
@@ -79,7 +79,7 @@ private fun summarizeTheMostRecentMessagesIfPassNumberThreshold(wsa: WsaDiscordP
 
 fun getLastSeenMessageIdInPost(postChannelId: String): String? =
         synchronized(DATABASE_FILE_LOCK) {
-            lines(createDatabaseFileIfNotExists())
+            lines(File(DATABASE_FILENAME).createFileIfNotExists())
                     .map { it.split(":") }
                     .filter { it[0] == postChannelId }
                     .map { it[1] }.findFirst().orElse(null)
@@ -131,7 +131,7 @@ fun updateLastSeenMessage(post: ThreadChannel, message: Message) {
 }
 
 private fun readPostIdToLastSeenMessageIdPairsFromDB(post: ThreadChannel, message: Message): MutableMap<String, String> =
-        lines(createDatabaseFileIfNotExists())
+        lines(File(DATABASE_FILENAME).createFileIfNotExists())
                 .map { it.split(":") }
                 .map {
                     val postId = it[0]
@@ -139,17 +139,6 @@ private fun readPostIdToLastSeenMessageIdPairsFromDB(post: ThreadChannel, messag
                     postId to lastSeenMessageId
                 }.toList()
                 .toMap().toMutableMap()
-
-
-private fun createDatabaseFileIfNotExists(): Path {
-    val path = Paths.get(DATABASE_FILENAME)
-    if (!path.exists()) {
-        if (!path.toFile().createNewFile()) {
-            log.error { "[Cannot create database file]" }
-        }
-    }
-    return path;
-}
 
 fun summarizeNewPostContent(chatGptApi: ChatGptAPI, post: ThreadChannel, postContent: Message): String {
     val messages = arrayOf(ChatGptAPI.Message("system", """
@@ -159,7 +148,7 @@ fun summarizeNewPostContent(chatGptApi: ChatGptAPI, post: ThreadChannel, postCon
         ```
         嗨！我是記者 Waterball！有人貼了一則關於<20~30 字內文摘要>的貼文，描述著「 <列出 5~10 項此貼文中的重點>」。
         
-        <針對貼文內文，如果此貼文為「知識分享」則提出一個測驗問題、如果此貼文為「提問」，則呼籲大家來幫忙回覆>。
+        <針對貼文內文，如果此貼文為「知識分享」則稱讚貼文作者並呼籲大家觀看內文、如果此貼文為「提問」，則呼籲大家來幫忙回覆>。
         ```
     """.trimIndent()), ChatGptAPI.Message("user", """
                 標題：'${post.name}'
