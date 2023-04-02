@@ -15,17 +15,18 @@
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>commons</artifactId>
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
-            <artifactId>two-sum</artifactId>
+            <artifactId>landing-experience</artifactId>
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
-            <artifactId>landing-experience</artifactId>
+            <artifactId>discord-impl-jda</artifactId>
         </dependency>
     </dependencies>
 

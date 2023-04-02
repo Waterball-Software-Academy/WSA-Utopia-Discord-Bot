@@ -6,17 +6,26 @@
         <groupId>tw.waterballsa.utopia</groupId>
         <version>${revision}</version>
     </parent>
-    <artifactId>landing-experience</artifactId>
-    <name>Features supported in order to improve the landing experience of every new WSA member.</name>
+    <artifactId>discord-impl-jda</artifactId>
+    <name>JDA's Implementation</name>
 
     <dependencies>
+        <dependency>
+            <groupId>net.dv8tion</groupId>
+            <artifactId>JDA</artifactId>
+        </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>commons</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>tw.waterballsa.utopia</groupId>
-            <artifactId>discord-impl-jda</artifactId>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
         </dependency>
     </dependencies>
 </project>

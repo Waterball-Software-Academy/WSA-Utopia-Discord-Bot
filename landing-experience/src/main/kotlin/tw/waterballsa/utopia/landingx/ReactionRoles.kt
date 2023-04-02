@@ -1,71 +1,72 @@
 package tw.waterballsa.utopia.landingx
 
-import dev.kord.common.entity.Snowflake
-import dev.kord.core.entity.User
-import dev.kord.core.event.message.ReactionAddEvent
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
-import me.jakejmattson.discordkt.Discord
-import me.jakejmattson.discordkt.dsl.listeners
 import mu.KotlinLogging
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
+import tw.waterballsa.utopia.jda.listener
 
 val logger = KotlinLogging.logger {}
 
-fun reactKeyEmojiToMessageToGetRoles(wsa: WsaDiscordProperties) = listeners {
-    on<ReactionAddEvent> {
+fun reactKeyEmojiToMessageToGetRoles(wsa: WsaDiscordProperties, jda: JDA) = listener {
+    on<MessageReactionAddEvent> {
         if (!matchEmoji(emoji.name)) {
             return@on
         }
 
-        if (wsa.unlockEntryMessageId != messageId.value) {
+        if (wsa.unlockEntryMessageId != messageId) {
             return@on
         }
 
-        val guildId = message.asMessage().getGuild().id
-        val user = user.asUser()
-        val subscriptionRoleIds = findAllSubscriptionRoleIds(wsa, discord)
-        addRolesToGuildMember(discord, guildId, user, subscriptionRoleIds.plus(Snowflake(wsa.wsaCitizenRoleId)))
-        deleteRolesFromGuildMember(discord, guildId, user, listOf(Snowflake(wsa.wsaGuestRoleId)))
+        val guild = jda.getGuildById(wsa.guildId)!!
+        val subscriptionRoles = findAllSubscriptionRoleIds(guild)
+        val citizenRole = guild.getRoleById(wsa.wsaCitizenRoleId)!!
+        addRolesToGuildMember(guild, user!!, subscriptionRoles + citizenRole)
+        val guestRole = guild.getRoleById(wsa.wsaCitizenRoleId)!!
+        deleteRolesFromGuildMember(guild, user!!, listOf(guestRole))
     }
 }
-suspend fun findAllSubscriptionRoleIds(wsa: WsaDiscordProperties, discord: Discord): List<Snowflake> {
-    val guild = discord.kord.getGuildOrNull(Snowflake(wsa.guildId))
-    return guild!!.roles.filter { it.name.contains("訂閱") }
-            .map { it.id }.toList()
+
+fun findAllSubscriptionRoleIds(guild: Guild): List<Role> {
+    return guild.roles.filter { it.name.contains("訂閱") }
 }
 
 private fun matchEmoji(emojiName: String): Boolean {
     return emojiName == "🔑"
 }
 
-private suspend fun addRolesToGuildMember(
-        discord: Discord,
-        guildId: Snowflake,
+private fun addRolesToGuildMember(
+        guild: Guild,
         user: User,
-        roles: List<Snowflake>
+        roles: List<Role>
 ) {
     if (roles.isEmpty()) {
         return
     }
+
     roles.forEach { role ->
-        discord.kord.rest.guild.addRoleToGuildMember(guildId, user.id, role)
+        guild.addRoleToMember(user, role)
+                .queue {
+                    logger.info { "[Role added] {\"userName\":\"${user.name}\", \"roleId\":\"${role.id}\" }" }
+                }
     }
-    logger.info { "${user.username} add roles $roles" }
 }
 
-private suspend fun deleteRolesFromGuildMember(
-        discord: Discord,
-        guildId: Snowflake,
+private fun deleteRolesFromGuildMember(
+        guild: Guild,
         user: User,
-        roles: List<Snowflake>
+        roles: List<Role>
 ) {
     if (roles.isEmpty()) {
         return
     }
     roles.forEach { role ->
-        discord.kord.rest.guild.deleteRoleFromGuildMember(guildId, user.id, role)
+        guild.removeRoleFromMember(user, role)
+                .queue {
+                    logger.info { "[Role removed] {\"userName\":\"${user.name}\", \"roleId\":\"${role.id}\" }" }
+                }
     }
-    logger.info { "${user.username} delete roles $roles" }
 }
