@@ -6,14 +6,18 @@
         <groupId>tw.waterballsa.utopia</groupId>
         <version>${revision}</version>
     </parent>
-    <artifactId>landing-experience</artifactId>
-    <name>Landing Experience (降落體驗)</name>
-    <description>Features supported in order to improve the landing experience of every new WSA member.</description>
+    <artifactId>forum-experience</artifactId>
+    <name>Forum Experience (論壇體驗)</name>
+    <description>A module that takes care the experience in all gentleman forums.</description>
 
     <dependencies>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>chatgpt-api</artifactId>
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>

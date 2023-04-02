@@ -7,7 +7,14 @@
         <version>${revision}</version>
     </parent>
     <artifactId>discord-impl-jda</artifactId>
-    <name>JDA's Implementation</name>
+
+    <name>JDA</name>
+    <description>Discord JDA Implementation</description>
+
+    <properties>
+        <spring-context.version>5.3.26</spring-context.version>
+
+    </properties>
 
     <dependencies>
         <dependency>
@@ -17,6 +24,11 @@
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring-context.version}</version> <!-- Replace with the latest version of Spring Framework -->
         </dependency>
 
         <dependency>
