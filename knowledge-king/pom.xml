@@ -7,7 +7,8 @@
         <version>${revision}</version>
     </parent>
     <artifactId>knowledgeking</artifactId>
-    <name>全民軟體知識王</name>
+    <name>Knowledge King (全民軟體知識王)</name>
+    <description>Knowledge King</description>
 
     <dependencies>
     </dependencies>

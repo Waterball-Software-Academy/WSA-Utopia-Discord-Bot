@@ -14,9 +14,5 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
-        <dependency>
-            <groupId>tw.waterballsa.utopia</groupId>
-            <artifactId>commons</artifactId>
-        </dependency>
     </dependencies>
 </project>

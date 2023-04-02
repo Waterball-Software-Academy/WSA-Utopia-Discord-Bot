@@ -14,7 +14,9 @@ open class WsaDiscordProperties(properties: Properties) {
     val selfIntroChannelId: String
     val wsaGuestRoleId: String
     val wsaCitizenRoleId: String
-    var gentlemanForumIds: Array<String>
+    val gentlemenForumCategoryId: String
+    val wsaGentlemenBroadcastChannelId: String
+
 
     init {
         properties.run {
@@ -24,8 +26,8 @@ open class WsaDiscordProperties(properties: Properties) {
             selfIntroChannelId = getProperty("self-intro-channel-id")
             wsaGuestRoleId = getProperty("wsa-guest-role-id")
             wsaCitizenRoleId = getProperty("wsa-citizen-role-id")
-            gentlemanForumIds = properties.getProperty("wsa-gentle-forum-ids")
-                    .split(",").toTypedArray()
+            gentlemenForumCategoryId = getProperty("wsa-gentlemen-forum-category-id")
+            wsaGentlemenBroadcastChannelId = getProperty("wsa-gentlemen-broadcast-channel-id")
         }
     }
 }

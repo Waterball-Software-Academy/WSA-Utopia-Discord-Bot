@@ -6,8 +6,10 @@
         <groupId>tw.waterballsa.utopia</groupId>
         <version>${revision}</version>
     </parent>
+
     <artifactId>gamification</artifactId>
-    <name>Gamification of Waterball Software Academy -- Let's build an MMORPG world within our discord server to make people feel alive in every moment!</name>
+    <name>Gamification (遊戲化學院)</name>
+    <description>Gamification of Waterball Software Academy -- Let's build an MMORPG world within our discord server to make people feel alive in every moment!</description>
 
     <dependencies>
     </dependencies>

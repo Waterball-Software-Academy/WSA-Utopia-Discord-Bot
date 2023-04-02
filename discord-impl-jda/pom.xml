@@ -7,9 +7,13 @@
         <version>${revision}</version>
     </parent>
     <artifactId>discord-impl-jda</artifactId>
-    <name>JDA's Implementation</name>
+
+    <name>JDA</name>
+    <description>Discord JDA Implementation</description>
+
     <properties>
-        <spring-context.version>6.0.7</spring-context.version>
+        <spring-context.version>5.3.26</spring-context.version>
+
     </properties>
 
     <dependencies>

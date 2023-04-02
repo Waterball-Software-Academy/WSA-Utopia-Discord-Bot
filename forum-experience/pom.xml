@@ -7,7 +7,8 @@
         <version>${revision}</version>
     </parent>
     <artifactId>forum-experience</artifactId>
-    <name>A module that takes care the experience in all gentleman forums.</name>
+    <name>Forum Experience (論壇體驗)</name>
+    <description>A module that takes care the experience in all gentleman forums.</description>
 
     <dependencies>
         <dependency>
@@ -17,6 +18,10 @@
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>chatgpt-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>discord-impl-jda</artifactId>
         </dependency>
     </dependencies>
 </project>
