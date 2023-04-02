@@ -15,12 +15,13 @@ open class WsaDiscordProperties(properties: Properties) {
     val wsaCitizenRoleId: String
 
     init {
-        logger.info { properties }
-        guildId = properties.getProperty("guild-id")
-        unlockEntryMessageId = properties.getProperty("unlock-entry-message-id")
-        selfIntroChannelId = properties.getProperty("self-intro-channel-id")
-        wsaGuestRoleId = properties.getProperty("wsa-guest-role-id")
-        wsaCitizenRoleId = properties.getProperty("wsa-citizen-role-id")
+        properties.run {
+            logger.info { properties }
+            guildId = getProperty("guild-id")
+            unlockEntryMessageId = getProperty("unlock-entry-message-id")
+            selfIntroChannelId = getProperty("self-intro-channel-id")
+            wsaGuestRoleId = getProperty("wsa-guest-role-id")
+            wsaCitizenRoleId = getProperty("wsa-citizen-role-id")
+        }
     }
 }
-

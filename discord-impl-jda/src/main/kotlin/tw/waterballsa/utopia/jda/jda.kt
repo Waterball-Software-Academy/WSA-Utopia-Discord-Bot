@@ -85,7 +85,6 @@ internal fun loadListenersFromAllUtopiaModules(wsa: WsaDiscordProperties?): List
             .filterNot {
                 it.declaringClass.`package`.name.startsWith("tw.waterballsa.utopia.jda")
             }
-            .toList()
 
     for (listenerFunction in listenerFunctions) {
         val parameterTypes = listenerFunction.parameterTypes
