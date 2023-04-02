@@ -37,14 +37,19 @@ class ChatGptAPI {
     }
 
     fun chat(messages: Array<Message>): Response {
+        log.info { "[Sending Chat] {\"totalContentLength\": ${messages.sumOf { m -> m.content.length }}}" }
         val requestBody = _mapper.writeValueAsString(
                 Request(1, _model, messages, _maxTokens, _temperature)
         )
-        val request = chatApiRequest(requestBody)
-        val response = sendRequest(request)
-        val res: Response = _mapper.readValue(response.body(), Response::class.java)
-        log.info { "[ChatGpt] {\"completeTokens\": ${res.usage.completion_tokens}, \"prompt\": ${res.usage.prompt_tokens}, \"totalTokens\": ${res.usage.total_tokens}" }
-        return res
+        val httpRequest = chatApiRequest(requestBody)
+        val httpResponse = sendRequest(httpRequest)
+        val chatGptResponse: Response = _mapper.readValue(httpResponse.body(), Response::class.java)
+        if (httpResponse.statusCode() == 200) {
+            log.info { "[Completion] {\"completeTokens\": ${chatGptResponse.usage.completion_tokens}, \"prompt\": ${chatGptResponse.usage.prompt_tokens}, \"totalTokens\": ${chatGptResponse.usage.total_tokens}}" }
+        } else {
+            log.error { "[Error] {\"errorBody\":\"${httpResponse.body()}\"}" }
+        }
+        return chatGptResponse
     }
 
     private fun chatApiRequest(requestBody: String): HttpRequest = HttpRequest.newBuilder()

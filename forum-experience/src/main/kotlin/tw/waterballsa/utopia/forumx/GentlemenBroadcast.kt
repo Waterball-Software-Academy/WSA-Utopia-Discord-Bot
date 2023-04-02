@@ -12,7 +12,9 @@ import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.jda.listener
 import java.nio.file.Files.lines
 import java.nio.file.Files.writeString
+import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.io.path.exists
 
 val log = KotlinLogging.logger {}
 
@@ -74,9 +76,10 @@ private fun summarizeTheMostRecentMessagesIfPassNumberThreshold(wsa: WsaDiscordP
                 }
     }
 }
+
 fun getLastSeenMessageIdInPost(postChannelId: String): String? =
         synchronized(DATABASE_FILE_LOCK) {
-            lines(Paths.get(DATABASE_FILENAME))
+            lines(createDatabaseFileIfNotExists())
                     .map { it.split(":") }
                     .filter { it[0] == postChannelId }
                     .map { it[1] }.findFirst().orElse(null)
@@ -114,7 +117,7 @@ fun broadcast(gentlemenBroadcastChannel: TextChannel,
               response: String) {
     gentlemenBroadcastChannel.sendMessage(
             "【貼文】<#${postChannel.id}>\n【訊息】${message.jumpUrl}\n\n$response")
-            .queue { log.info { "[New Gentlemen Broadcast] {\"message\":\"$it.contentRaw\"}" } }
+            .queue { log.info { "[Gentlemen Broadcast] {\"message\":\"${it.contentRaw}\"}" } }
 }
 
 fun updateLastSeenMessage(post: ThreadChannel, message: Message) {
@@ -128,7 +131,7 @@ fun updateLastSeenMessage(post: ThreadChannel, message: Message) {
 }
 
 private fun readPostIdToLastSeenMessageIdPairsFromDB(post: ThreadChannel, message: Message): MutableMap<String, String> =
-        lines(Paths.get(DATABASE_FILENAME))
+        lines(createDatabaseFileIfNotExists())
                 .map { it.split(":") }
                 .map {
                     val postId = it[0]
@@ -136,6 +139,17 @@ private fun readPostIdToLastSeenMessageIdPairsFromDB(post: ThreadChannel, messag
                     postId to lastSeenMessageId
                 }.toList()
                 .toMap().toMutableMap()
+
+
+private fun createDatabaseFileIfNotExists(): Path {
+    val path = Paths.get(DATABASE_FILENAME)
+    if (!path.exists()) {
+        if (!path.toFile().createNewFile()) {
+            log.error { "[Cannot create database file]" }
+        }
+    }
+    return path;
+}
 
 fun summarizeNewPostContent(chatGptApi: ChatGptAPI, post: ThreadChannel, postContent: Message): String {
     val messages = arrayOf(ChatGptAPI.Message("system", """
