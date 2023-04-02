@@ -17,7 +17,7 @@ import java.nio.file.Paths
 val log = KotlinLogging.logger {}
 
 private const val RECENT_MESSAGES_THRESHOLD = 4
-private const val DATABASE_FILENAME = "forumx.db"
+private const val DATABASE_FILENAME = "data/forumx.gentlemen-broadcast.db"
 private val DATABASE_FILE_LOCK = Any()
 
 fun gentlemenBroadcast(wsa: WsaDiscordProperties,
