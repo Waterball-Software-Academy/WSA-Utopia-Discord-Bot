@@ -15,7 +15,7 @@
         <module>discord-api</module>
         <module>discord-impl-jda</module>
         <module>commons</module>
-        <module>knowledge-king</module>
+<!--        <module>knowledge-king</module>-->
         <module>gamification</module>
         <module>landing-experience</module>
     </modules>
