@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners.*
 import org.springframework.context.ApplicationContext
@@ -45,13 +46,16 @@ private object JdaInstance {
     val instance: JDA by lazy {
         val env = getEnv("BOT_TOKEN").trim()
         val builder = JDABuilder.createDefault(env)
-                .enableIntents(
-                        GatewayIntent.GUILD_MEMBERS,
-                        GatewayIntent.MESSAGE_CONTENT,
-                        GatewayIntent.GUILD_MESSAGE_REACTIONS,
-                        GatewayIntent.DIRECT_MESSAGE_REACTIONS,
-                )
-                .addEventListeners(compositeListener)
+            .enableIntents(
+                GatewayIntent.GUILD_MEMBERS,
+                GatewayIntent.MESSAGE_CONTENT,
+                GatewayIntent.GUILD_MESSAGE_REACTIONS,
+                GatewayIntent.DIRECT_MESSAGE_REACTIONS,
+                GatewayIntent.SCHEDULED_EVENTS,
+                GatewayIntent.GUILD_PRESENCES
+            )
+            .enableCache(CacheFlag.SCHEDULED_EVENTS)
+            .addEventListeners(compositeListener)
         builder.build()
     }
 }
@@ -92,9 +96,9 @@ internal fun loadListenersFromAllUtopiaModules(context: ApplicationContext): Lis
 
     val reflections = Reflections("tw.waterballsa.utopia", SubTypes, TypesAnnotated, MethodsReturn)
     val listenerFunctions = reflections.get(MethodsReturn.with(UtopiaListener::class.java).`as`(Method::class.java))
-            .filterNot {
-                it.declaringClass.`package`.name.startsWith("tw.waterballsa.utopia.jda")
-            }
+        .filterNot {
+            it.declaringClass.`package`.name.startsWith("tw.waterballsa.utopia.jda")
+        }
 
     for (listenerFunction in listenerFunctions) {
         val parameterTypes = listenerFunction.parameterTypes
