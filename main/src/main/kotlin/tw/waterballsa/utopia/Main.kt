@@ -1,6 +1,8 @@
 package tw.waterballsa.utopia
 
+
 import ch.qos.logback.core.util.OptionHelper
+import mu.KotlinLogging
 import org.springframework.context.annotation.*
 import tw.waterballsa.utopia.commons.config.ENV_BETA
 import tw.waterballsa.utopia.commons.config.ENV_PROD
@@ -39,7 +41,6 @@ private const val DATABASE_DIRECTORY = "data"
 
 fun main() {
     val context = AnnotationConfigApplicationContext(MyDependencyInjectionConfig::class.java)
-    TimeZone.setDefault(TimeZone.getTimeZone("Asia/Taipei"))
     File(DATABASE_DIRECTORY).createDirectoryIfNotExists()
     runJda(context)
 }
