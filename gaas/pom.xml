@@ -4,7 +4,7 @@
     <parent>
         <groupId>tw.waterballsa.utopia</groupId>
         <artifactId>root</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>gaas</artifactId>
