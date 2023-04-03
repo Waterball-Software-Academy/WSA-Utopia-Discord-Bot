@@ -1,5 +1,6 @@
 package tw.waterballsa.utopia.gaas
 
+import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.ScheduledEvent
 import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventCreateEvent
 import net.dv8tion.jda.api.events.guild.scheduledevent.update.ScheduledEventUpdateStatusEvent
@@ -7,7 +8,6 @@ import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.commons.utils.createDirectoryIfNotExists
 import tw.waterballsa.utopia.commons.utils.createFileIfNotExists
 import tw.waterballsa.utopia.jda.listener
-import tw.waterballsa.utopia.jda.log
 import java.io.File
 import java.lang.System.lineSeparator
 import java.nio.file.Files.*
@@ -32,6 +32,7 @@ private val timer = Timer()
 private const val DATABASE_DIRECTORY = "data/gaas"
 private const val DATAFILE_FILENAME_TEMPLATE = "/study-circle-absence-record-\$date.db"
 private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+private val log = KotlinLogging.logger {}
 
 fun collectGaaSEvents(wsaDiscordProperties: WsaDiscordProperties) = listener {
     on<ScheduledEventCreateEvent> {
