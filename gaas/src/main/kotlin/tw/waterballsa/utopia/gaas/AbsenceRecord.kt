@@ -30,7 +30,7 @@ import kotlin.time.Duration.Companion.minutes
 private val gaaSEventIds = mutableListOf<String>()
 private val timer = Timer()
 private const val DATABASE_DIRECTORY = "data/gaas"
-private const val DATAFILE_FILENAME_TEMPLATE = "/study-circle-absence-record-\$date.db"
+private const val DATABASE_FILENAME_TEMPLATE = "/study-circle-absence-record-\$date.db"
 private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 private val log = KotlinLogging.logger {}
 
@@ -121,7 +121,7 @@ private fun writeParticipantsIntoFile(currentTime: String, newContent: List<Stri
 }
 
 private fun createDataFile(): Path {
-    val fileName = DATAFILE_FILENAME_TEMPLATE.replace("\$date", getTaipeiCurrentDate().toString())
+    val fileName = DATABASE_FILENAME_TEMPLATE.replace("\$date", getTaipeiCurrentDate().toString())
     File(DATABASE_DIRECTORY).createDirectoryIfNotExists()
     return File(DATABASE_DIRECTORY + fileName).createFileIfNotExists()
 }
