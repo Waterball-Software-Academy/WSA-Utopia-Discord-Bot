@@ -14,8 +14,6 @@ import tw.waterballsa.utopia.jda.runJda
 import java.io.File
 import java.util.TimeZone
 
-val log = KotlinLogging.logger {}
-
 @Configuration
 @ComponentScan("tw.waterballsa.utopia")
 open class MyDependencyInjectionConfig {
