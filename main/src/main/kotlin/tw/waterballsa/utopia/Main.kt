@@ -12,6 +12,7 @@ import tw.waterballsa.utopia.commons.utils.createDirectoryIfNotExists
 import tw.waterballsa.utopia.commons.utils.loadProperties
 import tw.waterballsa.utopia.jda.runJda
 import java.io.File
+import java.util.TimeZone
 
 val log = KotlinLogging.logger {}
 
@@ -42,6 +43,7 @@ private const val DATABASE_DIRECTORY = "data"
 
 fun main() {
     val context = AnnotationConfigApplicationContext(MyDependencyInjectionConfig::class.java)
+    TimeZone.setDefault(TimeZone.getTimeZone("Asia/Taipei"))
     File(DATABASE_DIRECTORY).createDirectoryIfNotExists()
     runJda(context)
 }
