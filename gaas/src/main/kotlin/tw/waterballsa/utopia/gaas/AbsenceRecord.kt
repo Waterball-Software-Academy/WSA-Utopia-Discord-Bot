@@ -17,6 +17,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 private val studyCircleEventIds = mutableListOf<String>()
@@ -82,7 +83,7 @@ fun recordTask(event: ScheduledEvent) {
                 writeParticipantsIntoFile(currentTime, newContent, filePath)
             }
         }
-    }, getTaipeiTime(start), 10.seconds.inWholeMilliseconds)
+    }, getTaipeiTime(start), 3.minutes.inWholeMilliseconds)
 
     timer.schedule(
         object : TimerTask() {
