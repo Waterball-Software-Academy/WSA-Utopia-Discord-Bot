@@ -22,7 +22,7 @@ import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.minutes
 
 /*
-* AbsenceRecord is one of the features in GaaS.
+* ParticipationRecord is one of the features in GaaS.
 * It is used to record the attendance status for GaaS events.
 * When an event starts, a periodic task is initiated to keep track of the participants.
 * */
