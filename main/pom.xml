@@ -36,6 +36,10 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>forum-experience</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>gaas</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
