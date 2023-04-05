@@ -40,7 +40,7 @@ fun collectGaaSEvents(wsaDiscordProperties: WsaDiscordProperties) = listener {
         scheduledEvent
             .takeIf { it.name.contains("遊戲微服務") && it.channel?.id == partyChannelId }
             ?.run {
-                log.info { "[AbsenceRecord] {\"message\":\"New GaaS event has been created and collected, event id: $id\"}"  }
+                log.info { "[GaaSEventCreated] {\"message\":\"New GaaS event has been created and collected, event id: $id\"}"  }
                 gaaSEventIds.add(id)
             }
     }
@@ -51,7 +51,7 @@ fun whenGaaSEventStartsThenRecordTheParticipationStatus() = listener {
         scheduledEvent
             .takeIf { it.isStudyCircleEvent() && it.status == ScheduledEvent.Status.ACTIVE }
             ?.run {
-                log.info { "[AbsenceRecord] {\"message\":\"Start recording task, event id: $id\"}"  }
+                log.info { "[RecordTaskStarted] {\"message\":\"Start recording task, event id: $id\"}"  }
                 recordEventParticipationStats()
             }
     }
@@ -62,7 +62,7 @@ fun removeCanceledOrCompletedEvent() = listener {
         scheduledEvent
             .takeIf { it.isStudyCircleEvent() && (it.status == ScheduledEvent.Status.CANCELED || it.status == ScheduledEvent.Status.COMPLETED) }
             ?.run {
-                log.info { "[AbsenceRecord] {\"message\":\"Remove cancel or completed event, event id: $id\"}"  }
+                log.info { "[RemoveCancelOrCompletedGaaSEvent] {\"message\":\"Remove cancel or completed event, event id: $id\"}"  }
                 gaaSEventIds.remove(id)
             }
     }
@@ -98,7 +98,7 @@ fun ScheduledEvent.recordEventParticipationStats() {
             override fun run() {
                 writeStaticsSummaryIntoFile(participantCount, filePath)
                 timer.cancel()
-                log.info { "[AbsenceRecord] {\"message\":\"Recording task has been finished.\"}" }
+                log.info { "[RecordTaskFinished] {\"message\":\"Recording task has been finished.\"}" }
             }
         }, getTaipeiTime(end)
     )
