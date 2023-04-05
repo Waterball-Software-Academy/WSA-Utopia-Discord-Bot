@@ -25,7 +25,7 @@ fun reactKeyEmojiToMessageToGetRoles(wsa: WsaDiscordProperties, jda: JDA) = list
         val subscriptionRoles = findAllSubscriptionRoleIds(guild)
         val citizenRole = guild.getRoleById(wsa.wsaCitizenRoleId)!!
         addRolesToGuildMember(guild, user!!, subscriptionRoles + citizenRole)
-        val guestRole = guild.getRoleById(wsa.wsaCitizenRoleId)!!
+        val guestRole = guild.getRoleById(wsa.wsaGuestRoleId)!!
         deleteRolesFromGuildMember(guild, user!!, listOf(guestRole))
     }
 }
