@@ -7,12 +7,17 @@ val logger = KotlinLogging.logger {}
 const val ENV_BETA = "beta"
 const val ENV_PROD = "prod"
 
+
 open class WsaDiscordProperties(properties: Properties) {
     val guildId: String
     val unlockEntryMessageId: String
     val selfIntroChannelId: String
     val wsaGuestRoleId: String
     val wsaCitizenRoleId: String
+    val gentlemenForumCategoryId: String
+    val wsaGentlemenBroadcastChannelId: String
+    val wsaPartyChannelId: String
+
 
     init {
         properties.run {
@@ -22,6 +27,9 @@ open class WsaDiscordProperties(properties: Properties) {
             selfIntroChannelId = getProperty("self-intro-channel-id")
             wsaGuestRoleId = getProperty("wsa-guest-role-id")
             wsaCitizenRoleId = getProperty("wsa-citizen-role-id")
+            gentlemenForumCategoryId = getProperty("wsa-gentlemen-forum-category-id")
+            wsaGentlemenBroadcastChannelId = getProperty("wsa-gentlemen-broadcast-channel-id")
+            wsaPartyChannelId = getProperty("wsa-party-channel-id")
         }
     }
 }

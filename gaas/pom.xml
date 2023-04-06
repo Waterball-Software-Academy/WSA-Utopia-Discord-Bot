@@ -1,15 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>root</artifactId>
         <groupId>tw.waterballsa.utopia</groupId>
+        <artifactId>root</artifactId>
         <version>${revision}</version>
     </parent>
-    <artifactId>knowledgeking</artifactId>
-    <name>Knowledge King (全民軟體知識王)</name>
-    <description>Knowledge King</description>
 
+    <artifactId>gaas</artifactId>
+    <name>gaas</name>
 
     <dependencies>
         <dependency>

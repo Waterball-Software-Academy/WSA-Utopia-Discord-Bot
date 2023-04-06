@@ -5,11 +5,16 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.GenericEvent
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners.*
-import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
+import org.springframework.context.ApplicationContext
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Configuration
 import tw.waterballsa.utopia.jda.JdaInstance.compositeListener
 import java.lang.reflect.Method
 
@@ -41,14 +46,25 @@ private object JdaInstance {
     val instance: JDA by lazy {
         val env = getEnv("BOT_TOKEN").trim()
         val builder = JDABuilder.createDefault(env)
-                .enableIntents(
-                        GatewayIntent.GUILD_MEMBERS,
-                        GatewayIntent.MESSAGE_CONTENT,
-                        GatewayIntent.GUILD_MESSAGE_REACTIONS,
-                        GatewayIntent.DIRECT_MESSAGE_REACTIONS,
-                )
-                .addEventListeners(compositeListener)
+            .enableIntents(
+                GatewayIntent.GUILD_MEMBERS,
+                GatewayIntent.MESSAGE_CONTENT,
+                GatewayIntent.GUILD_MESSAGE_REACTIONS,
+                GatewayIntent.DIRECT_MESSAGE_REACTIONS,
+                GatewayIntent.SCHEDULED_EVENTS,
+                GatewayIntent.GUILD_PRESENCES
+            )
+            .enableCache(CacheFlag.SCHEDULED_EVENTS)
+            .addEventListeners(compositeListener)
         builder.build()
+    }
+}
+
+@Configuration
+open class JdaConfig {
+    @Bean
+    open fun jda(): JDA {
+        return JdaInstance.instance
     }
 }
 
@@ -75,26 +91,20 @@ fun listener(listenerDeclaration: UtopiaListener.() -> Unit): UtopiaListener {
     return listener
 }
 
-
-internal fun loadListenersFromAllUtopiaModules(wsa: WsaDiscordProperties?): List<UtopiaListener> {
-
+internal fun loadListenersFromAllUtopiaModules(context: ApplicationContext): List<UtopiaListener> {
     val listeners = mutableListOf<UtopiaListener>()
 
     val reflections = Reflections("tw.waterballsa.utopia", SubTypes, TypesAnnotated, MethodsReturn)
     val listenerFunctions = reflections.get(MethodsReturn.with(UtopiaListener::class.java).`as`(Method::class.java))
-            .filterNot {
-                it.declaringClass.`package`.name.startsWith("tw.waterballsa.utopia.jda")
-            }
+        .filterNot {
+            it.declaringClass.`package`.name.startsWith("tw.waterballsa.utopia.jda")
+        }
 
     for (listenerFunction in listenerFunctions) {
         val parameterTypes = listenerFunction.parameterTypes
         val parameters = arrayOfNulls<Any>(parameterTypes.size)
         parameterTypes.forEachIndexed { i, parameterType ->
-            if (parameterType.isAssignableFrom(WsaDiscordProperties::class.java)) {
-                parameters[i] = wsa
-            } else if (parameterType.isAssignableFrom(JDA::class.java)) {
-                parameters[i] = JdaInstance.instance
-            }
+            parameters[i] = context.getBean(parameterType)
         }
         val listener = listenerFunction.invoke(null, *parameters) as UtopiaListener
         listener.name = listenerFunction.name
@@ -104,12 +114,16 @@ internal fun loadListenersFromAllUtopiaModules(wsa: WsaDiscordProperties?): List
     return listeners
 }
 
+@ComponentScan(basePackages = ["tw.waterballsa.utopia"])
+@Configuration
+open class Config
 
-fun runJda(wsa: WsaDiscordProperties) {
-    val listeners = loadListenersFromAllUtopiaModules(wsa)
+fun runJda(context: ApplicationContext) {
+    val listeners = loadListenersFromAllUtopiaModules(context)
     for (listener in listeners) {
         registerListener(listener)
     }
+    val e: SlashCommandInteractionEvent
 
     JdaInstance.instance.awaitReady()
 }

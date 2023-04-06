@@ -7,7 +7,8 @@
         <version>${revision}</version>
     </parent>
     <artifactId>main</artifactId>
-    <name>The entry point of the discord bot APP.</name>
+    <name>Main</name>
+    <description>The entry point of the discord bot APP.</description>
 
     <properties>
         <maven-assembly-plugin.version>2.6</maven-assembly-plugin.version>
@@ -15,7 +16,6 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>commons</artifactId>
@@ -35,6 +35,18 @@
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>discord-impl-jda</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>chatgpt-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>forum-experience</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>gaas</artifactId>
         </dependency>
     </dependencies>
 

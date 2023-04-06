@@ -6,15 +6,18 @@
         <groupId>tw.waterballsa.utopia</groupId>
         <version>${revision}</version>
     </parent>
-    <artifactId>knowledgeking</artifactId>
-    <name>Knowledge King (全民軟體知識王)</name>
-    <description>Knowledge King</description>
-
+    <artifactId>forum-experience</artifactId>
+    <name>Forum Experience (論壇體驗)</name>
+    <description>A module that takes care the experience in all gentleman forums.</description>
 
     <dependencies>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>chatgpt-api</artifactId>
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>

@@ -19,6 +19,7 @@ jobs:
           MONGO_USERNAME=${{ secrets.MONGO_USERNAME }},\
           MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }},\
           MONGO_HOST=${{ secrets.MONGO_HOST }},\
+          CHATGPT_TOKEN=${{ secrets.CHATGPT_TOKEN }},\
           DEPLOYMENT_ENV=beta
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

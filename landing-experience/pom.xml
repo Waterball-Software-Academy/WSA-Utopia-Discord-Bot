@@ -7,7 +7,8 @@
         <version>${revision}</version>
     </parent>
     <artifactId>landing-experience</artifactId>
-    <name>Features supported in order to improve the landing experience of every new WSA member.</name>
+    <name>Landing Experience (降落體驗)</name>
+    <description>Features supported in order to improve the landing experience of every new WSA member.</description>
 
     <dependencies>
         <dependency>
