@@ -1,4 +1,4 @@
-package tw.waterballsa.alpha.wsabot.bot.knowledgeking.commands
+package tw.waterballsa.utopia.knowledgeking.domain
 
 import java.util.*
 

@@ -26,6 +26,14 @@
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>knowledgeking</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>GuessNum1A2B</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>discord-impl-jda</artifactId>
         </dependency>
         <dependency>
