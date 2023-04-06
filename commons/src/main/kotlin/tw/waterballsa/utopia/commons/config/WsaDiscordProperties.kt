@@ -33,7 +33,7 @@ open class WsaDiscordProperties(properties: Properties) {
             wsaGentlemenBroadcastChannelId = getProperty("wsa-gentlemen-broadcast-channel-id")
             wsaPartyChannelId = getProperty("wsa-party-channel-id")
             wsaGaaSConversationChannelId = getProperty("wsa-gaas-conversation-channel-id")
-            wsaGaaSMemberRoleId= getProperty("wsa-gaas-member-role-id")
+            wsaGaaSMemberRoleId = getProperty("wsa-gaas-member-role-id")
             wsaAlphaRoleId = getProperty("wsa-alpha-role-id")
         }
     }
