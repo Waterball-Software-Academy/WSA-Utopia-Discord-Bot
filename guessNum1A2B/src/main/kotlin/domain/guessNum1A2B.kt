@@ -2,8 +2,7 @@ package tw.waterballsa.utopia.guessNum1A2B.domain
 
 import java.util.*
 
-class guessNum1A2B(secret: String) {
-    private val secretNumber = secret
+class guessNum1A2B(private val secretNumber: String) {
 
     fun guess(number: String): String {
         if (number.length != 4) return "0A0B"
