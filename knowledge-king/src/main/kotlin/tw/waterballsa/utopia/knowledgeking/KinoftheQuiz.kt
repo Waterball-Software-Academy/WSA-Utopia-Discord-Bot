@@ -1,30 +1,22 @@
 package tw.waterballsa.utopia.knowledgeking
 
-import dev.kord.common.entity.*
-import dev.kord.core.behavior.channel.*
-import dev.kord.core.behavior.edit
-import dev.kord.core.behavior.interaction.respondEphemeral
-import dev.kord.core.entity.Message
-import dev.kord.core.entity.channel.MessageChannel
-
-import dev.kord.x.emoji.Emojis
-import kotlinx.coroutines.delay
-import me.jakejmattson.discordkt.Discord
-import java.util.TimeZone
-import me.jakejmattson.discordkt.arguments.*
-import me.jakejmattson.discordkt.commands.commands
-import me.jakejmattson.discordkt.dsl.*
 
 import java.util.concurrent.TimeUnit
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import tw.waterballsa.alpha.wsabot.bot.knowledgeking.commands.KingoftheQuiz
-import tw.waterballsa.alpha.wsabot.bot.knowledgeking.commands.Solution
-import tw.waterballsa.utopia.knowledgeking.app.repo.GooleSheet
-import java.util.Calendar
-import kotlin.math.ln
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.interactions.commands.build.Commands.slash
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.internal.requests.Route
 
+import tw.waterballsa.utopia.knowledgeking.app.repo.GooleSheet
+import java.awt.Menu
+import java.awt.SystemColor.menu
+import java.util.*
+import kotlin.math.ln
+/*
 fun scheduleTaskAtEightPM(task: suspend () -> Unit) {
     GlobalScope.launch {
         // 计算从当前时间到每天晚上 8 点之间的时间差
@@ -46,7 +38,7 @@ fun scheduleTaskAtEightPM(task: suspend () -> Unit) {
 
 
         // 等待时间差
-        delay(delay)
+        //delay(delay)
 
         //
         while (true) {
@@ -54,7 +46,7 @@ fun scheduleTaskAtEightPM(task: suspend () -> Unit) {
             task()
             val endtime = Calendar.getInstance()
             val delaytime = endtime.timeInMillis - nowtime.timeInMillis
-            delay(TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS) - delaytime)
+            //delay(TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS) - delaytime)
         }
     }
 }
@@ -102,10 +94,10 @@ class Game(_channel : MessageChannel)
 
             buttons {
                 val emo = listOf(
-                    Emojis.regionalIndicatorA,
-                    Emojis.regionalIndicatorB,
-                    Emojis.regionalIndicatorC,
-                    Emojis.regionalIndicatorD
+                    Route.Emojis.regionalIndicatorA,
+                    Route.Emojis.regionalIndicatorB,
+                    Route.Emojis.regionalIndicatorC,
+                    Route.Emojis.regionalIndicatorD
                 )
 
                 for (i in 1..4) {
@@ -215,3 +207,4 @@ fun KingofQuizCommand() = commands("Demo") {
 }
 
 
+*/

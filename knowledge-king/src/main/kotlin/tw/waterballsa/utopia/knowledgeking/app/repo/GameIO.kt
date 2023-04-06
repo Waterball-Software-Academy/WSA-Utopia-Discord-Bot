@@ -1,7 +1,7 @@
 package tw.waterballsa.utopia.knowledgeking.app.repo
 
-import tw.waterballsa.alpha.wsabot.bot.knowledgeking.commands.AnswerList
-import tw.waterballsa.alpha.wsabot.bot.knowledgeking.commands.Solution
+import tw.waterballsa.utopia.knowledgeking.domain.AnswerList
+import tw.waterballsa.utopia.knowledgeking.domain.Solution
 import java.net.URL
 import java.util.Random
 
