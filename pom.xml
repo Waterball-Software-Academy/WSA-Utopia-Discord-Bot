@@ -15,9 +15,11 @@
         <module>discord-api</module>
         <module>discord-impl-jda</module>
         <module>commons</module>
-<!--        <module>knowledge-king</module>-->
+        <module>knowledge-king</module>
+        <module>GuessNum1A2B</module>
 <!--        <module>gamification</module>-->
         <module>landing-experience</module>
+        <module>GuessNum1A2B</module>
     </modules>
 
     <properties>
@@ -102,6 +104,16 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>landing-experience</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>knowledgeking</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>GuessNum1A2B</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>

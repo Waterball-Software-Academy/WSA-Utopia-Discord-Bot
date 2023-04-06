@@ -6,8 +6,8 @@
         <groupId>tw.waterballsa.utopia</groupId>
         <version>${revision}</version>
     </parent>
-    <artifactId>knowledgeking</artifactId>
-    <name>全民軟體知識王</name>
+    <artifactId>GuessNum1A2B</artifactId>
+    <name>猜數字遊戲</name>
 
 
     <dependencies>
