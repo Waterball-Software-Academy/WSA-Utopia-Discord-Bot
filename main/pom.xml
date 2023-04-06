@@ -34,6 +34,10 @@
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>guess-num-1A2B</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>forum-experience</artifactId>
         </dependency>
         <dependency>
