@@ -18,6 +18,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.concurrent.timerTask
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.minutes
 
@@ -74,37 +75,45 @@ fun removeGaaSEventOnCanceledOrCompleted() = listener {
 * */
 fun ScheduledEvent.recordEventParticipation() {
     val filePath = createDataFile()
-
     val currentDate = LocalDate.now()
-    val start = currentDate.atTime(21, 0, 0)
-    val end = currentDate.atTime(22, 0, 0)
+    val start = currentDate.atTime(21, 0, 0).toDate()
+    val end = currentDate.atTime(22, 0, 0).toDate()
     val participantCount = mutableListOf<Int>()
 
-    timer.schedule(object : TimerTask() {
-        override fun run() {
-            channel!!.asVoiceChannel().run {
-                participantCount.add(members.size)
-                val newContent = members.map { "${it.nickname ?: it.user.name} : ${it.id}" }
-                writeParticipantsIntoFile(newContent, filePath)
-            }
-        }
-    }, start.toDate(), 3.minutes.inWholeMilliseconds)
-
-    timer.schedule(
-        object : TimerTask() {
-            override fun run() {
-                writeStaticsSummaryIntoFile(participantCount, filePath)
-                timer.cancel()
-                log.info { "[RecordTaskFinished] {\"message\":\"Recording task has been finished.\"}" }
-            }
-        }, end.toDate()
-    )
+    with(timer) {
+        schedule(
+            recordParticipantsStatsAsFile(participantCount, filePath),
+            start,
+            3.minutes.inWholeMilliseconds
+        )
+        schedule(calculateAvgAndMaxParticipants(participantCount, filePath), end)
+    }
 }
 
 private fun ScheduledEvent.isGaaSEvent() = id in gaasEventIds
 
 private fun ScheduledEvent.isCanceledOrCompleted() =
     status == ScheduledEvent.Status.CANCELED || status == ScheduledEvent.Status.COMPLETED
+
+private fun ScheduledEvent.recordParticipantsStatsAsFile(
+    participantCount: MutableList<Int>,
+    filePath: Path
+) = timerTask {
+    channel!!.asVoiceChannel().run {
+        participantCount.add(members.size)
+        val newContent = members.map { "${it.nickname ?: it.user.name} : ${it.id}" }
+        writeParticipantsIntoFile(newContent, filePath)
+    }
+}
+
+private fun calculateAvgAndMaxParticipants (
+    participantCount: MutableList<Int>,
+    filePath: Path
+) = timerTask {
+    writeStaticsSummaryIntoFile(participantCount, filePath)
+    timer.cancel()
+    log.info { "[RecordTaskFinished] {\"message\":\"Recording task has been finished.\"}" }
+}
 
 @Synchronized
 private fun writeStaticsSummaryIntoFile(participantCount: List<Int>, filePath: Path) {
