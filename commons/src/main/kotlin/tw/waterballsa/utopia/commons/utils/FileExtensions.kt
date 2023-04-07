@@ -5,7 +5,7 @@ import java.nio.file.Path
 
 fun File.createDirectoryIfNotExists(): Path {
     if (!exists()) {
-        if (!mkdir()) {
+        if (!mkdirs()) {
             throw java.lang.IllegalStateException("Cannot create the directory '$name'.")
         }
     }

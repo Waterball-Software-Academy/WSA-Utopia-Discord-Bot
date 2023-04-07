@@ -5,19 +5,22 @@ import net.dv8tion.jda.api.entities.ScheduledEvent
 import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventCreateEvent
 import net.dv8tion.jda.api.events.guild.scheduledevent.update.ScheduledEventUpdateStatusEvent
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
+import tw.waterballsa.utopia.commons.extensions.onEnd
+import tw.waterballsa.utopia.commons.extensions.onStart
+import tw.waterballsa.utopia.commons.extensions.toDate
 import tw.waterballsa.utopia.commons.utils.createDirectoryIfNotExists
 import tw.waterballsa.utopia.commons.utils.createFileIfNotExists
 import tw.waterballsa.utopia.jda.listener
 import java.io.File
 import java.lang.System.lineSeparator
-import java.nio.file.Files.*
+import java.nio.file.Files.writeString
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption.APPEND
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.concurrent.timerTask
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.minutes
 
@@ -27,43 +30,42 @@ import kotlin.time.Duration.Companion.minutes
 * When an event starts, a periodic task is initiated to keep track of the participants.
 * */
 
-private val gaaSEventIds = mutableListOf<String>()
-private val timer = Timer()
-private const val DATABASE_DIRECTORY = "data/gaas"
-private const val DATABASE_FILENAME_TEMPLATE = "/study-circle-absence-record-\$date.db"
+private val gaasEventIds = hashSetOf<String>()
+private const val DATABASE_DIRECTORY = "data/gaas/participation-stats"
+private const val DATABASE_FILENAME_PREFIX = "/study-circle-participants-record"
 private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 private val log = KotlinLogging.logger {}
 
-fun collectGaaSEvents(wsaDiscordProperties: WsaDiscordProperties) = listener {
+fun collectGaaSEventsOnEventCreated(wsaDiscordProperties: WsaDiscordProperties) = listener {
     on<ScheduledEventCreateEvent> {
         val partyChannelId = wsaDiscordProperties.wsaPartyChannelId
         scheduledEvent
             .takeIf { it.name.contains("遊戲微服務") && it.channel?.id == partyChannelId }
             ?.run {
-                log.info { "[GaaSEventCreated] {\"message\":\"New GaaS event has been created and collected, event id: $id\"}"  }
-                gaaSEventIds.add(id)
+                log.info { "[GaaSEventCreated] {\"message\":\"New GaaS event has been created and collected, event id: $id\"}" }
+                gaasEventIds.add(id)
             }
     }
 }
 
-fun whenGaaSEventStartsThenRecordTheParticipationStatus() = listener {
+fun recordTheGaasMemberParticipationOnGaaSEventStarted() = listener {
     on<ScheduledEventUpdateStatusEvent> {
         scheduledEvent
-            .takeIf { it.isStudyCircleEvent() && it.status == ScheduledEvent.Status.ACTIVE }
+            .takeIf { it.isGaaSEvent() && it.status == ScheduledEvent.Status.ACTIVE }
             ?.run {
-                log.info { "[RecordTaskStarted] {\"message\":\"Start recording task, event id: $id\"}"  }
+                log.info { "[RecordTaskStarted] {\"message\":\"Start recording task, event id: $id\"}" }
                 recordEventParticipationStats()
             }
     }
 }
 
-fun removeCanceledOrCompletedEvent() = listener {
+fun removeGaaSEventOnCanceledOrCompleted() = listener {
     on<ScheduledEventUpdateStatusEvent> {
         scheduledEvent
-            .takeIf { it.isStudyCircleEvent() && (it.status == ScheduledEvent.Status.CANCELED || it.status == ScheduledEvent.Status.COMPLETED) }
+            .takeIf { it.isGaaSEvent() && it.isCanceledOrCompleted() }
             ?.run {
-                log.info { "[RemoveCancelOrCompletedGaaSEvent] {\"message\":\"Remove cancel or completed event, event id: $id\"}"  }
-                gaaSEventIds.remove(id)
+                log.info { "[RemoveCancelOrCompletedGaaSEvent] {\"message\":\"Remove cancel or completed event, event id: $id\"}" }
+                gaasEventIds.remove(id)
             }
     }
 }
@@ -74,62 +76,63 @@ fun removeCanceledOrCompletedEvent() = listener {
 * */
 fun ScheduledEvent.recordEventParticipationStats() {
     val filePath = createDataFile()
+    val today = LocalDate.now()
+    val startTime = today.atTime(21, 0, 0).toDate()
+    val endTime = today.atTime(22, 0, 0).toDate()
+    val participantCount = hashSetOf<Int>()
+    val period = 3.minutes.inWholeMilliseconds
 
-    val now = getTaipeiCurrentDateTime()
-    val start = now.withHour(21).withMinute(0).withSecond(0)
-    val end = now.withHour(22).withMinute(0).withSecond(0)
-    val participantCount = mutableListOf<Int>()
-
-    timer.schedule(object : TimerTask() {
-        override fun run() {
-            val channel = channel
-            checkNotNull(channel)
-            channel.asVoiceChannel().run {
-                participantCount.add(members.size)
-                val newContent = members.map { "${it.nickname} : ${it.id}" }
-                val currentTime = dateFormatter.format(getTaipeiCurrentDateTime())
-                writeParticipantsIntoFile(currentTime, newContent, filePath)
-            }
-        }
-    }, getTaipeiTime(start), 3.minutes.inWholeMilliseconds)
-
-    timer.schedule(
-        object : TimerTask() {
-            override fun run() {
-                writeStaticsSummaryIntoFile(participantCount, filePath)
-                timer.cancel()
-                log.info { "[RecordTaskFinished] {\"message\":\"Recording task has been finished.\"}" }
-            }
-        }, getTaipeiTime(end)
-    )
+    Timer().run {
+        onStart(recordParticipantsStatsAsFile(participantCount, filePath), startTime, period)
+        onEnd(calculateAvgAndMaxParticipants(participantCount, filePath), endTime)
+    }
 }
 
+private fun ScheduledEvent.isGaaSEvent() = id in gaasEventIds
+
+private fun ScheduledEvent.isCanceledOrCompleted() =
+    status == ScheduledEvent.Status.CANCELED || status == ScheduledEvent.Status.COMPLETED
+
+private fun ScheduledEvent.recordParticipantsStatsAsFile(
+    participantCount: MutableCollection<Int>,
+    filePath: Path
+) = timerTask {
+    channel!!.asVoiceChannel().run {
+        participantCount.add(members.size)
+        val newContent = members.map { "${it.nickname ?: it.user.name} : ${it.id}" }
+        writeParticipantsIntoFile(newContent, filePath)
+    }
+}
+
+private fun calculateAvgAndMaxParticipants(
+    participantCount: Collection<Int>,
+    filePath: Path
+) = timerTask { writeStaticsSummaryIntoFile(participantCount, filePath) }
 
 @Synchronized
-private fun writeStaticsSummaryIntoFile(participantCount: List<Int>, filePath: Path) {
+private fun writeStaticsSummaryIntoFile(participantCount: Collection<Int>, filePath: Path) {
     val avgStatics = "Avg: ${participantCount.average().roundToInt()}"
     val maxStatics = "Max: ${participantCount.max()}"
-    writeString(filePath, avgStatics + lineSeparator(), APPEND)
-    writeString(filePath, maxStatics + lineSeparator(), APPEND)
+    buildString {
+        append("$avgStatics${lineSeparator()}")
+        append("$maxStatics${lineSeparator()}")
+    }.also { result -> writeString(filePath, result, APPEND) }
 }
 
 @Synchronized
-private fun writeParticipantsIntoFile(currentTime: String, newContent: List<String>, filePath: Path) {
-    writeString(filePath, currentTime + lineSeparator(), APPEND)
-    newContent.forEach { writeString(filePath, it + lineSeparator(), APPEND) }
-    writeString(filePath, lineSeparator(), APPEND)
+private fun writeParticipantsIntoFile(newContent: Collection<String>, filePath: Path) {
+    val currentTime = dateFormatter.format(LocalDateTime.now())
+    buildString {
+        append("$currentTime${lineSeparator()}")
+        newContent.forEach { append("$it${lineSeparator()}") }
+        append(lineSeparator())
+    }.also { result -> writeString(filePath, result, APPEND) }
 }
 
 private fun createDataFile(): Path {
-    val fileName = DATABASE_FILENAME_TEMPLATE.replace("\$date", getTaipeiCurrentDate().toString())
+    val fileName = "${DATABASE_FILENAME_PREFIX}-${LocalDate.now()}.db"
     File(DATABASE_DIRECTORY).createDirectoryIfNotExists()
     return File(DATABASE_DIRECTORY + fileName).createFileIfNotExists()
 }
 
-private fun getTaipeiCurrentDateTime(): LocalDateTime = LocalDateTime.now()
 
-private fun getTaipeiCurrentDate(): LocalDate = LocalDate.now()
-
-private fun ScheduledEvent.isStudyCircleEvent() = id in gaaSEventIds
-
-private fun getTaipeiTime(localDateTime: LocalDateTime): Date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())

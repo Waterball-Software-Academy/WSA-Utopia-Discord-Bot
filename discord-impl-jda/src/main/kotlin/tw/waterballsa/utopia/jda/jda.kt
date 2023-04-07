@@ -52,7 +52,6 @@ private object JdaInstance {
                 GatewayIntent.GUILD_MESSAGE_REACTIONS,
                 GatewayIntent.DIRECT_MESSAGE_REACTIONS,
                 GatewayIntent.SCHEDULED_EVENTS,
-                GatewayIntent.GUILD_PRESENCES
             )
             .enableCache(CacheFlag.SCHEDULED_EVENTS)
             .addEventListeners(compositeListener)
