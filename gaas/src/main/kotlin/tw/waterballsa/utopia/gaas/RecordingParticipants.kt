@@ -10,7 +10,7 @@ import tw.waterballsa.utopia.commons.utils.createFileIfNotExists
 import tw.waterballsa.utopia.jda.listener
 import java.io.File
 import java.lang.System.lineSeparator
-import java.nio.file.Files.*
+import java.nio.file.Files.writeString
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption.APPEND
 import java.time.LocalDate
