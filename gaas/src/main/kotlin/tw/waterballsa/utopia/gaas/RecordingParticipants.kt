@@ -76,8 +76,8 @@ fun ScheduledEvent.recordEventParticipation() {
     val filePath = createDataFile()
 
     val currentDate = LocalDate.now()
-    val start = currentDate.atTime(12, 0, 0)
-    val end = currentDate.atTime(14, 0, 0)
+    val start = currentDate.atTime(21, 0, 0)
+    val end = currentDate.atTime(22, 0, 0)
     val participantCount = mutableListOf<Int>()
 
     timer.schedule(object : TimerTask() {
