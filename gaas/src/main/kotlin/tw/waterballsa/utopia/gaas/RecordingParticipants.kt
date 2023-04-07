@@ -75,7 +75,6 @@ fun removeGaaSEventOnCanceledOrCompleted() = listener {
 * a task is started to periodically check the list of participants and record their attendance.
 * */
 fun ScheduledEvent.recordEventParticipationStats() {
-    val timer = Timer()
     val filePath = createDataFile()
     val today = LocalDate.now()
     val startTime = today.atTime(21, 0, 0).toDate()
@@ -83,7 +82,7 @@ fun ScheduledEvent.recordEventParticipationStats() {
     val participantCount = hashSetOf<Int>()
     val period = 3.minutes.inWholeMilliseconds
 
-    timer.run {
+    Timer().run {
         onStart(recordParticipantsStatsAsFile(participantCount, filePath), startTime, period)
         onEnd(calculateAvgAndMaxParticipants(participantCount, filePath), endTime)
     }
@@ -124,8 +123,7 @@ private fun writeStaticsSummaryIntoFile(participantCount: Collection<Int>, fileP
 private fun writeParticipantsIntoFile(newContent: Collection<String>, filePath: Path) {
     val currentTime = dateFormatter.format(LocalDateTime.now())
     buildString {
-        append(currentTime)
-        append(lineSeparator())
+        append("$currentTime${lineSeparator()}")
         newContent.forEach { append("$it${lineSeparator()}") }
         append(lineSeparator())
     }.also { result -> writeString(filePath, result, APPEND) }
