@@ -82,8 +82,7 @@ fun ScheduledEvent.recordEventParticipation() {
 
     timer.schedule(object : TimerTask() {
         override fun run() {
-            val channel = channel!!
-            channel.asVoiceChannel().run {
+            channel!!.asVoiceChannel().run {
                 participantCount.add(members.size)
                 val newContent = members.map { "${it.nickname ?: it.user.name} : ${it.id}" }
                 writeParticipantsIntoFile(newContent, filePath)
