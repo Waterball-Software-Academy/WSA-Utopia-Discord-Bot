@@ -1,6 +1,5 @@
 package tw.waterballsa.utopia
 
-
 import ch.qos.logback.core.util.OptionHelper
 import org.springframework.context.annotation.*
 import tw.waterballsa.utopia.commons.config.ENV_BETA
