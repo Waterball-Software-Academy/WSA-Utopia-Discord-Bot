@@ -103,10 +103,6 @@ fun ScheduledEvent.recordEventParticipation() {
     )
 }
 
-fun ScheduledEvent.isCanceledOrCompleted() =
-    status == ScheduledEvent.Status.CANCELED || status == ScheduledEvent.Status.COMPLETED
-
-
 @Synchronized
 private fun writeStaticsSummaryIntoFile(participantCount: List<Int>, filePath: Path) {
     val avgStatics = "Avg: ${participantCount.average().roundToInt()}"
@@ -129,5 +125,8 @@ private fun createDataFile(): Path {
 }
 
 private fun ScheduledEvent.isStudyCircleEvent() = id in gaasEventIds
+
+fun ScheduledEvent.isCanceledOrCompleted() =
+    status == ScheduledEvent.Status.CANCELED || status == ScheduledEvent.Status.COMPLETED
 
 private fun LocalDateTime.toDate() = Date.from(atZone(ZoneId.systemDefault()).toInstant())
