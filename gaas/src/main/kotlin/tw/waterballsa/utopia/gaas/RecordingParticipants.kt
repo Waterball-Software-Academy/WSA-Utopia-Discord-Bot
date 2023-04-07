@@ -8,10 +8,7 @@ import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.commons.extensions.onEnd
 import tw.waterballsa.utopia.commons.extensions.onStart
 import tw.waterballsa.utopia.commons.extensions.toDate
-import tw.waterballsa.utopia.commons.utils.createDirectoryIfNotExists
-import tw.waterballsa.utopia.commons.utils.createFileIfNotExists
 import tw.waterballsa.utopia.jda.listener
-import java.io.File
 import java.lang.System.lineSeparator
 import java.nio.file.Files.writeString
 import java.nio.file.Path
@@ -21,6 +18,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.concurrent.timerTask
+import kotlin.io.path.Path
+import kotlin.io.path.createDirectories
+import kotlin.io.path.createFile
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.minutes
 
@@ -32,7 +32,7 @@ import kotlin.time.Duration.Companion.minutes
 
 private val gaasEventIds = hashSetOf<String>()
 private const val DATABASE_DIRECTORY = "data/gaas/participation-stats"
-private const val DATABASE_FILENAME_PREFIX = "/study-circle-participants-record"
+private const val DATABASE_FILENAME_PREFIX = "study-circle-participants-record"
 private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 private val log = KotlinLogging.logger {}
 
@@ -70,12 +70,17 @@ fun removeGaaSEventOnCanceledOrCompleted() = listener {
     }
 }
 
+private fun ScheduledEvent.isGaaSEvent() = id in gaasEventIds
+
+private fun ScheduledEvent.isCanceledOrCompleted() =
+    status == ScheduledEvent.Status.CANCELED || status == ScheduledEvent.Status.COMPLETED
+
 /*
 * When the event starts, it is checked whether it is a GaaS study group, and if so,
 * a task is started to periodically check the list of participants and record their attendance.
 * */
 fun ScheduledEvent.recordEventParticipationStats() {
-    val filePath = createDataFile()
+    val filePath = createParticipantsStatsFile()
     val today = LocalDate.now()
     val startTime = today.atTime(21, 0, 0).toDate()
     val endTime = today.atTime(22, 0, 0).toDate()
@@ -88,10 +93,6 @@ fun ScheduledEvent.recordEventParticipationStats() {
     }
 }
 
-private fun ScheduledEvent.isGaaSEvent() = id in gaasEventIds
-
-private fun ScheduledEvent.isCanceledOrCompleted() =
-    status == ScheduledEvent.Status.CANCELED || status == ScheduledEvent.Status.COMPLETED
 
 private fun ScheduledEvent.recordParticipantsStatsAsFile(
     participantCount: MutableCollection<Int>,
@@ -129,10 +130,8 @@ private fun writeParticipantsIntoFile(newContent: Collection<String>, filePath: 
     }.also { result -> writeString(filePath, result, APPEND) }
 }
 
-private fun createDataFile(): Path {
-    val fileName = "${DATABASE_FILENAME_PREFIX}-${LocalDate.now()}.db"
-    File(DATABASE_DIRECTORY).createDirectoryIfNotExists()
-    return File(DATABASE_DIRECTORY + fileName).createFileIfNotExists()
-}
-
-
+private fun createParticipantsStatsFile(): Path =
+    Path(DATABASE_DIRECTORY)
+        .createDirectories()
+        .resolve("$DATABASE_FILENAME_PREFIX-${LocalDate.now()}.db")
+        .createFile()

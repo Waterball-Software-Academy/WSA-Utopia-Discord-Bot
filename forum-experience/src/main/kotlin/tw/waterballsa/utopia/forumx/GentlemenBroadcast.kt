@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import tw.waterballsa.utopia.chatgpt.ChatGptAPI
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
-import tw.waterballsa.utopia.commons.utils.createFileIfNotExists
+import tw.waterballsa.utopia.commons.extensions.createFileIfNotExists
 import tw.waterballsa.utopia.jda.listener
 import java.io.File
 import java.nio.file.Files.lines
