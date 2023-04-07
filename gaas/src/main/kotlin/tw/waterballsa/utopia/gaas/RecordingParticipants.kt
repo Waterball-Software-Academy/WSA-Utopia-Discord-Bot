@@ -75,18 +75,14 @@ fun removeGaaSEventOnCanceledOrCompleted() = listener {
 * */
 fun ScheduledEvent.recordEventParticipation() {
     val filePath = createDataFile()
-    val currentDate = LocalDate.now()
-    val start = currentDate.atTime(21, 0, 0).toDate()
-    val end = currentDate.atTime(22, 0, 0).toDate()
-    val participantCount = mutableListOf<Int>()
+    val today = LocalDate.now()
+    val startTime = today.atTime(21, 0, 0).toDate()
+    val endTime = today.atTime(22, 0, 0).toDate()
+    val participantCount = hashSetOf<Int>()
 
-    with(timer) {
-        schedule(
-            recordParticipantsStatsAsFile(participantCount, filePath),
-            start,
-            3.minutes.inWholeMilliseconds
-        )
-        schedule(calculateAvgAndMaxParticipants(participantCount, filePath), end)
+    timer.run {
+        onStart(recordParticipantsStatsAsFile(participantCount, filePath), startTime, 3.minutes.inWholeMilliseconds)
+        onEnd(calculateAvgAndMaxParticipants(participantCount, filePath), endTime)
     }
 }
 
@@ -96,7 +92,7 @@ private fun ScheduledEvent.isCanceledOrCompleted() =
     status == ScheduledEvent.Status.CANCELED || status == ScheduledEvent.Status.COMPLETED
 
 private fun ScheduledEvent.recordParticipantsStatsAsFile(
-    participantCount: MutableList<Int>,
+    participantCount: HashSet<Int>,
     filePath: Path
 ) = timerTask {
     channel!!.asVoiceChannel().run {
@@ -106,17 +102,13 @@ private fun ScheduledEvent.recordParticipantsStatsAsFile(
     }
 }
 
-private fun calculateAvgAndMaxParticipants (
-    participantCount: MutableList<Int>,
+private fun calculateAvgAndMaxParticipants(
+    participantCount: HashSet<Int>,
     filePath: Path
-) = timerTask {
-    writeStaticsSummaryIntoFile(participantCount, filePath)
-    timer.cancel()
-    log.info { "[RecordTaskFinished] {\"message\":\"Recording task has been finished.\"}" }
-}
+) = timerTask { writeStaticsSummaryIntoFile(participantCount, filePath) }
 
 @Synchronized
-private fun writeStaticsSummaryIntoFile(participantCount: List<Int>, filePath: Path) {
+private fun writeStaticsSummaryIntoFile(participantCount: Set<Int>, filePath: Path) {
     val avgStatics = "Avg: ${participantCount.average().roundToInt()}"
     val maxStatics = "Max: ${participantCount.max()}"
     writeString(filePath, avgStatics + lineSeparator(), APPEND)
@@ -141,3 +133,13 @@ private fun createDataFile(): Path {
 }
 
 private fun LocalDateTime.toDate() = Date.from(atZone(ZoneId.systemDefault()).toInstant())
+
+private fun Timer.onStart(task: TimerTask, startTime: Date, delay: Long) = schedule(task, startTime, delay)
+
+private fun Timer.onEnd(task: TimerTask, endTime: Date) {
+    schedule(timerTask {
+        task.run()
+        timer.cancel()
+    }, endTime)
+    log.info { "[TimerTaskFinished] {\"message\":\"Timer task has been closed.\"}" }
+}
