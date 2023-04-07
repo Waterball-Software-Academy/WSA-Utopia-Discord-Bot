@@ -21,8 +21,8 @@ import java.lang.System.lineSeparator
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption.APPEND
+import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalDateTime.now
 import java.time.ZoneId.systemDefault
 
 /*
@@ -34,9 +34,9 @@ import java.time.ZoneId.systemDefault
 private const val customButtonId = "gaas-leave"
 private const val customModalId = "leave-modal"
 private const val DATABASE_DIRECTORY = "data/gaas/leave"
-private const val DATABASE_FILENAME_TEMPLATE = "/GaaS-leave-\$date.db"
+private const val DATABASE_FILENAME_PREFIX = "/GaaS-leave"
 private lateinit var eventTime: LocalDateTime
-fun createLeaveMenuWhenGaaSEventCreated(wsaDiscordProperties: WsaDiscordProperties): UtopiaListener {
+fun createLeaveButtonOnGaaSEventCreated(wsaDiscordProperties: WsaDiscordProperties): UtopiaListener {
     return listener {
         on<ScheduledEventCreateEvent> {
             val partyChannelId = wsaDiscordProperties.wsaPartyChannelId
@@ -59,7 +59,7 @@ fun createLeaveMenuWhenGaaSEventCreated(wsaDiscordProperties: WsaDiscordProperti
     }
 }
 
-fun createLeaveModalWhenLeaveButtonBeClicked(wsaDiscordProperties: WsaDiscordProperties) = listener {
+fun replyLeaveModalOnLeaveButtonClicked(wsaDiscordProperties: WsaDiscordProperties) = listener {
     val wsaGaaSMemberRoleId = wsaDiscordProperties.wsaGaaSMemberRoleId
     on<ButtonInteractionEvent> {
         when {
@@ -67,7 +67,7 @@ fun createLeaveModalWhenLeaveButtonBeClicked(wsaDiscordProperties: WsaDiscordPro
                 reply("看起來你似乎不是 GaaS 讀書會成員喔，那就不用特別請假啦").setEphemeral(true).queue()
                 return@on
             }
-            now().isAfter(eventTime) -> {
+            LocalDateTime.now().isAfter(eventTime) -> {
                 reply("超過可以請假的時間囉，下次請記得要在活動開始前請假喔").setEphemeral(true).queue()
                 return@on
             }
@@ -89,7 +89,7 @@ fun createLeaveModalWhenLeaveButtonBeClicked(wsaDiscordProperties: WsaDiscordPro
     }
 }
 
-fun saveLeaveReasonWhenSubmit() = listener {
+fun saveLeaveReasonOnSubmit() = listener {
     on<ModalInteractionEvent> {
         takeIf { modalId == customModalId }
             ?.run {
@@ -104,7 +104,7 @@ fun saveLeaveReasonWhenSubmit() = listener {
 }
 
 private fun createLeaveDataFile(): Path {
-    val fileName = DATABASE_FILENAME_TEMPLATE.replace("\$date", eventTime.toLocalDate().toString())
+    val fileName = "$DATABASE_FILENAME_PREFIX-${LocalDate.now()}.db"
     File(DATABASE_DIRECTORY).createDirectoryIfNotExists()
     return File(DATABASE_DIRECTORY + fileName).createFileIfNotExists()
 }
