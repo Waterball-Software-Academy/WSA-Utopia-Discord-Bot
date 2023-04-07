@@ -27,10 +27,10 @@ import kotlin.time.Duration.Companion.minutes
 * When an event starts, a periodic task is initiated to keep track of the participants.
 * */
 
-private val gaasEventIds = mutableListOf<String>()
+private val gaasEventIds = hashSetOf<String>()
 private val timer = Timer()
 private const val DATABASE_DIRECTORY = "data/gaas/participation-stats"
-private const val DATABASE_FILENAME_TEMPLATE = "/study-circle-participants-record-\$date.db"
+private const val DATABASE_FILENAME_PREFIX = "/study-circle-participants-record-"
 private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 private val log = KotlinLogging.logger {}
 
@@ -49,7 +49,7 @@ fun collectGaaSEventsOnEventCreated(wsaDiscordProperties: WsaDiscordProperties) 
 fun recordTheGaasMemberParticipationOnGaaSEventStarted() = listener {
     on<ScheduledEventUpdateStatusEvent> {
         scheduledEvent
-            .takeIf { it.isStudyCircleEvent() && it.status == ScheduledEvent.Status.ACTIVE }
+            .takeIf { it.isGaaSEvent() && it.status == ScheduledEvent.Status.ACTIVE }
             ?.run {
                 log.info { "[RecordTaskStarted] {\"message\":\"Start recording task, event id: $id\"}" }
                 recordEventParticipation()
@@ -60,7 +60,7 @@ fun recordTheGaasMemberParticipationOnGaaSEventStarted() = listener {
 fun removeGaaSEventOnCanceledOrCompleted() = listener {
     on<ScheduledEventUpdateStatusEvent> {
         scheduledEvent
-            .takeIf { it.isStudyCircleEvent() && it.isCanceledOrCompleted() }
+            .takeIf { it.isGaaSEvent() && it.isCanceledOrCompleted() }
             ?.run {
                 log.info { "[RemoveCancelOrCompletedGaaSEvent] {\"message\":\"Remove cancel or completed event, event id: $id\"}" }
                 gaasEventIds.remove(id)
@@ -85,9 +85,8 @@ fun ScheduledEvent.recordEventParticipation() {
             val channel = channel!!
             channel.asVoiceChannel().run {
                 participantCount.add(members.size)
-                val newContent = members.map { "${it.nickname} : ${it.id}" }
-                val currentTime = dateFormatter.format(LocalDateTime.now())
-                writeParticipantsIntoFile(currentTime, newContent, filePath)
+                val newContent = members.map { "${it.nickname ?: it.user.name} : ${it.id}" }
+                writeParticipantsIntoFile(newContent, filePath)
             }
         }
     }, start.toDate(), 3.minutes.inWholeMilliseconds)
@@ -103,6 +102,11 @@ fun ScheduledEvent.recordEventParticipation() {
     )
 }
 
+private fun ScheduledEvent.isGaaSEvent() = id in gaasEventIds
+
+private fun ScheduledEvent.isCanceledOrCompleted() =
+    status == ScheduledEvent.Status.CANCELED || status == ScheduledEvent.Status.COMPLETED
+
 @Synchronized
 private fun writeStaticsSummaryIntoFile(participantCount: List<Int>, filePath: Path) {
     val avgStatics = "Avg: ${participantCount.average().roundToInt()}"
@@ -112,21 +116,20 @@ private fun writeStaticsSummaryIntoFile(participantCount: List<Int>, filePath: P
 }
 
 @Synchronized
-private fun writeParticipantsIntoFile(currentTime: String, newContent: List<String>, filePath: Path) {
-    writeString(filePath, currentTime + lineSeparator(), APPEND)
-    newContent.forEach { writeString(filePath, it + lineSeparator(), APPEND) }
-    writeString(filePath, lineSeparator(), APPEND)
+private fun writeParticipantsIntoFile(newContent: List<String>, filePath: Path) {
+    val currentTime = dateFormatter.format(LocalDateTime.now())
+    buildString {
+        append(currentTime)
+        append(lineSeparator())
+        newContent.forEach { append("$it${lineSeparator()}") }
+        append(lineSeparator())
+    }.also { result -> writeString(filePath, result, APPEND) }
 }
 
 private fun createDataFile(): Path {
-    val fileName = DATABASE_FILENAME_TEMPLATE.replace("\$date", LocalDate.now().toString())
+    val fileName = "${DATABASE_FILENAME_PREFIX}${LocalDate.now()}.db"
     File(DATABASE_DIRECTORY).createDirectoryIfNotExists()
     return File(DATABASE_DIRECTORY + fileName).createFileIfNotExists()
 }
-
-private fun ScheduledEvent.isStudyCircleEvent() = id in gaasEventIds
-
-fun ScheduledEvent.isCanceledOrCompleted() =
-    status == ScheduledEvent.Status.CANCELED || status == ScheduledEvent.Status.COMPLETED
 
 private fun LocalDateTime.toDate() = Date.from(atZone(ZoneId.systemDefault()).toInstant())
