@@ -21,7 +21,7 @@
         <module>chatgpt-api</module>
         <module>forum-experience</module>
         <module>gaas</module>
-        <module>guessNum1A2B</module>
+        <module>guess-num-1A2B</module>
     </modules>
 
     <properties>
@@ -131,7 +131,7 @@
             </dependency>
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
-                <artifactId>guessNum1A2B</artifactId>
+                <artifactId>guess-num-1A2B</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>

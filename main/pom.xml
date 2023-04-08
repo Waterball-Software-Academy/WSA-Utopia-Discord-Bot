@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
-            <artifactId>guessNum1A2B</artifactId>
+            <artifactId>guess-num-1A2B</artifactId>
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>

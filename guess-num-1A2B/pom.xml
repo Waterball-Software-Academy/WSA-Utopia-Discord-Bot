@@ -6,7 +6,7 @@
         <groupId>tw.waterballsa.utopia</groupId>
         <version>${revision}</version>
     </parent>
-    <artifactId>guessNum1A2B</artifactId>
+    <artifactId>guess-num-1A2B</artifactId>
     <name>1A2B猜數字遊戲</name>
 
     <dependencies>
