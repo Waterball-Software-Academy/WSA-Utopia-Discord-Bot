@@ -4,16 +4,18 @@ import ch.qos.logback.core.util.OptionHelper.getEnv
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.GenericEvent
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.EventListener
+import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners.*
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.ApplicationContext
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import tw.waterballsa.utopia.jda.JdaInstance.compositeListener
 import java.lang.reflect.Method
@@ -46,15 +48,15 @@ private object JdaInstance {
     val instance: JDA by lazy {
         val env = getEnv("BOT_TOKEN").trim()
         val builder = JDABuilder.createDefault(env)
-            .enableIntents(
-                GatewayIntent.GUILD_MEMBERS,
-                GatewayIntent.MESSAGE_CONTENT,
-                GatewayIntent.GUILD_MESSAGE_REACTIONS,
-                GatewayIntent.DIRECT_MESSAGE_REACTIONS,
-                GatewayIntent.SCHEDULED_EVENTS,
-            )
-            .enableCache(CacheFlag.SCHEDULED_EVENTS)
-            .addEventListeners(compositeListener)
+                .enableIntents(
+                        GatewayIntent.GUILD_MEMBERS,
+                        GatewayIntent.MESSAGE_CONTENT,
+                        GatewayIntent.GUILD_MESSAGE_REACTIONS,
+                        GatewayIntent.DIRECT_MESSAGE_REACTIONS,
+                        GatewayIntent.SCHEDULED_EVENTS,
+                )
+                .enableCache(CacheFlag.SCHEDULED_EVENTS)
+                .addEventListeners(compositeListener)
         builder.build()
     }
 }
@@ -69,16 +71,21 @@ open class JdaConfig {
 
 open class UtopiaListener : EventListener {
     var name: String? = null
-    val declarations: MutableMap<Class<out GenericEvent>, (GenericEvent.() -> Unit)> = mutableMapOf()
+    val listenerDeclarations: MutableMap<Class<out GenericEvent>, (GenericEvent.() -> Unit)> = mutableMapOf()
+    val commands = mutableListOf<CommandData>()
 
     override fun onEvent(e: GenericEvent) {
-        declarations[e.javaClass]?.invoke(e)
+        listenerDeclarations[e.javaClass]?.invoke(e)
     }
 
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T : GenericEvent> on(noinline listenerDeclaration: T.() -> Unit) {
         val pair = T::class.java to listenerDeclaration
-        declarations[pair.first] = pair.second as GenericEvent.() -> Unit
+        listenerDeclarations[pair.first] = pair.second as GenericEvent.() -> Unit
+    }
+
+    fun command(commandDeclaration: () -> CommandData) {
+        commands.add(commandDeclaration.invoke())
     }
 }
 
@@ -95,17 +102,24 @@ internal fun loadListenersFromAllUtopiaModules(context: ApplicationContext): Lis
 
     val reflections = Reflections("tw.waterballsa.utopia", SubTypes, TypesAnnotated, MethodsReturn)
     val listenerFunctions = reflections.get(MethodsReturn.with(UtopiaListener::class.java).`as`(Method::class.java))
-        .filterNot {
-            it.declaringClass.`package`.name.startsWith("tw.waterballsa.utopia.jda")
-        }
+            .filterNot {
+                it.declaringClass.`package`.name.startsWith("tw.waterballsa.utopia.jda")
+            }
 
     for (listenerFunction in listenerFunctions) {
-        val parameterTypes = listenerFunction.parameterTypes
-        val parameters = arrayOfNulls<Any>(parameterTypes.size)
-        parameterTypes.forEachIndexed { i, parameterType ->
-            parameters[i] = context.getBean(parameterType)
+        val parameters = listenerFunction.parameters
+        val arguments = arrayOfNulls<Any>(parameters.size)
+
+        parameters.forEachIndexed { i, p ->
+            arguments[i] = if (p.isAnnotationPresent(Qualifier::class.java)) {
+                val qualifier = p.getAnnotation(Qualifier::class.java)
+                val beanName = qualifier.value
+                context.getBean(beanName)
+            } else {
+                context.getBean(p.type)
+            }
         }
-        val listener = listenerFunction.invoke(null, *parameters) as UtopiaListener
+        val listener = listenerFunction.invoke(null, *arguments) as UtopiaListener
         listener.name = listenerFunction.name
         listeners.add(listener)
     }
@@ -113,16 +127,20 @@ internal fun loadListenersFromAllUtopiaModules(context: ApplicationContext): Lis
     return listeners
 }
 
-@ComponentScan(basePackages = ["tw.waterballsa.utopia"])
-@Configuration
-open class Config
+const val WSA_GUILD_BEAN_NAME = "WsaGuild"
 
-fun runJda(context: ApplicationContext) {
+fun runJda() {
+    JdaInstance.instance.awaitReady()
+}
+
+fun registerAllJdaListeners(context: AnnotationConfigApplicationContext) {
+    val wsa = context.getBean(WSA_GUILD_BEAN_NAME, Guild::class.java)
+
     val listeners = loadListenersFromAllUtopiaModules(context)
     for (listener in listeners) {
         registerListener(listener)
+        if (listener.commands.isNotEmpty()) {
+            wsa.updateCommands().addCommands(listener.commands).complete()
+        }
     }
-    val e: SlashCommandInteractionEvent
-
-    JdaInstance.instance.awaitReady()
 }

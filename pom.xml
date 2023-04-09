@@ -12,7 +12,6 @@
 
     <modules>
         <module>main</module>
-        <module>discord-api</module>
         <module>discord-impl-jda</module>
         <module>commons</module>
         <!--        <module>knowledge-king</module>-->
@@ -21,6 +20,7 @@
         <module>chatgpt-api</module>
         <module>forum-experience</module>
         <module>gaas</module>
+        <module>audio-breakout</module>
     </modules>
 
     <properties>
@@ -90,12 +90,6 @@
             <artifactId>kotlinx-coroutines-core</artifactId>
             <version>${kotlinx-coroutines-core.version}</version>
         </dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>${javax.inject.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
@@ -176,6 +170,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>gaas</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>audio-breakout</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>

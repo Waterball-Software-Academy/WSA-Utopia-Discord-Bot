@@ -40,6 +40,10 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>gaas</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>audio-breakout</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

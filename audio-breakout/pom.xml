@@ -6,7 +6,14 @@
         <groupId>tw.waterballsa.utopia</groupId>
         <version>${revision}</version>
     </parent>
-    <artifactId>discord-api</artifactId>
-    <name>Discord API</name>
-    <description>Discord API</description>
+    <artifactId>audio-breakout</artifactId>
+    <name>Audio Breakout Rooms</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>discord-impl-jda</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

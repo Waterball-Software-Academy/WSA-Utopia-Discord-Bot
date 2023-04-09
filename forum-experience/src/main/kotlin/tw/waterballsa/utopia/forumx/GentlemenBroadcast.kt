@@ -16,7 +16,7 @@ import java.nio.file.Files.lines
 import java.nio.file.Files.writeString
 import java.nio.file.Paths
 
-val log = KotlinLogging.logger {}
+private val log = KotlinLogging.logger {}
 
 private const val RECENT_MESSAGES_THRESHOLD = 4
 private const val DATABASE_FILENAME = "data/forumx.gentlemen-broadcast.db"
