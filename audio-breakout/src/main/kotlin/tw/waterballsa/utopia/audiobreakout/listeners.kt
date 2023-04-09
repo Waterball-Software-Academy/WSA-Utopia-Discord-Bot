@@ -64,6 +64,7 @@ fun audioBreakoutRoom() = listener {
         val roomId = UUID.randomUUID().toString()
         roomIdToMemberIds[roomId] = members.map { it.id }
 
+        deferReply().queue()
         log.info { "[breaking rooms] {\"roomId\"=\"$roomId\", \"$OPTION_ROOM_SIZE\":$roomSize, $OPTION_ROOM_NAME\":\"$roomNamePrefix\", \"$OPTION_COUNTDOWN\":$countdownTimeInSeconds}" }
 
         // break out rooms
@@ -74,8 +75,8 @@ fun audioBreakoutRoom() = listener {
             val groupMembers = members.subList(startIndex, endIndex)
             val groupChannelName = "┗ $roomNumber • \uD83D\uDC65 $roomNamePrefix"
 
-            val groupChannel = if (mainCategory == null) guild.createVoiceChannel(groupChannelName).complete()
-            else mainCategory.createVoiceChannel(groupChannelName).complete()
+            val groupChannel = mainCategory?.createVoiceChannel(groupChannelName)?.complete()
+                    ?: guild.createVoiceChannel(groupChannelName).complete()
 
             groupMembers.forEach { guild.moveVoiceMember(it, groupChannel).complete() }
             roomChannels.add(groupChannel)
@@ -92,12 +93,12 @@ fun audioBreakoutRoom() = listener {
             groupChannel.sendMessage("倒數 $countdownTimeInSeconds 秒鐘，<t:$endTimeInSeconds:t> 集合！").queue()
         }
 
-        reply("Rooms break-out successfully!").queue()
+        hook.editOriginal("Executing Rooms break-out successfully!").queue()
 
         timer.schedule(timerTask {
-            for (groupChannel in roomChannels) {
-                groupChannel.members.forEach { guild.moveVoiceMember(it, mainChannel).complete() }
-                groupChannel.delete().queue()
+            roomChannels.forEach {
+                it.members.forEach { guild.moveVoiceMember(it, mainChannel).complete() }
+                it.delete().queue()
             }
             roomIdToMemberIds.remove(roomId)
             log.info { "[assembled] {\"roomId\"=\"$roomId\"}" }
@@ -109,16 +110,18 @@ fun audioBreakoutRoom() = listener {
 private fun SlashCommandInteractionEvent.validateMemberShouldNotAlreadyBeInRoom(): Boolean {
     val memberFound = roomIdToMemberIds.values
             .flatten().find { it == member?.id }
-    if (memberFound != null) {
-        reply("You cannot use the breakout function when you are in a break-out room.").complete()
-        log.info { "[member should not be in a room] {\"memberId\"=\"${member?.id}\"}" }
-    }
+    memberFound
+            ?.let {
+                reply("You cannot use the breakout function when you are in a break-out room.").complete()
+                log.info { "[member should not be in a room] {\"memberId\"=\"${member?.id}\"}" }
+            }
     return memberFound != null
 }
 
 private fun moveVoiceMember(guild: Guild, member: Member, voiceChannel: VoiceChannel) {
     try {
         guild.moveVoiceMember(member, voiceChannel).complete()
-    } catch (ignored: ErrorResponseException) {
+    } catch (e: ErrorResponseException) {
+        log.warn { "[Error during moveVoiceMember] {\"message\":\"${e.message}\"" }
     }
 }
