@@ -84,8 +84,8 @@ open class UtopiaListener : EventListener {
         listenerDeclarations[pair.first] = pair.second as GenericEvent.() -> Unit
     }
 
-    fun command(commandDeclarations: () -> CommandData) {
-        commands.add(commandDeclarations.invoke())
+    fun command(commandDeclaration: () -> CommandData) {
+        commands.add(commandDeclaration.invoke())
     }
 }
 
