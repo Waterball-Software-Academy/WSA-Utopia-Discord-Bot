@@ -92,7 +92,7 @@ fun audioBreakoutRoom() = listener {
             groupChannel.sendMessage("倒數 $countdownTimeInSeconds 秒鐘，<t:$endTimeInSeconds:t> 集合！").queue()
         }
 
-        reply("Rooms break-out successfully!").complete()
+        reply("Rooms break-out successfully!").queue()
 
         timer.schedule(timerTask {
             for (groupChannel in roomChannels) {
@@ -110,7 +110,8 @@ private fun SlashCommandInteractionEvent.validateMemberShouldNotAlreadyBeInRoom(
     val memberFound = roomIdToMemberIds.values
             .flatten().find { it == member?.id }
     if (memberFound != null) {
-        log.info { "[member should not already be in room] {\"memberId\"=\"${member?.id}\"}" }
+        reply("You cannot use the breakout function when you are in a break-out room.").complete()
+        log.info { "[member should not be in a room] {\"memberId\"=\"${member?.id}\"}" }
     }
     return memberFound != null
 }
