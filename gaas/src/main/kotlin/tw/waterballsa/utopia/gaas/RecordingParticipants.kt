@@ -93,7 +93,6 @@ fun ScheduledEvent.recordEventParticipationStats() {
     }
 }
 
-
 private fun ScheduledEvent.recordParticipantsStatsAsFile(
     participantCount: MutableCollection<Int>,
     filePath: Path
