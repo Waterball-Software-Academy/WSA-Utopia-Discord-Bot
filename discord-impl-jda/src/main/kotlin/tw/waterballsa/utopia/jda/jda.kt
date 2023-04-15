@@ -137,10 +137,9 @@ fun registerAllJdaListeners(context: AnnotationConfigApplicationContext) {
     val wsa = context.getBean(WSA_GUILD_BEAN_NAME, Guild::class.java)
 
     val listeners = loadListenersFromAllUtopiaModules(context)
-    for (listener in listeners) {
-        registerListener(listener)
-        if (listener.commands.isNotEmpty()) {
-            wsa.updateCommands().addCommands(listener.commands).complete()
-        }
-    }
+
+    val commands = listeners.onEach { registerListener(it) }
+            .flatMap { it.commands }
+
+    wsa.updateCommands().addCommands(commands).queue()
 }
