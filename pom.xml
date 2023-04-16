@@ -25,6 +25,7 @@
         <module>random</module>
         <module>actuator</module>
         <module>document</module>
+        <module>audio-experience</module>
     </modules>
 
     <properties>
@@ -212,6 +213,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>document</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>audio-experience</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>
