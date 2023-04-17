@@ -1,6 +1,8 @@
 package tw.waterballsa.utopia.random
 
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -13,6 +15,8 @@ import tw.waterballsa.utopia.jda.listener
 
 private const val OPTION_NUMBER_NAME = "number"
 private const val OPTION_ROLE_NAME = "role"
+
+private val log = KotlinLogging.logger {}
 
 fun lottery(wsa: WsaDiscordProperties) = listener {
     command {
@@ -30,6 +34,8 @@ fun lottery(wsa: WsaDiscordProperties) = listener {
             return@on
         }
 
+        log.info { "[$fullCommandName]: ${member?.user} use command in $channel" }
+
         val number = getOptionAsIntInRange(OPTION_NUMBER_NAME, 1..100) ?: return@on
         val role = getOption(OPTION_ROLE_NAME)?.asRole
 
@@ -43,8 +49,8 @@ fun lottery(wsa: WsaDiscordProperties) = listener {
             }
         }
 
-        // Filter members according to the 'role' parameter
-        val members = mainChannel.members.filter { (role == null || it.roles.contains(role)) && !it.user.isBot }
+        // Filter qualified members according to the 'role' parameter
+        val members = mainChannel.members.filter { isQualifiedMember(it, role) }
         if (members.isEmpty()) {
             reply("人數不足").queue()
             return@on
@@ -62,4 +68,7 @@ fun lottery(wsa: WsaDiscordProperties) = listener {
     }
 }
 
-fun <MemberImpl> getRandomMember(list: Collection<MemberImpl>, x: Int): List<MemberImpl> = list.shuffled().take(x)
+private fun <T> getRandomMember(list: Collection<T>, x: Int): List<T> = list.shuffled().take(x)
+
+private fun isQualifiedMember(member: Member, role: Role?): Boolean =
+    (role == null || member.roles.contains(role)) && !member.user.isBot
