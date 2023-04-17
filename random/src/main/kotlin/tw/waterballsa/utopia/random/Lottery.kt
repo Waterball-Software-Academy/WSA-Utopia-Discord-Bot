@@ -44,7 +44,7 @@ fun lottery(wsa: WsaDiscordProperties) = listener {
         }
 
         // Filter members according to the 'role' parameter
-        val members = mainChannel.members.filter { role == null || it.roles.contains(role) && !it.user.isBot }
+        val members = mainChannel.members.filter { (role == null || it.roles.contains(role)) && !it.user.isBot }
         if (members.isEmpty()) {
             reply("人數不足").queue()
             return@on
