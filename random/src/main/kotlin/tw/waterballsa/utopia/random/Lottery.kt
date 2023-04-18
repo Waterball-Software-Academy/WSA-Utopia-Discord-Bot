@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
+import tw.waterballsa.utopia.commons.utils.getRandomElements
 import tw.waterballsa.utopia.jda.extensions.getOptionAsIntInRange
 import tw.waterballsa.utopia.jda.listener
 
@@ -50,13 +51,13 @@ fun lottery(wsa: WsaDiscordProperties) = listener {
         }
 
         // Filter qualified members according to the 'role' parameter
-        val members = mainChannel.members.filter { isQualifiedMember(it, role) }
+        val members = mainChannel.members.filter { it.isQualifiedMember(role) }
         if (members.isEmpty()) {
             reply("人數不足").queue()
             return@on
         }
 
-        val selectedMembers = getRandomMember(members, number)
+        val selectedMembers = members.getRandomElements(number)
 
         reply(
             selectedMembers.joinToString(
@@ -68,7 +69,5 @@ fun lottery(wsa: WsaDiscordProperties) = listener {
     }
 }
 
-private fun <T> getRandomMember(list: Collection<T>, x: Int): List<T> = list.shuffled().take(x)
 
-private fun isQualifiedMember(member: Member, role: Role?): Boolean =
-    (role == null || member.roles.contains(role)) && !member.user.isBot
+private fun Member.isQualifiedMember(role: Role?): Boolean = (role == null || roles.contains(role)) && !user.isBot
