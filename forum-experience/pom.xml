@@ -17,11 +17,11 @@
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
-            <artifactId>chatgpt-api</artifactId>
+            <artifactId>discord-impl-jda</artifactId>
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
-            <artifactId>discord-impl-jda</artifactId>
+            <artifactId>chatgpt-api</artifactId>
         </dependency>
     </dependencies>
 </project>

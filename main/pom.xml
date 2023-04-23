@@ -44,6 +44,10 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>audio-breakout</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>knowledgeking</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
