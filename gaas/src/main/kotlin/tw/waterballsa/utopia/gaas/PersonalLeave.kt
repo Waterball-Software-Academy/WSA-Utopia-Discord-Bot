@@ -48,14 +48,14 @@ fun createLeaveButtonOnGaaSEventCreated(wsaDiscordProperties: WsaDiscordProperti
             val conversationChannel = jda.getGuildById(guildId)!!.getChannel<TextChannel>(gaaSConversationChannelId)!!
 
             scheduledEvent
-                .takeIf { it.name.contains("遊戲微服務") && it.channel?.id == partyChannelId }
-                ?.run {
-                    conversationChannel
-                        .sendMessage("<@&$wsaGaaSMemberRoleId>\n哈囉各位讀書會夥伴！如果不能參加 **[${eventTime.toLocalDate()}]** 讀書會的夥伴，請點擊按鈕請假喔")
-                        .setAllowedMentions(listOf(MentionType.ROLE))
-                        .addActionRow(Button.primary(customButtonId, "我要請假"))
-                        .queue()
-                }
+                    .takeIf { it.name.contains("遊戲微服務") && it.channel?.id == partyChannelId }
+                    ?.run {
+                        conversationChannel
+                                .sendMessage("<@&$wsaGaaSMemberRoleId>\n哈囉各位讀書會夥伴！如果不能參加 **[${eventTime.toLocalDate()}]** 讀書會的夥伴，請點擊按鈕請假喔")
+                                .setAllowedMentions(listOf(MentionType.ROLE))
+                                .addActionRow(Button.primary(customButtonId, "我要請假"))
+                                .queue()
+                    }
         }
     }
 }
@@ -63,54 +63,55 @@ fun createLeaveButtonOnGaaSEventCreated(wsaDiscordProperties: WsaDiscordProperti
 fun replyLeaveModalOnLeaveButtonClicked(wsaDiscordProperties: WsaDiscordProperties) = listener {
     val wsaGaaSMemberRoleId = wsaDiscordProperties.wsaGaaSMemberRoleId
     on<ButtonInteractionEvent> {
+        if (button.id != customButtonId) {
+            return@on
+        }
         when {
             !(member!!.isGaaSMember(wsaGaaSMemberRoleId)) -> {
                 reply("看起來你似乎不是 GaaS 讀書會成員喔，那就不用特別請假啦").setEphemeral(true).queue()
                 return@on
             }
+
             LocalDateTime.now().isAfter(eventTime) -> {
                 reply("超過可以請假的時間囉，下次請記得要在活動開始前請假喔").setEphemeral(true).queue()
                 return@on
             }
         }
 
-        takeIf { button.id == customButtonId }
-            ?.run {
-                val subject = TextInput.create("leave-reason", "請假事由", TextInputStyle.SHORT)
-                    .setPlaceholder("Subject of this ticket")
-                    .setMinLength(10)
-                    .setMaxLength(100) // or setRequiredRange(10, 100)
-                    .build()
+        val subject = TextInput.create("leave-reason", "請假事由", TextInputStyle.SHORT)
+                .setPlaceholder("Subject of this ticket")
+                .setMinLength(10)
+                .setMaxLength(100) // or setRequiredRange(10, 100)
+                .build()
 
-                Modal.create(customModalId, "GaaS 讀書會請假條")
-                    .addActionRow(subject)
-                    .build()
-                    .also { replyModal(it).queue() }
-            }
+        Modal.create(customModalId, "GaaS 讀書會請假條")
+                .addActionRow(subject)
+                .build()
+                .also { replyModal(it).queue() }
     }
 }
 
 fun saveLeaveReasonOnSubmitted() = listener {
     on<ModalInteractionEvent> {
         takeIf { modalId == customModalId }
-            ?.run {
-                val filePath = createLeaveRecordFile()
-                val member = interaction.member!!
-                val nickname = member.nickname ?: member.user.name
-                val leaveReason = getValue("leave-reason")?.asString
-                writeString(filePath, "$nickname : $leaveReason${lineSeparator()}", APPEND)
-                reply("哈囉，$nickname！我們收到你的請假申請囉，期待你下週能來和我們暢聊你的開發成果。").setEphemeral(true)
-                    .queue()
-            }
+                ?.run {
+                    val filePath = createLeaveRecordFile()
+                    val member = interaction.member!!
+                    val nickname = member.nickname ?: member.user.name
+                    val leaveReason = getValue("leave-reason")?.asString
+                    writeString(filePath, "$nickname : $leaveReason${lineSeparator()}", APPEND)
+                    reply("哈囉，$nickname！我們收到你的請假申請囉，期待你下週能來和我們暢聊你的開發成果。").setEphemeral(true)
+                            .queue()
+                }
     }
 }
 
 private fun createLeaveRecordFile(): Path =
-    Path(DATABASE_DIRECTORY)
-        .createDirectories()
-        .resolve("$DATABASE_FILENAME_PREFIX-${LocalDate.now()}.db")
-        .createFile()
+        Path(DATABASE_DIRECTORY)
+                .createDirectories()
+                .resolve("$DATABASE_FILENAME_PREFIX-${LocalDate.now()}.db")
+                .createFile()
 
 private fun Member.isGaaSMember(gaaSMemberRoleId: String): Boolean =
-    gaaSMemberRoleId in roles.mapNotNull { it.id }
+        gaaSMemberRoleId in roles.mapNotNull { it.id }
 
