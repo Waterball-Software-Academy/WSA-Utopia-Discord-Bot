@@ -14,7 +14,7 @@
         <module>main</module>
         <module>discord-impl-jda</module>
         <module>commons</module>
-        <!--        <module>knowledge-king</module>-->
+        <module>knowledge-king</module>
         <!--        <module>gamification</module>-->
         <module>landing-experience</module>
         <module>chatgpt-api</module>
@@ -175,6 +175,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>audio-breakout</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>knowledgeking</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>
