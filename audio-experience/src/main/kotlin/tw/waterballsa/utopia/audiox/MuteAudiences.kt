@@ -25,7 +25,7 @@ private const val MUTE_REVOKED_COMMAND = "$MUTE_SLASH $REVOKED_SUB_COMMAND"
 private val log = KotlinLogging.logger {}
 private var currentCommandName = ""
 
-fun muteAudiences(wsa: WsaDiscordProperties) = listener {
+fun muteAudiences() = listener {
     /*
     mute audiences: The command allows the user to mute audiences
         Optional -> audience: Allow the audience to unmute
@@ -43,7 +43,7 @@ fun muteAudiences(wsa: WsaDiscordProperties) = listener {
     }
 
     on<SlashCommandInteractionEvent> {
-        val memberChannel: AudioChannelUnion? = member?.voiceState?.channel
+        val memberChannel = member?.voiceState?.channel
         log.info { "[Mute Command]: Command in $channel" }
         log.info { "[Mute Command]: User in $memberChannel" }
 
@@ -51,13 +51,13 @@ fun muteAudiences(wsa: WsaDiscordProperties) = listener {
             return@on
         }
 
-        val voiceChannel: VoiceChannel = channel.asVoiceChannel();
+        val voiceChannel = channel.asVoiceChannel();
 
         when (fullCommandName) {
             MUTE_AUDIENCES_COMMAND -> {
                 currentCommandName = MUTE_AUDIENCES_COMMAND
-                val role: OptionMapping? = getOption(OPTION_ROLE_NAME);
-                val audience: OptionMapping? = getOption(OPTION_AUDIENCE_NAME);
+                val role = getOption(OPTION_ROLE_NAME);
+                val audience = getOption(OPTION_AUDIENCE_NAME);
 
                 voiceChannel.members.forEach {
                     when {
@@ -84,9 +84,9 @@ private fun SlashCommandInteractionEvent.isNotMuteCommand(): Boolean {
 }
 
 private fun SlashCommandInteractionEvent.isNotVoiceChannel(): Boolean {
-    val memberChannel: AudioChannelUnion? = member?.voiceState?.channel
+    val memberChannelId = member?.voiceState?.channel?.id
 
-    val isVoiceChannel: Boolean = (memberChannel != null) && (channel == memberChannel)
+    val isVoiceChannel = (memberChannelId != null) && (channel.id == memberChannelId)
     if (!isVoiceChannel) {
         this.reply("This is not a voice channel.").queue()
     }
@@ -102,9 +102,9 @@ private fun isUnmuteRole(member: Member, role: OptionMapping?): Boolean {
 }
 
 private fun muteMember(member: Member, isMute: Boolean) {
-    val memberName: String? = if (member.nickname != null) member.nickname else member.effectiveName
-    val memberId: String = member.id
-    val muteLabel: String = if (isMute) "Mute" else "Unmute"
+    val memberName = member.nickname ?: member.effectiveName
+    val memberId = member.id
+    val muteLabel = if (isMute) "Mute" else "Unmute"
 
     member.mute(isMute)
         .queue { log.info { "[$currentCommandName]: $muteLabel {\"memberName\":\"${memberName}\", \"memberId\":\"${memberId}\"} voice !!" } }
