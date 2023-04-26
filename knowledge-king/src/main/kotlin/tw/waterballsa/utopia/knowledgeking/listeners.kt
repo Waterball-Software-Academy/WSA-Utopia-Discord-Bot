@@ -7,12 +7,11 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
-import tw.waterballsa.utopia.commons.extensions.dailyScheduling
 import tw.waterballsa.utopia.commons.extensions.scheduleDelay
 import tw.waterballsa.utopia.jda.listener
 import tw.waterballsa.utopia.knowledgeking.domain.*
 import java.util.*
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 private val log = KotlinLogging.logger {}
@@ -29,7 +28,7 @@ private val announcementTime = Calendar.getInstance().apply {
 // 10.minutes.inWholeMilliseconds
 private val prepareDurationInMillis = 5.seconds.inWholeMilliseconds
 
-private const val numberOfQuestions = 5
+private const val numberOfQuestions = 3
 private const val timeBetweenQuestionsInSeconds = 15L
 private const val timeBetweenAnswerRevealedAndNextQuestionInSeconds = 8L
 
@@ -57,13 +56,13 @@ fun knowledgeKing(wsa: WsaDiscordProperties, jda: JDA, chatGptQuestionParser: Ch
 }
 
 private fun launchKnowledgeKingScheduling(wsa: WsaDiscordProperties, jda: JDA, chatGpt: ChatGptQuestionParser) {
-    timer.dailyScheduling(announcementTime) {
-        val knowledgeKingChannel = jda.getTextChannelById(wsa.knowledgeKingChannelId)
-        val topic = generateTopic()
-        announceTopic(topic, knowledgeKingChannel!!)
-        val quiz = generateQuizForTopic(topic, chatGpt)
-        scheduleFirstQuestion(quiz, wsa, jda, knowledgeKingChannel)
-    }
+//    timer.dailyScheduling(announcementTime) {
+    val knowledgeKingChannel = jda.getTextChannelById(wsa.knowledgeKingChannelId)
+    val topic = generateTopic()
+    announceTopic(topic, knowledgeKingChannel!!)
+    val quiz = generateQuizForTopic(topic, chatGpt)
+    scheduleFirstQuestion(quiz, wsa, jda, knowledgeKingChannel)
+//    }
 }
 
 private fun scheduleFirstQuestion(quiz: Quiz, wsa: WsaDiscordProperties, jda: JDA, knowledgeKingChannel: TextChannel) {
@@ -79,11 +78,13 @@ private fun scheduleFirstQuestion(quiz: Quiz, wsa: WsaDiscordProperties, jda: JD
 private fun scheduleRevealAnswer(nextQuestionEvent: NextQuestionEvent, knowledgeKingChannel: TextChannel) {
     log.info { "[Revealing next question] \"{\"delayInSeconds\": $timeBetweenAnswerRevealedAndNextQuestionInSeconds}\"" }
     timer.scheduleDelay(timeBetweenQuestionsInSeconds.seconds.inWholeMilliseconds) {
+        val ranking = knowledgeKing!!.rank()
         revealTheAnswer(nextQuestionEvent, knowledgeKingChannel)
         if (nextQuestionEvent.isLastQuestion) {
-            val rank = knowledgeKing!!.endGame()
-            revealRank(rank, knowledgeKingChannel)
+            knowledgeKing!!.endGame()
+            revealFinalRanking(ranking, knowledgeKingChannel)
         } else {
+            knowledgeKingChannel.sendMessage(":trophy: 目前排名：\n${rankingToMessage(ranking)}").queue()
             scheduleNextQuestion(knowledgeKingChannel)
         }
     }
@@ -98,19 +99,21 @@ private fun scheduleNextQuestion(knowledgeKingChannel: TextChannel) {
     }
 }
 
-private fun revealRank(ranking: Ranking, knowledgeKingChannel: TextChannel) {
-    val rankings = ranking.ranks.stream().limit(5)
-            .map { " 第 ${it.rankNumber} 名： <@${it.contestantId}> - ${it.score} 分\n" }
-            .toList()
-    knowledgeKingChannel.sendMessage("本次【全民軟體知識王】活動結束\n感謝大家的參與\n本次的排名如下：\n${rankings.joinToString { "\n" }}").queue()
+private fun revealFinalRanking(ranking: Ranking, knowledgeKingChannel: TextChannel) {
+    knowledgeKingChannel.sendMessage("本次【全民軟體知識王】活動結束\n感謝大家的參與\n:trophy: 本次的排名如下：\n${rankingToMessage(ranking)}").queue()
+}
+
+private fun rankingToMessage(ranking: Ranking): String {
+    val rankings = ranking.ranks
+            .map { " 第 ${it.rankNumber} 名： <@${it.contestantId}> - ${it.score} 分" }
+            .take(5)
+    return rankings.joinToString("\n")
 }
 
 private fun revealTheAnswer(nextQuestionEvent: NextQuestionEvent, knowledgeKingChannel: TextChannel) {
     // Check answer spec type
     val answerOption: String = when (val answer = nextQuestionEvent.question.answer) {
-        is SingleAnswerSpec -> ({
-            'A' + answer.optionNumber
-        }).toString()
+        is SingleAnswerSpec -> "${'A' + answer.optionNumber}"
 
         is MultipleAnswerSpec -> answer.optionNumbers.map {
             'A' + it
@@ -121,7 +124,7 @@ private fun revealTheAnswer(nextQuestionEvent: NextQuestionEvent, knowledgeKingC
 
     // Answer message template
     val answerMessage = """
-        正確解答: $answerOption 
+        :bulb: 正確解答: $answerOption 
     """.trimIndent()
 
     // Send message to text channel
@@ -138,7 +141,7 @@ private fun generateQuizForTopic(topic: String, chatGpt: ChatGptQuestionParser):
 private fun announceTopic(topic: String, knowledgeKingChannel: TextChannel) {
     knowledgeKingChannel.sendMessage("""
                 【全民軟體知識王】
-                ${prepareDurationInMillis.minutes} 分鐘後，比賽開始啊！快來玩！
+                ${prepareDurationInMillis.milliseconds.inWholeMinutes} 分鐘後，比賽開始啊！快來玩！
                 比賽主題：$topic
             """.trimIndent()).queue()
 }

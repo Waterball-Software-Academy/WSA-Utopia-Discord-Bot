@@ -48,6 +48,9 @@ class ChatGptAPI {
             log.info { "[Completion] {\"completeTokens\": ${chatGptResponse.usage.completion_tokens}, \"prompt\": ${chatGptResponse.usage.prompt_tokens}, \"totalTokens\": ${chatGptResponse.usage.total_tokens}}" }
         } else {
             log.error { "[Error] {\"errorBody\":\"${httpResponse.body()}\"}" }
+            if ("server_error" == chatGptResponse.error.type) {
+                // TODO: should implement retry logic
+            }
         }
         return chatGptResponse
     }
@@ -77,10 +80,19 @@ class ChatGptAPI {
             val created: Long = 0,
             val model: String = "",
             val usage: Usage = Usage(),
-            val choices: List<Choice> = emptyList()
+            val choices: List<Choice> = emptyList(),
+            val error: Error = Error()
     ) {
         fun firstMessageContent() = choices[0].message.content
     }
+
+    class Error(
+            val message: String = "",
+            val type: String = "",
+            val param: Long = 0,
+            val code: String = ""
+    )
+
 
     class Usage(
             val prompt_tokens: Int = 0,

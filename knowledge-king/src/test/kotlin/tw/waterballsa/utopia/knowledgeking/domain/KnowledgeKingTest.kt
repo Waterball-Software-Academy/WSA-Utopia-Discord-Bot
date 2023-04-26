@@ -35,7 +35,6 @@ internal class KnowledgeKingTest {
 
     private var game: KnowledgeKing = KnowledgeKing(quiz, 3)
 
-
     @AfterEach
     fun reset() {
         game = KnowledgeKing(quiz, 3)
@@ -76,6 +75,11 @@ internal class KnowledgeKingTest {
         assertNull(game.nextQuestion(), "no next question")
         val ranking = game.endGame()
         assertTrue(game.isGameOver())
+
+        val rankings = ranking.ranks.stream().limit(5)
+                .map { " 第 ${it.rankNumber} 名： <@${it.contestantId}> - ${it.score} 分" }
+                .toList()
+        val s = "本次【全民軟體知識王】活動結束\n感謝大家的參與\n本次的排名如下：\n${rankings.joinToString("\n")}"
 
         assertEquals("A", ranking.rank(0).contestantId)
         assertEquals("C", ranking.rank(1).contestantId)
