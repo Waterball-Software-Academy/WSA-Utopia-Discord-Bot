@@ -21,6 +21,7 @@
         <module>forum-experience</module>
         <module>gaas</module>
         <module>audio-breakout</module>
+        <module>random</module>
     </modules>
 
     <properties>
@@ -175,6 +176,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>audio-breakout</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>random</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>
