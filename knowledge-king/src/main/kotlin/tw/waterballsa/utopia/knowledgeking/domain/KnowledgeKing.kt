@@ -45,14 +45,15 @@ class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSe
         return NextQuestionEvent(nextQuestion.number, nextQuestion, isLastQuestion)
     }
 
-    fun endGame(): Ranking {
+    fun endGame() {
         gameOver = true
-        return scoreboard.ranking()
     }
 
     fun isGameOver(): Boolean {
         return gameOver
     }
+
+    fun rank() = scoreboard.ranking()
 }
 
 class Scoreboard {
