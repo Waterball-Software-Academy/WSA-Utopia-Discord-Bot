@@ -17,6 +17,7 @@ open class WsaDiscordProperties(properties: Properties) {
     val gentlemenForumCategoryId: String
     val wsaGentlemenBroadcastChannelId: String
     val wsaPartyChannelId: String
+    val wsaGaaSRegistrationThreadId: String
 
 
     init {
@@ -30,6 +31,7 @@ open class WsaDiscordProperties(properties: Properties) {
             gentlemenForumCategoryId = getProperty("wsa-gentlemen-forum-category-id")
             wsaGentlemenBroadcastChannelId = getProperty("wsa-gentlemen-broadcast-channel-id")
             wsaPartyChannelId = getProperty("wsa-party-channel-id")
+            wsaGaaSRegistrationThreadId = getProperty("wsa-gaas-registration-thread-id")
         }
     }
 }
