@@ -13,10 +13,10 @@ internal class ObservedMemberRepository {
 
     private val observedMemberPath: Path = Path(DATABASE_FILE_PATH)
         .createDirectories()
-        .resolve(DATABASE_FILE_NANE).takeIf { it.notExists() }
+        .resolve(DATABASE_FILE_NANE)
+        .takeIf { it.notExists() }
         ?.createFile()
         ?: Path(DATABASE_FILE_PATH, DATABASE_FILE_NANE)
-
 
     private val idToRecord = mutableMapOf<String, ObservedMemberRecord>()
 

@@ -2,11 +2,12 @@ package tw.waterballsa.utopia.gaas
 
 import net.dv8tion.jda.api.entities.Member
 import java.time.LocalDate
+import java.time.LocalDate.now
 
 data class ObservedMemberRecord(
     val id: String,
     val name: String,
-    val createdTime: LocalDate = LocalDate.now()
+    val createdTime: LocalDate = now()
 ) {
     companion object {
         fun createFromMember(member: Member): ObservedMemberRecord =
