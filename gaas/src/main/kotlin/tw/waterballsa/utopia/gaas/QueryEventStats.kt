@@ -1,6 +1,5 @@
 package tw.waterballsa.utopia.gaas
 
-import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.jda.extensions.getOptionAsIntWithValidation
@@ -20,7 +19,7 @@ fun getMaxAndAvgParticipantsAtSpecificDate(wsaDiscordProperties: WsaDiscordPrope
         when {
             interaction.fullCommandName != "gaas stats-avg-and-max" -> return@on
             !commandUser.isAlphaMember(alphaRoleId) -> {
-                replayEphemerally("權限不足")
+                replyEphemerally("權限不足")
                 return@on
             }
         }
@@ -32,14 +31,14 @@ fun getMaxAndAvgParticipantsAtSpecificDate(wsaDiscordProperties: WsaDiscordPrope
 
         takeUnless { validateDateFormat(date) }
             ?.run {
-                replayEphemerally("日期格式不合法")
+                replyEphemerally("日期格式不合法")
                 return@on
             }
 
         val eventStatsFile =
             getEventStatsFile(date)
                 ?: run {
-                    replayEphemerally("查無指定日期的資料")
+                    replyEphemerally("查無指定日期的資料")
                     return@on
                 }
 
@@ -48,7 +47,7 @@ fun getMaxAndAvgParticipantsAtSpecificDate(wsaDiscordProperties: WsaDiscordPrope
                 .filter { line -> line.contains("Avg:") || line.contains("Max:") }
                 .joinToString(System.lineSeparator())
 
-            replayEphemerally(avgAndMax)
+            replyEphemerally(avgAndMax)
         }
     }
 }
@@ -68,8 +67,3 @@ private fun getEventStatsFile(date: String): File? =
         .walkTopDown()
         .firstOrNull { it.name.contains(date) }
 
-private fun Member.isAlphaMember(alphaRoleId: String): Boolean =
-    alphaRoleId in roles.mapNotNull { it.id }
-
-private fun SlashCommandInteractionEvent.replayEphemerally(message: String) =
-    reply(message).setEphemeral(true).queue()

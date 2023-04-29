@@ -20,7 +20,11 @@ fun registerCommands() = listener {
                     .addOption(OptionType.INTEGER, OPTION_EVENT_DATE_DAY, "Day", true)
             )
             .addSubcommands(
-                SubcommandData("watch", "Add specific member to watchlist")
+                SubcommandData("observe", "Add a specific member to the watchlist")
+                    .addOption(OptionType.USER, OPTION_MEMBER, "GaaS Member", true)
+            )
+            .addSubcommands(
+                SubcommandData("unobserved", "Remove a specific member from the watchlist")
                     .addOption(OptionType.USER, OPTION_MEMBER, "GaaS Member", true)
             )
     }

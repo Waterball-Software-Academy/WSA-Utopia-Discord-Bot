@@ -1,7 +1,6 @@
 package tw.waterballsa.utopia.gaas
 
 import dev.minn.jda.ktx.generics.getChannel
-import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventCreateEvent
@@ -111,6 +110,4 @@ private fun createLeaveRecordFile(): Path =
         .resolve("$DATABASE_FILENAME_PREFIX-${LocalDate.now()}.db")
         .createFile()
 
-private fun Member.isGaaSMember(gaaSMemberRoleId: String): Boolean =
-    gaaSMemberRoleId in roles.mapNotNull { it.id }
 
