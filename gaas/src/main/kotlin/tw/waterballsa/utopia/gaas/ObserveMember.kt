@@ -2,6 +2,7 @@ package tw.waterballsa.utopia.gaas
 
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -12,10 +13,8 @@ import tw.waterballsa.utopia.commons.extensions.onStart
 import tw.waterballsa.utopia.commons.extensions.toDate
 import tw.waterballsa.utopia.jda.listener
 import java.time.LocalDate.now
-import java.time.temporal.ChronoUnit.DAYS
 import java.util.*
 import kotlin.concurrent.timerTask
-import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.hours
 
 private val timer = Timer()
@@ -47,13 +46,13 @@ fun observeMember(properties: WsaDiscordProperties) = listener {
             return@on
         }
 
-        observedMemberRepository.addObservedMember(ObservedMemberRecord.createFromMember(targetUser))
+        observedMemberRepository.addObservedMember(targetUser.toObservedMemberRecord())
         replyEphemerally("${targetUser.asMention} 已經成功加入觀察名單")
     }
 }
 
 
-fun removeMemberFromObservedList(properties: WsaDiscordProperties) = listener {
+fun removeMember(properties: WsaDiscordProperties) = listener {
     on<SlashCommandInteractionEvent> {
         val targetUser = getOptionsByType(OptionType.USER).first().asMember!!
         val alphaRoleId = properties.wsaAlphaRoleId
@@ -80,7 +79,7 @@ fun removeMemberFromObservedList(properties: WsaDiscordProperties) = listener {
     }
 }
 
-fun cleanseMemberListPeriodically(jda: JDA, properties: WsaDiscordProperties) = listener {
+fun removeExpiredMembersPeriodically(jda: JDA, properties: WsaDiscordProperties) = listener {
     val guild = jda.getGuildById(properties.guildId)!!
     val role = jda.getRoleById(properties.wsaGaaSMemberRoleId)!!
 
@@ -91,19 +90,23 @@ fun cleanseMemberListPeriodically(jda: JDA, properties: WsaDiscordProperties) = 
     )
 }
 
-private fun removeExpiredMemberRolePeriodically (
+private fun removeExpiredMemberRolePeriodically(
     guild: Guild,
     role: Role
 ) = timerTask {
     observedMemberRepository.findAll()
-        .filter { DAYS.between(it.createdTime, now()).absoluteValue >= 30 }
+        .filter { it.isCreatedTimeOver30Days() }
         .takeIf { it.isNotEmpty() }
-        ?.onEach { record ->
-            guild.removeRoleFromMember(UserSnowflake.fromId(record.id), role).queue {
-                log.info { "[Observe] {\"Observe\" : \"Remove the expired Member [${record.name}]. \"}" }
-            }
-        }
+        ?.onEach { removeRoleFromRecord(guild, it, role) }
         ?.map { it.id }
         ?.let { observedMemberRepository.removeObservedMemberByIds(it) }
 }
 
+private fun removeRoleFromRecord(guild: Guild, record: ObservedMemberRecord, role: Role) {
+    guild.removeRoleFromMember(UserSnowflake.fromId(record.id), role).queue {
+        log.info { "[Observe] {\"Observe\" : \"Remove the expired Member [${record.name}]. \"}" }
+    }
+}
+
+private fun Member.toObservedMemberRecord() =
+    ObservedMemberRecord(id, nickname ?: effectiveName)
