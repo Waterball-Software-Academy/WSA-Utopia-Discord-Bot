@@ -60,7 +60,10 @@ private fun launchKnowledgeKingScheduling(wsa: WsaDiscordProperties, jda: JDA, c
     val knowledgeKingChannel = jda.getTextChannelById(wsa.knowledgeKingChannelId)
     val topic = generateTopic()
     announceTopic(topic, knowledgeKingChannel!!)
+
+    // todo: 後續可以用 async task 優化，這裡暫時用時間線來對齊公告通知
     val quiz = generateQuizForTopic(topic, chatGpt)
+
     scheduleFirstQuestion(quiz, wsa, jda, knowledgeKingChannel)
 //    }
 }
@@ -140,9 +143,18 @@ private fun generateQuizForTopic(topic: String, chatGpt: ChatGptQuestionParser):
 
 private fun announceTopic(topic: String, knowledgeKingChannel: TextChannel) {
     knowledgeKingChannel.sendMessage("""
-                【全民軟體知識王】
-                ${prepareDurationInMillis.milliseconds.inWholeMinutes} 分鐘後，比賽開始啊！快來玩！
-                比賽主題：$topic
+                :loudspeaker: 水球軟體學院的「全民軟體知識王」比賽即將開始啦！
+                不管你正好在閒聊，滿腹知識的你、渴望證明自己的你、十年寒窗無人問的你
+                都歡迎一起加入知識問答，放輕鬆去玩～
+                
+                :point_right: 遊戲方式如下：
+                題目皆是選擇題，分別有四個答案，裡面只有一個答案是正確的唷！
+                參與者透過點擊 A、B、C、D 其中一個按鈕，完成答題
+                （你點選的答案不會被他人看見唷 :face_with_peeking_eye:）
+                
+                本次的比賽主題是「$topic」
+                比賽即將在 **${prepareDurationInMillis.milliseconds.inWholeSeconds} 分鐘**後開始唷
+                大家趕緊把時間空下來，千萬別錯過唷！
             """.trimIndent()).queue()
 }
 
