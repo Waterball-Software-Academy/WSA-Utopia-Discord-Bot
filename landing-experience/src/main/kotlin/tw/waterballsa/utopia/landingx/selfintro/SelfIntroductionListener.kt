@@ -16,7 +16,7 @@ class SelfIntroductionListener(private val wsa: WsaDiscordProperties) : UtopiaLi
 
     override fun onMessageReceived(e: MessageReceivedEvent) {
         with(e) {
-            if (wsa.selfIntroChannelId != e.messageId) {
+            if (wsa.selfIntroChannelId != e.channel.id) {
                 return
             }
             val author = message.author
