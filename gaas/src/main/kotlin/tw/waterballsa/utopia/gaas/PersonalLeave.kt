@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
-import tw.waterballsa.utopia.jda.UtopiaListener
+import tw.waterballsa.utopia.jda.DeprecatedUtopiaListener
 import tw.waterballsa.utopia.jda.listener
 import java.lang.System.lineSeparator
 import java.nio.file.Files.writeString
@@ -36,7 +36,7 @@ private const val DATABASE_DIRECTORY = "data/gaas/leave"
 private const val DATABASE_FILENAME_PREFIX = "GaaS-leave"
 private lateinit var eventTime: LocalDateTime
 
-fun createLeaveButtonOnGaaSEventCreated(wsaDiscordProperties: WsaDiscordProperties): UtopiaListener {
+fun createLeaveButtonOnGaaSEventCreated(wsaDiscordProperties: WsaDiscordProperties): DeprecatedUtopiaListener {
     return listener {
         on<ScheduledEventCreateEvent> {
             val partyChannelId = wsaDiscordProperties.wsaPartyChannelId

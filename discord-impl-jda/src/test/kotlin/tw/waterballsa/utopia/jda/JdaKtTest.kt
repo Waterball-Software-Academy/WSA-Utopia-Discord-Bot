@@ -8,7 +8,7 @@ class JdaKtTest {
     @Test
     fun `test should include listeners in the listeners package`() {
         val context = AnnotationConfigApplicationContext()
-        val listeners = loadListenersFromAllUtopiaModules(context)
+        val listeners = loadListenerFunctionsFromAllModules(context)
         assertThat(listeners).anyMatch { it.name == "testListener1" }
         assertThat(listeners).anyMatch { it.name == "testListener2" }
         assertThat(listeners).anyMatch { it.name == "testListener3" }
