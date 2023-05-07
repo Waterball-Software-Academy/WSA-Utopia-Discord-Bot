@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.GenericEvent
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
@@ -21,7 +20,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import tw.waterballsa.utopia.jda.JdaInstance.compositeListener
 import java.lang.reflect.Method
-import kotlin.reflect.safeCast
 
 val log = KotlinLogging.logger {}
 
@@ -33,11 +31,8 @@ internal class CompositeListener : EventListener {
 
     override fun onEvent(event: GenericEvent) {
         for (listener in listeners) {
-            if (listener.matchMessageEvent(GenericMessageEvent::class.safeCast(event))) {
-                listener.onEvent(event)
-            }
+            listener.onEvent(event)
         }
-
         for (listener in deprecatedListeners) {
             listener.onEvent(event)
         }
@@ -82,11 +77,6 @@ open class JdaConfig {
 }
 
 abstract class UtopiaListener : ListenerAdapter() {
-    open fun matchMessageEvent(e: GenericMessageEvent?): Boolean {
-        // hook
-        return true
-    }
-
 }
 
 @Deprecated("Please use 'UtopiaListener' instead")
