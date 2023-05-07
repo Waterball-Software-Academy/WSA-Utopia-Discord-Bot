@@ -77,6 +77,9 @@ open class JdaConfig {
 }
 
 abstract class UtopiaListener : ListenerAdapter() {
+    open fun commands(): List<CommandData> {
+        return emptyList()
+    }
 }
 
 @Deprecated("Please use 'UtopiaListener' instead")
@@ -146,15 +149,16 @@ fun runJda() {
 fun registerAllJdaListeners(context: AnnotationConfigApplicationContext) {
     val wsa = context.getBean(WSA_GUILD_BEAN_NAME, Guild::class.java)
 
-    val listeners = loadListenerFunctionsFromAllModules(context)
+    val listenerFunctions = loadListenerFunctionsFromAllModules(context)
 
-    val commands = listeners.onEach { compositeListener.register(it) }
+    listenerFunctions.onEach { compositeListener.register(it) }
             .flatMap { it.commands }
+            .let { wsa.updateCommands().addCommands(it).queue() }
 
-    context.getBeansOfType(UtopiaListener::class.java)
-            .entries.forEach { (_, listenerBean) ->
-                compositeListener.register(listenerBean)
-            }
+    val utopiaListeners = context.getBeansOfType(UtopiaListener::class.java).values
+    utopiaListeners.forEach { compositeListener.register(it) }
 
-    wsa.updateCommands().addCommands(commands).queue()
+    utopiaListeners.flatMap { it.commands() }.let {
+        wsa.updateCommands().addCommands(it).queue()
+    }
 }
