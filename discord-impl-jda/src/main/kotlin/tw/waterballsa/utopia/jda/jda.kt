@@ -6,7 +6,9 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.GenericEvent
+import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.hooks.EventListener
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.cache.CacheFlag
@@ -19,26 +21,36 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import tw.waterballsa.utopia.jda.JdaInstance.compositeListener
 import java.lang.reflect.Method
+import kotlin.reflect.safeCast
 
 val log = KotlinLogging.logger {}
 
 internal class CompositeListener : EventListener {
     internal val listeners: MutableList<UtopiaListener> = mutableListOf()
 
+    // FIXME: after all deprecated listeners are upgraded to class-oriented listener, should remove all the coupling to DeprecatedUtopiaListener
+    internal val deprecatedListeners: MutableList<DeprecatedUtopiaListener> = mutableListOf()
+
     override fun onEvent(event: GenericEvent) {
         for (listener in listeners) {
+            if (listener.matchMessageEvent(GenericMessageEvent::class.safeCast(event))) {
+                listener.onEvent(event)
+            }
+        }
+
+        for (listener in deprecatedListeners) {
             listener.onEvent(event)
         }
     }
 
     fun register(e: UtopiaListener) {
-        log.debug { "[Register UtopiaListener] {\"name\":\"${e.name}\"}" }
+        log.debug { "[Register UtopiaListener] {\"class\":\"${e.javaClass.canonicalName}\"}" }
         listeners.add(e)
     }
 
-    fun unregister(e: UtopiaListener) {
-        log.debug { "[Unregister UtopiaListener] {\"name\":\"${e.name}\"}" }
-        listeners.remove(e)
+    fun register(e: DeprecatedUtopiaListener) {
+        log.debug { "[Register UtopiaListener] {\"class\":\"${e.javaClass.canonicalName}\"}" }
+        deprecatedListeners.add(e)
     }
 
 }
@@ -69,7 +81,16 @@ open class JdaConfig {
     }
 }
 
-open class UtopiaListener : EventListener {
+abstract class UtopiaListener : ListenerAdapter() {
+    open fun matchMessageEvent(e: GenericMessageEvent?): Boolean {
+        // hook
+        return true
+    }
+
+}
+
+@Deprecated("Please use 'UtopiaListener' instead")
+open class DeprecatedUtopiaListener : EventListener {
     var name: String? = null
     val listenerDeclarations: MutableMap<Class<out GenericEvent>, (GenericEvent.() -> Unit)> = mutableMapOf()
     val commands = mutableListOf<CommandData>()
@@ -89,19 +110,19 @@ open class UtopiaListener : EventListener {
     }
 }
 
-private fun registerListener(e: UtopiaListener): Unit = compositeListener.register(e)
-
-fun listener(listenerDeclaration: UtopiaListener.() -> Unit): UtopiaListener {
-    val listener = UtopiaListener()
+@Deprecated("Use class-oriented approach to declare your listener, see 'tw.waterballsa.utopia.landingx.selfintro.SelfIntroductionListener' for example.")
+fun listener(listenerDeclaration: DeprecatedUtopiaListener.() -> Unit): DeprecatedUtopiaListener {
+    val listener = DeprecatedUtopiaListener()
     listenerDeclaration.invoke(listener)
     return listener
 }
 
-internal fun loadListenersFromAllUtopiaModules(context: ApplicationContext): List<UtopiaListener> {
-    val listeners = mutableListOf<UtopiaListener>()
+private const val COMPONENT_SCAN_CLASS_PATH = "tw.waterballsa.utopia"
 
-    val reflections = Reflections("tw.waterballsa.utopia", SubTypes, TypesAnnotated, MethodsReturn)
-    val listenerFunctions = reflections.get(MethodsReturn.with(UtopiaListener::class.java).`as`(Method::class.java))
+internal fun loadListenerFunctionsFromAllModules(context: ApplicationContext): MutableList<DeprecatedUtopiaListener> {
+    val listeners = mutableListOf<DeprecatedUtopiaListener>()
+    val reflections = Reflections(COMPONENT_SCAN_CLASS_PATH, SubTypes, TypesAnnotated, MethodsReturn)
+    val listenerFunctions = reflections.get(MethodsReturn.with(DeprecatedUtopiaListener::class.java).`as`(Method::class.java))
             .filterNot {
                 it.declaringClass.`package`.name.startsWith("tw.waterballsa.utopia.jda")
             }
@@ -119,11 +140,10 @@ internal fun loadListenersFromAllUtopiaModules(context: ApplicationContext): Lis
                 context.getBean(p.type)
             }
         }
-        val listener = listenerFunction.invoke(null, *arguments) as UtopiaListener
+        val listener = listenerFunction.invoke(null, *arguments) as DeprecatedUtopiaListener
         listener.name = listenerFunction.name
         listeners.add(listener)
     }
-
     return listeners
 }
 
@@ -136,10 +156,15 @@ fun runJda() {
 fun registerAllJdaListeners(context: AnnotationConfigApplicationContext) {
     val wsa = context.getBean(WSA_GUILD_BEAN_NAME, Guild::class.java)
 
-    val listeners = loadListenersFromAllUtopiaModules(context)
+    val listeners = loadListenerFunctionsFromAllModules(context)
 
-    val commands = listeners.onEach { registerListener(it) }
+    val commands = listeners.onEach { compositeListener.register(it) }
             .flatMap { it.commands }
+
+    context.getBeansOfType(UtopiaListener::class.java)
+            .entries.forEach { (_, listenerBean) ->
+                compositeListener.register(listenerBean)
+            }
 
     wsa.updateCommands().addCommands(commands).queue()
 }
