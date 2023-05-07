@@ -78,6 +78,148 @@
 
        <img src=".\docs\intellij-idea-setting\set-env-config.png" title="Set env config"/>
 
+### Create a new feature module
+
+* To create a new feature module, follow these steps:
+
+* Create a new module using Maven. Make sure you have added the module name to the list of modules in the
+  root `pom.xml`.
+    1. Open your project in an IDE, such as IntelliJ IDEA
+    2. Right-click on the root directory of your project, and select `New` -> `Module`
+    3. In the sidebar: Choose `Maven Archetype` template
+    4. Describe your project, enter your project name and choose java version 17 or higher
+    5. In the `Advanced Settings` dialog, enter the following details:
+        * `GroupId`: the identifier for your organization or group (e.g., "com.example")
+        * `ArtifactId`: the identifier for your module (e.g., "my-module")
+        * `Version`: the version of your module (e.g., "1.0-SNAPSHOT")
+    6. Click `Create` to create the module and wait for building the Maven project to get `BUILD SUCCESS` message
+
+* Declare your module's dependency in `pom.xml`
+    1. Modify the default version with `${revision}` to keep it consistent with the version in the root directory.
+
+       ```xml
+       <parent>
+         <artifactId>root</artifactId>
+         <groupId>tw.waterballsa.utopia</groupId>
+         <version>${revision}</version>
+       </parent>
+       ```
+
+    2. Modify module detail
+
+       ```xml
+       <artifactId><!-- your module artifactId --></artifactId>
+       <name><!-- your module name --></name>
+       <description><!-- your module description --></description>
+       ```
+
+    3. Add WSA-Utopia `commons` and `discord-impl-jda` module to dependencies
+
+       ```xml
+       <dependencies>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>discord-impl-jda</artifactId>
+        </dependency>
+       </dependencies>
+       ```
+
+    4. Reload maven project
+
+* Make your module compile successfully in WSA-Utopia project
+    1. Check your module has been successfully added to the modules in `pom.xml` of the root project
+
+       ```xml
+       <modules>
+           <module>main</module>
+           <module>discord-impl-jda</module>
+           <module>commons</module>
+           <module>landing-experience</module>
+           <module>chatgpt-api</module>
+           <module>forum-experience</module>
+           <module><!-- your module --></module>
+       </modules>
+       ```
+
+    2. Add your dependency to dependencies of dependencyManagement in `pom.xml` of root project
+
+        ```xml
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId><!-- your module --></artifactId>
+            <version>${revision}</version>
+        </dependency>
+       ```
+
+    3. Add your dependency to `pom.xml` of main module
+
+       ```xml
+       <dependency>
+         <groupId>tw.waterballsa.utopia</groupId>
+         <artifactId><!-- your module --></artifactId>
+       </dependency>
+       ```
+
+    4. Reload maven project
+
+* Create your project base architecture
+    1. Remove unnecessary items from `module/src/main/resources` folder in your project
+    2. Add a Kotlin folder from `module/src/main` folder and reload maven project
+    3. Add `tw.waterballsa.utopia.<!-- your feature name -->` package from `module/src/main/kotlin` folder
+    4. Add a Kotlin class to your module and name it following feature modules and PascalCase
+
+* Run a Discord command on your project
+    1. Obtaining the WSA academy Discord channel ID from it.
+        * Dependency injection of `WsaDiscordProperties`
+        * Get discord listener from JDA package
+
+       ```
+       fun helloWorld(wsa: WsaDiscordProperties) = listener {
+       }
+       ```
+
+    2. Register a feature module command
+        * Commands.slash(`<!-- feature module name -->`, `<!-- feature module command description -->`)
+        * SubcommandData(`<!-- feature name -->`, `<!-- feature name command description -->`)
+        * addOption(`<!-- command parameter data type -->`, `<!-- command parameter name -->`,
+          `<!-- command parameter description -->`, `<!-- command parameter are required or not -->`)
+
+        ```
+        command {
+           Commands.slash("hello", "Hello!")
+              .addSubcommands(
+                 SubcommandData("world", "Greeting")
+                    .addOption(OptionType.STRING, "name", "Who am I greeting to.", true)
+           )
+        }
+        ```
+
+    3. Implement command action
+        * Listening event -> on<SlashCommandInteractionEvent>
+        * Check the received command in the event listener
+        * Valid command parameter -> Valid function provided by WSA-Utopia
+        * Asynchronously executing commands -> reply(`<!-- reply to user message -->`).queue()
+        * Synchronously executing commands -> reply(`<!-- reply to user message -->`).complete()
+
+          ```
+           on<SlashCommandInteractionEvent> {
+              if (fullCommandName != "hello world") {
+                  return@on
+              }
+       
+              val name = getOptionAsStringWithLimitedLength("name", 1..10)
+              reply("hello world $name!").queue()
+
+              //reply("hello world $name").complete()
+           }
+          ```
+
+    4. Great! It's time to run your feature module and submit your own commands on `火球軟體學院(Beta)` !!!
+
 ## How to use it
 
 maven
