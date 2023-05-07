@@ -22,6 +22,7 @@
         <module>gaas</module>
         <module>audio-breakout</module>
         <module>random</module>
+      <module>actuator</module>
     </modules>
 
     <properties>
@@ -183,6 +184,11 @@
                 <artifactId>random</artifactId>
                 <version>${revision}</version>
             </dependency>
+          <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>actuator</artifactId>
+            <version>${revision}</version>
+          </dependency>
         </dependencies>
     </dependencyManagement>
 
