@@ -20,9 +20,12 @@ class ChatGptAPI {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     private val endpoint = "https://api.openai.com/v1/chat/completions"
     private val _model = "gpt-3.5-turbo"
+    // this is default property of completion tokens
     private val _maxTokens = 2000
-    private val _temperature = 0.0
+    private val _temperature = 0.8
     private var secret: String? = null
+
+    val maxTokens = 4096
 
     init {
         secret = try {
@@ -36,10 +39,13 @@ class ChatGptAPI {
         return getEnv("CHATGPT_TOKEN")
     }
 
-    fun chat(messages: Array<Message>): Response {
+    /**
+     * Consider calculating the total number of tokens at the outside-level, and passing the maximum number of tokens for completion.
+     */
+    fun chat(messages: Array<Message>, maxTokens: Int = _maxTokens): Response {
         log.info { "[Sending Chat] {\"totalContentLength\": ${messages.sumOf { m -> m.content.length }}}" }
         val requestBody = _mapper.writeValueAsString(
-                Request(1, _model, messages, _maxTokens, _temperature)
+                Request(1, _model, messages, maxTokens, _temperature)
         )
         val httpRequest = chatApiRequest(requestBody)
         val httpResponse = sendRequest(httpRequest)
