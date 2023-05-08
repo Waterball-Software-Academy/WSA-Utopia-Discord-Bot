@@ -45,3 +45,8 @@ export DEPLOYMENT_ENV=beta
 ```sh
 java -jar main/target/main-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
+
+# 烏托邦功勛榜
+<a href = "https://github.com/Waterball-Software-Academy/WSA-Utopia-Discord-Bot/graphs/contributors">
+  <img src = "https://contrib.rocks/image?repo=Waterball-Software-Academy/WSA-Utopia-Discord-Bot"/>
+</a>
