@@ -8,6 +8,7 @@ import tw.waterballsa.utopia.chatgpt.JTokkit
 import tw.waterballsa.utopia.knowledgeking.domain.Question
 import tw.waterballsa.utopia.knowledgeking.domain.SingleAnswerSpec
 import java.util.*
+import kotlin.math.ceil
 
 @Configuration
 open class ChatGptQuestionParserConfig {
@@ -41,6 +42,18 @@ private val topics = listOf(
     "網際網路標準（IETF）",
     "網際網路安全協定（IPSec）",
     "網路通訊協定（HTTP、FTP、SMTP）",
+    "資訊科技 (Information Technology)",
+    "網路技術 (Networking)",
+    "虛擬實境 (Virtual Reality)",
+    "嵌入式系統 (Embedded Systems)",
+    "軟體工程 (Software Engineering)",
+    "計算機圖形學 (Computer Graphics)",
+    "計算機結構 (Computer Architecture)",
+    "作業系統 (Operating Systems)",
+    "電腦視覺 (Computer Vision)",
+    "資料科學 (Data Science)",
+    "電腦音樂 (Computer Music)",
+    "人機互動 (Human-Computer Interaction)",
     "網頁設計",
     "程式語言",
     "系統編程",
@@ -71,6 +84,100 @@ private val topics = listOf(
     "套件管理",
     "自動化測試",
     "敏捷開發方法學",
+    "jQuery",
+    "Bootstrap",
+    "React",
+    "AngularJS",
+    "Vue.js",
+    "Ember.js",
+    "Sass (Syntactically Awesome Style Sheets)",
+    "LESS (Leaner Style Sheets)",
+    "Webpack",
+    "Babel",
+    "Grunt",
+    "Gulp",
+    "Handlebars.js",
+    "Mustache.js",
+    "Backbone.js",
+    "Polymer",
+    "Ruby on Rails",
+    "Node.js",
+    "Django (Python)",
+    "Flask (Python)",
+    "Express.js",
+    "ASP.NET",
+    "Laravel (PHP)",
+    "Spring (Java)",
+    "Hibernate (Java)",
+    "Scala",
+    ".NET Framework",
+    "MySQL",
+    "MongoDB",
+    "PostgreSQL",
+    "Oracle Database",
+    "SQL Server",
+    "基礎設施即代碼 (Infrastructure as Code, IaC)",
+    "自動化部署 (Continuous Deployment, CD)",
+    "自動化集成 (Continuous Integration, CI)",
+    "自動化監控 (Continuous Monitoring)",
+    "建置管理 (Build Management)",
+    "日誌管理 (Log Management)",
+    "可擴展性 (Scalability)",
+    "負載平衡 (Load Balancing)",
+    "高可用性 (High Availability)",
+    "監控與追蹤 (Monitoring and Tracing)",
+    "錯誤追蹤 (Error Tracking)",
+    "自動化配置管理 (Automated Configuration Management)",
+    "DevOps 文化 (DevOps Culture)",
+    "Apache HTTP Server",
+    "Nginx",
+    "Microsoft IIS (Internet Information Services)",
+    "Gunicorn",
+    "Tomcat",
+    "冒泡排序",
+    "插入排序",
+    "選擇排序",
+    "快速排序",
+    "合併排序等等",
+    "搜尋演算法",
+    "線性搜尋",
+    "二元搜尋",
+    "深度優先搜尋",
+    "廣度優先搜尋",
+    "圖論演算法 (Graph algorithms)",
+    "最短路徑演算法",
+    "最小生成樹演算法",
+    "拓撲排序演算法",
+    "最大流演算法",
+    "字符串演算法 (String algorithms)",
+    "字串匹配演算法",
+    "字串搜索演算法",
+    "字串排序演算法",
+    "數論演算法 (Number theory algorithms)",
+    "質數判定演算法",
+    "費馬小定理",
+    "歐拉函數",
+    "最大公因數",
+    "最小公倍數",
+    "壓縮演算法 (Compression algorithms)",
+    "漢弗曼編碼",
+    "LZ77",
+    "LZ78",
+    "DEFLATE",
+    "機器學習演算法 (Machine learning algorithms)",
+    "決策樹",
+//  "神經網路",
+//  "支援向量機",
+    "隨機森林",
+    "K-均值",
+    "同步演算法 (Concurrency algorithms)",
+    "信號量",
+    "條件變量",
+    "讀寫鎖",
+    "死鎖避免",
+)
+
+private val programTopics = listOf(
 //  "Ada 語言",
     "Assembly language 語言",
     "BASIC 語言",
@@ -120,7 +227,8 @@ private val random = Random()
 class ChatGptQuestionParser(private val chatGptAPI: ChatGptAPI) {
     private val questionQueue = QuestionQueue<String>()
     private val jTokkit = JTokkit()
-    private var basedUsageTokens: Int = 2000
+    private var basedUsageTokens = 2000
+    private val programTopicRatio = 0.2
 
     private val completionContentFormat: String = """
         --Question--
@@ -144,9 +252,9 @@ class ChatGptQuestionParser(private val chatGptAPI: ChatGptAPI) {
             
             出題原則：
             1. 總共 $numberOfQuestions 題
-            2. 題目類型為：$topicsString
+            2. 題目類型為：$topicsString，難度依題目順序遞增。
             3. 純粹的名詞解釋題越少越好，專有名詞跟術語可以保持英文。
-            4. 若有程式語言時至少有一題「有附上實際程式案例」的題目。
+            4. 若為程式語言的題目時，至少出一題「有附上實際程式案例」或「實際的情境」的題目。
             5. 語言：題目答案皆使用繁體中文，
             6. 選項一律四個，選項不得重複
             7. 題目不要類似：$pastQuestionsString
@@ -164,7 +272,7 @@ class ChatGptQuestionParser(private val chatGptAPI: ChatGptAPI) {
         """.trimIndent()
 
     fun generateQuestions(topic: String, numberOfQuestions: Int): List<Question> {
-        val shuffledTopics = topics.shuffled().take(numberOfQuestions)
+        val shuffledTopics = getRandomTopics(numberOfQuestions)
 
         log.info { "[Generate questions] {\"topics\": ${shuffledTopics.joinToString("、")}}" }
 
@@ -239,6 +347,11 @@ class ChatGptQuestionParser(private val chatGptAPI: ChatGptAPI) {
             }
         }
         return questions
+    }
+
+    private fun getRandomTopics(takeNumber: Int): List<String> {
+        val numOfProgramTopic = ceil(takeNumber * programTopicRatio).toInt()
+        return topics.shuffled().take(takeNumber - numOfProgramTopic) + programTopics.shuffled().take(numOfProgramTopic)
     }
 
     private fun getTokens(string: String): Int {
