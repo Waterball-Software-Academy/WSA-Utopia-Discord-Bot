@@ -54,6 +54,8 @@ class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSe
     }
 
     fun rank() = scoreboard.ranking()
+
+    fun size() = quiz.questions.size
 }
 
 class Scoreboard {
@@ -76,6 +78,15 @@ class Ranking(val ranks: List<Rank>) {
             throw IllegalArgumentException("Cannot find the rank (by number $rankNumber).")
         }
         return ranks[rankNumber]
+    }
+
+    fun takeRangeRankings(range: Int): Map<Long, List<Rank>> {
+        return ranks.filter { it.score > 0 }
+                    .groupBy { it.score }
+                    .toList()
+                    .sortedByDescending { it.first }
+                    .take(range)
+                    .toMap()
     }
 }
 
