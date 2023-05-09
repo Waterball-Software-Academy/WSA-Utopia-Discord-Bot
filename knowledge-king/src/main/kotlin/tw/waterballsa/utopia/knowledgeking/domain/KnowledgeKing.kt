@@ -17,8 +17,10 @@ class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSe
         gameStarted = true
         currentQuestion = nextQuestion()?.question
 
-        return listOf(ContestStartedEvent(quiz.questions.size),
-                NextQuestionEvent(1, this.currentQuestion!!, false))
+        return listOf(
+            ContestStartedEvent(quiz.questions.size),
+            NextQuestionEvent(1, this.currentQuestion!!, false)
+        )
     }
 
     fun answer(contestantId: String?, answer: Answer): AnsweredEvent {
@@ -27,7 +29,7 @@ class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSe
         }
         return if (currentQuestion?.isCorrectAnswer(answer) == true) {
             val secondsElapsed = (currentTimeMillis() - currentQuestionStartTimeInMillis).milliseconds.inWholeSeconds
-            scoreboard.win(contestantId!!, 500  * secondsElapsed / timeBetweenQuestionsInSeconds)
+            scoreboard.win(contestantId!!, 500 * secondsElapsed / timeBetweenQuestionsInSeconds)
             AnsweredEvent(answer, contestantId, AnswerResult.CORRECT)
         } else {
             AnsweredEvent(answer, contestantId!!, AnswerResult.WRONG)
@@ -82,11 +84,11 @@ class Ranking(val ranks: List<Rank>) {
 
     fun takeRangeRankings(range: Int): Map<Long, List<Rank>> {
         return ranks.filter { it.score > 0 }
-                    .groupBy { it.score }
-                    .toList()
-                    .sortedByDescending { it.first }
-                    .take(range)
-                    .toMap()
+            .groupBy { it.score }
+            .toList()
+            .sortedByDescending { it.first }
+            .take(range)
+            .toMap()
     }
 }
 
@@ -95,9 +97,11 @@ data class Rank(val rankNumber: Int, val contestantId: String, var score: Long)
 
 data class Quiz(val topic: String, val questions: List<Question>) {}
 
-data class Question(val number: Int, val description: String, val options: List<String>,
-                    val type: QuestionType, val answer: AnswerSpec,
-                    val explanation: String? = null) {
+data class Question(
+    val number: Int, val description: String, val options: List<String>,
+    val type: QuestionType, val answer: AnswerSpec,
+    val explanation: String? = null
+) {
     fun isCorrectAnswer(answer: Answer): Boolean {
         return when (type) {
             QuestionType.SINGLE -> {
@@ -134,7 +138,8 @@ data class SingleChoiceAnswer(val optionNumber: Int, override val timestamp: Dat
 
 }
 
-data class MultipleChoicesAnswer(val optionNumbers: List<Int>, override val timestamp: Date = Date()) : Answer(timestamp) {
+data class MultipleChoicesAnswer(val optionNumbers: List<Int>, override val timestamp: Date = Date()) :
+    Answer(timestamp) {
 }
 
 enum class AnswerResult {

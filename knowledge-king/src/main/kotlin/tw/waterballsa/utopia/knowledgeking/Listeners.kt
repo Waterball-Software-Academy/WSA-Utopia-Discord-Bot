@@ -77,11 +77,23 @@ private fun launchKnowledgeKingScheduling(wsa: WsaDiscordProperties, jda: JDA, c
 
         val durationTimeWithGenerateQuiz = Duration.between(startGenerateQuizTime, endGenerateQuizTime)
 
-        scheduleFirstQuestion(quiz, wsa, jda, knowledgeKingChannel, timeBetweenAnnounceAndFirstQuestion.minutes.inWholeSeconds - durationTimeWithGenerateQuiz.seconds)
+        scheduleFirstQuestion(
+            quiz,
+            wsa,
+            jda,
+            knowledgeKingChannel,
+            timeBetweenAnnounceAndFirstQuestion.minutes.inWholeSeconds - durationTimeWithGenerateQuiz.seconds
+        )
     }
 }
 
-private fun scheduleFirstQuestion(quiz: Quiz, wsa: WsaDiscordProperties, jda: JDA, knowledgeKingChannel: TextChannel, delayInSeconds: Long) {
+private fun scheduleFirstQuestion(
+    quiz: Quiz,
+    wsa: WsaDiscordProperties,
+    jda: JDA,
+    knowledgeKingChannel: TextChannel,
+    delayInSeconds: Long
+) {
     log.info { "[First question delay seconds] \"{\"delayInSeconds\": $delayInSeconds}\"" }
 
     timer.scheduleDelay(delayInSeconds.seconds.inWholeMilliseconds) {
@@ -124,7 +136,7 @@ private fun scheduleRevealAnswer(nextQuestionEvent: NextQuestionEvent, knowledge
                     append(":loudspeaker: 比賽已經走一半了～中場休息一下～")
                     rankings.firstNotNullOfOrNull { ranks ->
                         ranks.value.joinToString(", ") { "<@${it.contestantId}>" }
-                    }?.let {append("\n　目前的領先者為 $it")}
+                    }?.let { append("\n　目前的領先者為 $it") }
                 }
                 knowledgeKingChannel.sendMessage(beautifulMsgBlock(breakMessage)).queue()
 
@@ -153,52 +165,63 @@ private fun scheduleNextQuestion(knowledgeKingChannel: TextChannel) {
 
 private fun revealFinalRanking(ranking: Ranking, knowledgeKingChannel: TextChannel) {
     // show final message
-    knowledgeKingChannel.sendMessage("""
+    knowledgeKingChannel.sendMessage(
+        """
         ┌－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┐
         ｜感謝大家參與本次的「全民軟體知識王」，問答的階段已經結束了｜
         ｜接下來要準備公佈這次答題正確率的排名，將從第三名開始公布！｜
         └－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┘
-    """.trimIndent()).queue()
+    """.trimIndent()
+    ).queue()
 
     val rankGroups = ranking.takeRangeRankings(awardRangeWithTopThree)
 
     if (rankGroups.isEmpty()) {
         log.info { "[Reveal Final Ranking] {\"winner\": \"empty\"}" }
-        knowledgeKingChannel.sendMessage(":loudspeaker: 本屆沒有智慧王 :banana:  :monkey:").queueAfter(2, TimeUnit.SECONDS)
+        knowledgeKingChannel.sendMessage(":loudspeaker: 本屆沒有智慧王 :banana:  :monkey:")
+            .queueAfter(2, TimeUnit.SECONDS)
 
     } else {
         log.info { "[Reveal Final Ranking] {\"winner\": \"${rankGroups.size}\"}" }
 
-        knowledgeKingChannel.sendMessage("（奏樂）...:trumpet:..:accordion:.:notes:..:drum:..:drum:. :notes:").queueAfter(0, TimeUnit.SECONDS)
+        knowledgeKingChannel.sendMessage("（奏樂）...:trumpet:..:accordion:.:notes:..:drum:..:drum:. :notes:")
+            .queueAfter(0, TimeUnit.SECONDS)
 
         val listOfRankGroup = rankGroups.toList()
         var delayTimeOfSeconds = 3L
 
         // start from 3rd place
-        (0..awardRangeWithTopThree).reversed().forEach { index->
+        (0..awardRangeWithTopThree).reversed().forEach { index ->
             val rankGroup = listOfRankGroup.getOrNull(index)
 
             when (index) {
                 2 -> {
                     if (rankGroup != null) {
                         val candidates = rankGroup.second.joinToString(", ") { "<@${it.contestantId}>" }
-                        knowledgeKingChannel.sendMessage(":third_place: 第三名是 ${candidates}，得分數為 ${rankGroup.first} 分").queueAfter(delayTimeOfSeconds, TimeUnit.SECONDS)
+                        knowledgeKingChannel.sendMessage(":third_place: 第三名是 ${candidates}，得分數為 ${rankGroup.first} 分")
+                            .queueAfter(delayTimeOfSeconds, TimeUnit.SECONDS)
                     } else {
-                        knowledgeKingChannel.sendMessage(":third_place: 第三名從缺 :joy:").queueAfter(delayTimeOfSeconds, TimeUnit.SECONDS)
+                        knowledgeKingChannel.sendMessage(":third_place: 第三名從缺 :joy:")
+                            .queueAfter(delayTimeOfSeconds, TimeUnit.SECONDS)
                     }
                 }
+
                 1 -> {
                     if (rankGroup != null) {
                         val candidates = rankGroup.second.joinToString(", ") { "<@${it.contestantId}>" }
-                        knowledgeKingChannel.sendMessage(":second_place: 第二名是 ${candidates}，得分數為 ${rankGroup.first} 分").queueAfter(delayTimeOfSeconds, TimeUnit.SECONDS)
+                        knowledgeKingChannel.sendMessage(":second_place: 第二名是 ${candidates}，得分數為 ${rankGroup.first} 分")
+                            .queueAfter(delayTimeOfSeconds, TimeUnit.SECONDS)
                     } else {
-                        knowledgeKingChannel.sendMessage(":second_place: 第二名從缺 :monkey: :monkey:").queueAfter(delayTimeOfSeconds, TimeUnit.SECONDS)
+                        knowledgeKingChannel.sendMessage(":second_place: 第二名從缺 :monkey: :monkey:")
+                            .queueAfter(delayTimeOfSeconds, TimeUnit.SECONDS)
                     }
                 }
+
                 0 -> {
                     rankGroup?.second?.let {
                         val candidates = it.joinToString(", ") { "<@${it.contestantId}>" }
-                        knowledgeKingChannel.sendMessage("即將公佈冠軍...").queueAfter(delayTimeOfSeconds, TimeUnit.SECONDS)
+                        knowledgeKingChannel.sendMessage("即將公佈冠軍...")
+                            .queueAfter(delayTimeOfSeconds, TimeUnit.SECONDS)
                         announceChampion(knowledgeKingChannel, candidates, rankGroup.first, delayTimeOfSeconds + 3)
                     }
                 }
@@ -210,7 +233,8 @@ private fun revealFinalRanking(ranking: Ranking, knowledgeKingChannel: TextChann
 
 private fun announceChampion(channel: TextChannel, candidates: String, score: Long, delaySeconds: Long) {
     channel.sendMessage("冠軍是...".trimIndent()).queueAfter(delaySeconds, TimeUnit.SECONDS)
-    channel.sendMessage(":trophy: 本屆的知識王是 $candidates，得分數為 $score 分".trimIndent()).queueAfter(delaySeconds + 1, TimeUnit.SECONDS)
+    channel.sendMessage(":trophy: 本屆的知識王是 $candidates，得分數為 $score 分".trimIndent())
+        .queueAfter(delaySeconds + 1, TimeUnit.SECONDS)
     channel.sendMessage(":tada: 恭喜脫穎而出，得到第一名的殊榮 :tada:").queueAfter(delaySeconds + 2, TimeUnit.SECONDS)
 }
 
@@ -220,7 +244,7 @@ private fun revealTheAnswer(nextQuestionEvent: NextQuestionEvent, knowledgeKingC
         is SingleAnswerSpec -> "${'A' + answer.optionNumber}"
 
         is MultipleAnswerSpec -> answer.optionNumbers.map {
-            "${'A' + it }"
+            "${'A' + it}"
         }.joinToString(", ")
 
         else -> throw IllegalStateException("Doesn't support the answer type ${answer.javaClass.simpleName}.")
@@ -239,7 +263,8 @@ private fun generateQuizForTopic(topic: String, chatGpt: ChatGptQuestionParser):
 }
 
 private fun announceTopic(topic: String, knowledgeKingChannel: TextChannel) {
-    knowledgeKingChannel.sendMessage("""
+    knowledgeKingChannel.sendMessage(
+        """
         ┌－－－－－－－－－－－－－－－－－－－－－－－－－－┐
         ｜:loudspeaker: 水球軟體學院的「全民軟體知識王」比賽即將開始啦！  ｜
         ｜　　　　　　　　　　　　　　　　　　　　　　　　　　｜
@@ -256,11 +281,13 @@ private fun announceTopic(topic: String, knowledgeKingChannel: TextChannel) {
         本次的比賽主題是「$topic」
         比賽即將在 **${timeBetweenAnnounceAndFirstQuestion} 分鐘**後開始唷
         大家趕緊把時間空下來，千萬別錯過唷！
-    """.trimIndent()).queue()
+    """.trimIndent()
+    ).queue()
 }
 
 private fun announceStartingGame(knowledgeKingChannel: TextChannel) {
-    knowledgeKingChannel.sendMessage(beautifulMsgBlock(":triangular_flag_on_post: 全民軟體知識王現在開始囉").trimIndent()).queue()
+    knowledgeKingChannel.sendMessage(beautifulMsgBlock(":triangular_flag_on_post: 全民軟體知識王現在開始囉").trimIndent())
+        .queue()
 }
 
 private fun generateTopic(): String {
@@ -284,12 +311,12 @@ private fun handleNextQuestionEvent(event: NextQuestionEvent, knowledgeKingChann
 
     knowledgeKingChannel.sendMessageEmbeds(Embed {
         this.title = "第 ${question.number} 題 - ${question.description}"
-        this.description = question.options.mapIndexed { i, option -> "${'A' + i}) $option"}.joinToString("\n")
+        this.description = question.options.mapIndexed { i, option -> "${'A' + i}) $option" }.joinToString("\n")
     }).addActionRow(
-            Button.primary(buttonId(question.number, 0), "A"),
-            Button.primary(buttonId(question.number, 1), "B"),
-            Button.primary(buttonId(question.number, 2), "C"),
-            Button.primary(buttonId(question.number, 3), "D")
+        Button.primary(buttonId(question.number, 0), "A"),
+        Button.primary(buttonId(question.number, 1), "B"),
+        Button.primary(buttonId(question.number, 2), "C"),
+        Button.primary(buttonId(question.number, 3), "D")
     ).queue {
         log.info { "[Question Posted] \"question type\":\"${question.type}\",\"question number\" : ${question.number}" }
     }
@@ -301,9 +328,9 @@ private fun buttonId(questionNumber: Int, optionNumber: Int): String {
 }
 
 // todo: more beautiful, support multiple line and half char width
-private fun beautifulMsgBlock(message: String) : String {
+private fun beautifulMsgBlock(message: String): String {
     val partOfMessages = message.split("\n")
-    val maxLength = partOfMessages.maxByOrNull { it.length }?.let{
+    val maxLength = partOfMessages.maxByOrNull { it.length }?.let {
         Regex(":(\\w+):").replace(it) { "　" }.length
     } ?: 20
     return buildString {
