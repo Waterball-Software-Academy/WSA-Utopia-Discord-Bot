@@ -116,7 +116,6 @@ private fun scheduleFirstQuestion(
 private fun scheduleRevealAnswer(nextQuestionEvent: NextQuestionEvent, knowledgeKingChannel: TextChannel) {
     log.info { "[Revealing next question] \"{\"delayInSeconds\": $timeBetweenAnswerRevealedAndNextQuestionInSeconds}\"" }
 
-    // 延遲 15 秒揭曉（答題時間）
     timer.scheduleDelay(timeBetweenQuestionsInSeconds.seconds.inWholeMilliseconds) {
         revealTheAnswer(nextQuestionEvent, knowledgeKingChannel)
 
@@ -154,7 +153,6 @@ private fun scheduleRevealAnswer(nextQuestionEvent: NextQuestionEvent, knowledge
 private fun scheduleNextQuestion(knowledgeKingChannel: TextChannel) {
     log.info { "[Starting next question] {\"number\": ${knowledgeKing!!.currentQuestion!!.number + 1}, \"delayInSeconds\": $timeBetweenAnswerRevealedAndNextQuestionInSeconds} }\n        " }
 
-    // 延遲 8 秒出下一題（等待下一題時間）
     timer.scheduleDelay(timeBetweenAnswerRevealedAndNextQuestionInSeconds.seconds.inWholeMilliseconds) {
         val nextQuestionEvent = knowledgeKing!!.nextQuestion()!!
         handleNextQuestionEvent(nextQuestionEvent, knowledgeKingChannel)
@@ -326,7 +324,7 @@ private fun buttonId(questionNumber: Int, optionNumber: Int): String {
     return "${knowledgeKing!!.id}-$questionNumber-$optionNumber"
 }
 
-// todo: more beautiful, support multiple line and half char width
+// TODO: more beautiful, support multiple line and half char width
 private fun beautifulMsgBlock(message: String): String {
     val partOfMessages = message.split("\n")
     val maxLength = partOfMessages.maxByOrNull { it.length }?.let {
