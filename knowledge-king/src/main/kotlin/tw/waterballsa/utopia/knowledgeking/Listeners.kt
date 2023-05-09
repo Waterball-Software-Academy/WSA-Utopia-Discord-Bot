@@ -15,7 +15,6 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 private val log = KotlinLogging.logger {}
@@ -31,9 +30,9 @@ private val announcementTime = Calendar.getInstance().apply {
 // Specifies the duration of time given to each contestant to prepare before the start of the game
 // 10.minutes.inWholeMilliseconds
 private val prepareDurationInMillis = 5.seconds.inWholeMilliseconds
-private const val timeBetweenAnnounceAndFirstQuestion = 1L
+private val timeBetweenAnnounceAndFirstQuestion = 60.seconds
 
-private const val numberOfQuestions = 3
+private const val numberOfQuestions = 8
 private const val timeBetweenQuestionsInSeconds = 15L
 private const val timeBetweenAnswerRevealedAndNextQuestionInSeconds = 8L
 private const val halftimeForBreakInSeconds = 20L
@@ -82,7 +81,7 @@ private fun launchKnowledgeKingScheduling(wsa: WsaDiscordProperties, jda: JDA, c
             wsa,
             jda,
             knowledgeKingChannel,
-            timeBetweenAnnounceAndFirstQuestion.minutes.inWholeSeconds - durationTimeWithGenerateQuiz.seconds
+            maxOf(timeBetweenAnnounceAndFirstQuestion.inWholeSeconds - durationTimeWithGenerateQuiz.seconds, 0)
         )
     }
 }
@@ -178,7 +177,7 @@ private fun revealFinalRanking(ranking: Ranking, knowledgeKingChannel: TextChann
 
     if (rankGroups.isEmpty()) {
         log.info { "[Reveal Final Ranking] {\"winner\": \"empty\"}" }
-        knowledgeKingChannel.sendMessage(":loudspeaker: 本屆沒有智慧王 :banana:  :monkey:")
+        knowledgeKingChannel.sendMessage(":banana: 本屆沒有智慧王 :monkey:")
             .queueAfter(2, TimeUnit.SECONDS)
 
     } else {
@@ -279,7 +278,7 @@ private fun announceTopic(topic: String, knowledgeKingChannel: TextChannel) {
         （你點選的答案不會被他人看見唷 :face_with_peeking_eye:）
         
         本次的比賽主題是「$topic」
-        比賽即將在 **${timeBetweenAnnounceAndFirstQuestion} 分鐘**後開始唷
+        比賽即將在 **${timeBetweenAnnounceAndFirstQuestion.inWholeMinutes} 分鐘**後開始唷
         大家趕緊把時間空下來，千萬別錯過唷！
     """.trimIndent()
     ).queue()
