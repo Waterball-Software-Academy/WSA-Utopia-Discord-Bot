@@ -11,7 +11,7 @@ class JTokkit {
     private val registry = Encodings.newDefaultEncodingRegistry()
     private val encodingType: EncodingType = EncodingType.CL100K_BASE
 
-    fun size(string: String): Int {
+    fun measureNumOfTokens(string: String): Int {
         val encoding: Encoding = registry.getEncoding(encodingType)
         val encoded: List<Int> = encoding.encode(string)
         return encoded.size

@@ -355,7 +355,7 @@ class ChatGptQuestionParser(private val chatGptAPI: ChatGptAPI) {
     }
 
     private fun getTokens(string: String): Int {
-        return jTokkit.size(string)
+        return jTokkit.measureNumOfTokens(string)
     }
 
     private fun addQuestion(question: Question) {
