@@ -46,6 +46,8 @@ export DEPLOYMENT_ENV=beta
 java -jar main/target/main-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
 
+更多相關資訊請參考 [烏托邦 WIKI](https://github.com/Waterball-Software-Academy/WSA-Utopia-Discord-Bot/wiki)
+
 # 烏托邦功勛榜
 貢獻 feature 前請先參考 [How to contribute a new feature?
 ](https://github.com/Waterball-Software-Academy/WSA-Utopia-Discord-Bot/blob/main/docs/how-to-contribute-a-new-feature.md)
