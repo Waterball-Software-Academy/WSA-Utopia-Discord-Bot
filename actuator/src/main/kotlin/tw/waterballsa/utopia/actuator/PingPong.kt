@@ -9,17 +9,28 @@ import tw.waterballsa.utopia.jda.UtopiaListener
 /**
  * @author timm
  */
+
+private const val PING_COMMAND_NAME = "ping"
+
 @Component
 class PingPong() : UtopiaListener() {
+
     override fun commands(): List<CommandData> {
         return listOf(
-            Commands.slash("ping", "sends pong")
+            Commands.slash(PING_COMMAND_NAME, "sends pong")
         )
     }
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         with(event) {
+            if (!isPingCommand(fullCommandName)) {
+                return
+            }
             reply("pong").setEphemeral(true).queue()
         }
+    }
+
+    private fun isPingCommand(fullCommandName: String): Boolean {
+        return PING_COMMAND_NAME == fullCommandName
     }
 }
