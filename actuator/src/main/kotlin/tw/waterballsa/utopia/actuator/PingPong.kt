@@ -23,14 +23,14 @@ class PingPong() : UtopiaListener() {
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         with(event) {
-            if (!fullCommandName.isPingCommand()) {
+            if (!isPingCommand()) {
                 return
             }
             reply("pong").setEphemeral(true).queue()
         }
     }
 
-    private fun String.isPingCommand(): Boolean {
-        return PING_COMMAND_NAME == this
+    private fun SlashCommandInteractionEvent.isPingCommand(): Boolean {
+        return PING_COMMAND_NAME == this.fullCommandName
     }
 }
