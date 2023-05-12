@@ -29,7 +29,18 @@ internal class KnowledgeKingTest {
                             "所有介面宣告的方法都是 abstract 方法"
                     ),
                     type = QuestionType.SINGLE,
-                    answer = SingleAnswerSpec(1)))
+                    answer = SingleAnswerSpec(1)),
+            Question(number = 3,
+                    description = "下列哪種程式語言不是屬於編譯型語言？",
+                    options = listOf(
+                        "C++",
+                        "Python",
+                        "Java",
+                        "Go",
+                    ),
+                    type = QuestionType.SINGLE,
+                    answer = SingleAnswerSpec(1)),
+    )
 
     private val quiz = Quiz("Java", questions)
 
@@ -64,13 +75,25 @@ internal class KnowledgeKingTest {
         game.nextQuestion()!!.let {
             assertEquals(2, it.question.number)
             assertEquals(questions[1], it.question)
-            assertTrue(it.isLastQuestion)
+            assertFalse(it.isLastQuestion)
         }
 
         answer("A", 1) // correct
         answer("B", 1) // correct
         answer("C", 1) // correct
         answer("D", 1) // correct
+
+        game.nextQuestion()!!.let {
+            assertEquals(3, it.question.number)
+            assertEquals(questions[2], it.question)
+            assertTrue(it.isLastQuestion)
+        }
+
+        answer("A", 1) // correct
+        answer("B", 0)
+        answer("C", 2)
+        answer("D", 2)
+
 
         assertNull(game.nextQuestion(), "no next question")
         val ranking = game.endGame()
@@ -86,6 +109,21 @@ internal class KnowledgeKingTest {
         assertEquals("B", ranking.rank(2).contestantId)
         assertEquals("D", ranking.rank(3).contestantId)
 
+        val rankingGroups = ranking.getRankingGroups()
+        assertEquals(rankingGroups.size, 3)
+
+        assertEquals(rankingGroups[0].rankingNum, 1)
+        assertEquals(rankingGroups[0].ranks, listOf(ranking.rank(0)))
+        assertEquals(rankingGroups[0].score, ranking.rank(0).score)
+
+        assertEquals(rankingGroups[1].rankingNum, 2)
+        assertEquals(rankingGroups[1].ranks, listOf(ranking.rank(1)))
+        assertEquals(rankingGroups[1].score, ranking.rank(1).score)
+
+        assertEquals(rankingGroups[2].rankingNum, 3)
+        assertEquals(rankingGroups[2].ranks, listOf(ranking.rank(2), ranking.rank(3)))
+        assertEquals(rankingGroups[2].score, ranking.rank(2).score)
+        assertEquals(rankingGroups[2].score, ranking.rank(3).score)
     }
 
     private fun answer(contestantId: String, singleChoice: Int) {
