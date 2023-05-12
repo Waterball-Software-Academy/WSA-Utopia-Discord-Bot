@@ -3,6 +3,9 @@ package tw.waterballsa.utopia.knowledgeking.domain
 import java.lang.Exception
 import java.lang.System.currentTimeMillis
 import java.util.*
+import kotlin.math.ceil
+import kotlin.math.ln
+import kotlin.math.round
 import kotlin.time.Duration.Companion.milliseconds
 
 class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSeconds: Long) {
@@ -34,8 +37,7 @@ class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSe
             throw IllegalStateException("The game is over, cannot answer the question.")
         }
         return if (currentQuestion?.isCorrectAnswer(answer) == true) {
-            val secondsElapsed = (currentTimeMillis() - currentQuestionStartTimeInMillis).milliseconds.inWholeSeconds
-            scoreboard.win(contestantId!!, 500 * secondsElapsed / timeBetweenQuestionsInSeconds)
+            scoreboard.win(contestantId!!, calculateScore(currentQuestionStartTimeInMillis))
             AnsweredEvent(answer, contestantId, AnswerResult.CORRECT)
         } else {
             AnsweredEvent(answer, contestantId!!, AnswerResult.WRONG)
@@ -62,18 +64,43 @@ class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSe
         return gameOver
     }
 
-    fun isGameHalfway(): Boolean = (currentQuestion?.number ?: 0) == kotlin.math.ceil(size().toDouble() / 2).toInt()
+    fun isGameHalfway(): Boolean = (currentQuestion?.number ?: 0) == kotlin.math.ceil(getQuestionsSize().toDouble() / 2).toInt()
 
     fun rank() = scoreboard.ranking()
 
-    fun size() = quiz.questions.size
+    fun getQuestionsSize() = quiz.questions.size
+
+    /**
+     * response sec     score
+     * 0..1	            501
+     * 1..2	            385
+     * 2..3	            318
+     * 3..4	            269
+     * 4..5	            232
+     * 5..6	            202
+     * 6..7	            176
+     * 7..8	            154
+     * 8..9	            134
+     * 9..10           	116
+     * 10..11          	101
+     * 11..12          	86
+     * 12..13          	73
+     * 13..14          	60
+     * 14..15          	49
+     *
+     * formula: round((3 + ln(1/secondsElapsed)) * 167)
+     */
+    fun calculateScore(questionStartTimeInMillis: Long): Long {
+        val secondsElapsed = ceil(minOf(maxOf(currentTimeMillis().milliseconds.inWholeSeconds - questionStartTimeInMillis.milliseconds.inWholeSeconds, 1), 15).toDouble())
+        return round((3+ ln(1.0/secondsElapsed)) * 167).toLong()
+    }
 }
 
 class Scoreboard {
     private val board = mutableMapOf<String, Long>()
 
     fun win(contestantId: String, score: Long) {
-        board[contestantId] = board[contestantId] ?: (0 + score)
+        board[contestantId] = (board[contestantId] ?: (0 + score)) + score
     }
 
     fun ranking(): Ranking {
@@ -83,7 +110,7 @@ class Scoreboard {
     }
 }
 
-class Ranking(val ranks: List<Rank>, val showRankingRange: Int = 3) {
+class Ranking(val ranks: List<Rank>, private val showRankingRange: Int = 3) {
 
     private var rankingGroup = mutableListOf<RankingGroup>()
 
@@ -113,15 +140,11 @@ class Ranking(val ranks: List<Rank>, val showRankingRange: Int = 3) {
             .toList()
             .sortedByDescending { it.first }
             .take(range)
-            .map { RankingGroup(it.first.toInt(), it.second) }
+            .mapIndexed { index, it -> RankingGroup(index + 1, it.first, it.second) }
     }
 
-    class RankingGroup(val rankingNum: Int, val ranks: List<Rank>) {
-
-        val score: Long
-            get() = ranks.first().score
-
-        fun asMentions(separator: String = " "): String {
+    data class RankingGroup(val rankingNum: Int, val score: Long, val ranks: List<Rank>) {
+        fun asMentionsString(separator: String = " "): String {
             return ranks.joinToString(separator) { "<@${it.contestantId}>" }
         }
     }

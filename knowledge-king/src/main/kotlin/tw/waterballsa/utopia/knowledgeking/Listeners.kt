@@ -156,7 +156,7 @@ class KnowledgeKingListener(
                         null -> knowledgeKingChannel.sendMessage(beautyMessageInBlock(":loudspeaker: 比賽已經走一半了～中場休息一下～"))
                         else -> knowledgeKingChannel.sendMessage(beautyMessageInBlock("""
                             :loudspeaker: 比賽已經走一半了～中場休息一下～
-                            目前的領先者為 ${firstPlaceRankingGroup.asMentions()}
+                            目前的領先者為 ${firstPlaceRankingGroup.asMentionsString()}
                         """.trimIndent())).queue()
                     }
                     timer.scheduleDelay(halftimeForBreakInSeconds) {
@@ -295,7 +295,7 @@ class KnowledgeKingListener(
             null -> knowledgeKingChannel.sendMessage(beautyMessageInBlock(":loudspeaker: 比賽已經走一半了～中場休息一下～"))
             else -> knowledgeKingChannel.sendMessage(beautyMessageInBlock("""
                             :loudspeaker: 比賽已經走一半了～中場休息一下～
-                            目前的領先者為 ${firstPlaceRankingGroup.asMentions()}
+                            目前的領先者為 ${firstPlaceRankingGroup.asMentionsString()}
                         """.trimIndent())).queue()
         }
     }
