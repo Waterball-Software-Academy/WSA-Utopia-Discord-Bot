@@ -1,5 +1,6 @@
 package tw.waterballsa.utopia.knowledgeking.domain
 
+import java.lang.Exception
 import java.lang.System.currentTimeMillis
 import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
@@ -17,10 +18,15 @@ class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSe
         gameStarted = true
         currentQuestion = nextQuestion()?.question
 
-        return listOf(
-            ContestStartedEvent(quiz.questions.size),
-            NextQuestionEvent(1, this.currentQuestion!!, false)
-        )
+        try {
+            return listOf(
+                ContestStartedEvent(quiz.questions.size),
+                NextQuestionEvent(1, this.currentQuestion!!, false)
+            )
+        } catch (err: Exception) {
+            // TODO: often throw NullPointerException, inspect it
+            return listOf()
+        }
     }
 
     fun answer(contestantId: String?, answer: Answer): AnsweredEvent {
@@ -56,6 +62,8 @@ class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSe
         return gameOver
     }
 
+    fun isGameHalfway(): Boolean = (currentQuestion?.number ?: 0) == kotlin.math.ceil(size().toDouble() / 2).toInt()
+
     fun rank() = scoreboard.ranking()
 
     fun size() = quiz.questions.size
@@ -75,7 +83,14 @@ class Scoreboard {
     }
 }
 
-class Ranking(val ranks: List<Rank>) {
+class Ranking(val ranks: List<Rank>, val showRankingRange: Int = 3) {
+
+    private var rankingGroup = mutableListOf<RankingGroup>()
+
+    init {
+        initRankingGroup()
+    }
+
     fun rank(rankNumber: Int): Rank {
         if (rankNumber > ranks.size) {
             throw IllegalArgumentException("Cannot find the rank (by number $rankNumber).")
@@ -83,13 +98,32 @@ class Ranking(val ranks: List<Rank>) {
         return ranks[rankNumber]
     }
 
-    fun takeRangeRankings(range: Int): Map<Long, List<Rank>> {
+    fun getRankingGroups() = rankingGroup
+
+    private fun initRankingGroup() {
+        rankingGroup.addAll(makeRankingGroup(showRankingRange))
+    }
+
+    /**
+     * return Map<score: Long, List<Rank>>
+     */
+    private fun makeRankingGroup(range: Int): List<RankingGroup> {
         return ranks.filter { it.score > 0 }
             .groupBy { it.score }
             .toList()
             .sortedByDescending { it.first }
             .take(range)
-            .toMap()
+            .map { RankingGroup(it.first.toInt(), it.second) }
+    }
+
+    class RankingGroup(val rankingNum: Int, val ranks: List<Rank>) {
+
+        val score: Long
+            get() = ranks.first().score
+
+        fun asMentions(separator: String = " "): String {
+            return ranks.joinToString(separator) { "<@${it.contestantId}>" }
+        }
     }
 }
 
