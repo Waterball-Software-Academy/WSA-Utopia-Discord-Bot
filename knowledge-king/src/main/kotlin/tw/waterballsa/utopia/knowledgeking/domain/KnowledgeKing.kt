@@ -33,15 +33,21 @@ class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSe
     }
 
     fun answer(contestantId: String?, answer: Answer): AnsweredEvent {
-        if (gameOver) {
-            throw IllegalStateException("The game is over, cannot answer the question.")
+        val answerEvent = when {
+            // end
+            gameOver -> throw IllegalStateException("The game is over, cannot answer the question.")
+            // correct
+            currentQuestion?.isCorrectAnswer(answer) ?: false -> {
+                scoreboard.getPoint(contestantId!!, calculateScore(currentQuestionStartTimeInMillis))
+                AnsweredEvent(answer, contestantId, AnswerResult.CORRECT)
+            }
+            // incorrect
+            else -> {
+                scoreboard.answerWrong(contestantId!!, calculateScore(currentQuestionStartTimeInMillis))
+                AnsweredEvent(answer, contestantId, AnswerResult.WRONG)
+            }
         }
-        return if (currentQuestion?.isCorrectAnswer(answer) == true) {
-            scoreboard.win(contestantId!!, calculateScore(currentQuestionStartTimeInMillis))
-            AnsweredEvent(answer, contestantId, AnswerResult.CORRECT)
-        } else {
-            AnsweredEvent(answer, contestantId!!, AnswerResult.WRONG)
-        }
+        return answerEvent
     }
 
     fun nextQuestion(): NextQuestionEvent? {
@@ -64,7 +70,8 @@ class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSe
         return gameOver
     }
 
-    fun isGameHalfway(): Boolean = (currentQuestion?.number ?: 0) == kotlin.math.ceil(getQuestionsSize().toDouble() / 2).toInt()
+    fun isGameHalfway(): Boolean =
+        (currentQuestion?.number ?: 0) == kotlin.math.ceil(getQuestionsSize().toDouble() / 2).toInt()
 
     fun rank() = scoreboard.ranking()
 
@@ -91,16 +98,28 @@ class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSe
      * formula: round((3 + ln(1/secondsElapsed)) * 167)
      */
     fun calculateScore(questionStartTimeInMillis: Long): Long {
-        val secondsElapsed = ceil(minOf(maxOf(currentTimeMillis().milliseconds.inWholeSeconds - questionStartTimeInMillis.milliseconds.inWholeSeconds, 1), 15).toDouble())
-        return round((3+ ln(1.0/secondsElapsed)) * 167).toLong()
+        val secondsElapsed = ceil(
+            minOf(
+                maxOf(
+                    currentTimeMillis().milliseconds.inWholeSeconds - questionStartTimeInMillis.milliseconds.inWholeSeconds,
+                    1
+                ), 15
+            ).toDouble()
+        )
+        return round((3 + ln(1.0 / secondsElapsed)) * 167).toLong()
     }
 }
 
 class Scoreboard {
     private val board = mutableMapOf<String, Long>()
 
-    fun win(contestantId: String, score: Long) {
-        board[contestantId] = (board[contestantId] ?: (0 + score)) + score
+    fun getPoint(contestantId: String, score: Long) {
+        board[contestantId] = (board[contestantId] ?: 0) + score
+    }
+
+    // TODO: 要計算到 negative 還是一切 reset zero，沒有的話後續可以考慮跟 getPoint 合併
+    fun answerWrong(contestantId: String, score: Long) {
+        board[contestantId] = (board[contestantId] ?: 0) - score
     }
 
     fun ranking(): Ranking {
