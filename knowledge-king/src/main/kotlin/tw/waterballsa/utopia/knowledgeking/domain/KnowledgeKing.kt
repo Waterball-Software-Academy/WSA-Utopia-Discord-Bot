@@ -7,6 +7,7 @@ import kotlin.math.ceil
 import kotlin.math.ln
 import kotlin.math.round
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSeconds: Long) {
     val id: String = UUID.randomUUID().toString()
@@ -73,9 +74,13 @@ class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSe
     fun isGameHalfway(): Boolean =
         (currentQuestion?.number ?: 0) == kotlin.math.ceil(getQuestionsSize().toDouble() / 2).toInt()
 
-    fun rank() = scoreboard.ranking()
+    fun rank(): Ranking = scoreboard.ranking()
 
-    fun getQuestionsSize() = quiz.questions.size
+    fun getQuestionsSize(): Int = quiz.questions.size
+
+    fun getElapsedTimeInSeconds(questionStartTimeInSeconds: Long): Long {
+        return currentTimeMillis().milliseconds.inWholeSeconds - questionStartTimeInSeconds.seconds.inWholeSeconds
+    }
 
     /**
      * response sec     score
@@ -98,14 +103,7 @@ class KnowledgeKing(private val quiz: Quiz, private val timeBetweenQuestionsInSe
      * formula: round((3 + ln(1/secondsElapsed)) * 167)
      */
     fun calculateScore(questionStartTimeInMillis: Long): Long {
-        val secondsElapsed = ceil(
-            minOf(
-                maxOf(
-                    currentTimeMillis().milliseconds.inWholeSeconds - questionStartTimeInMillis.milliseconds.inWholeSeconds,
-                    1
-                ), 15
-            ).toDouble()
-        )
+        val secondsElapsed = ceil(minOf(maxOf(getElapsedTimeInSeconds(questionStartTimeInMillis.milliseconds.inWholeSeconds), 1), 15).toDouble())
         return round((3 + ln(1.0 / secondsElapsed)) * 167).toLong()
     }
 }
@@ -179,6 +177,8 @@ data class Question(
     val type: QuestionType, val answer: AnswerSpec,
     val explanation: String? = null
 ) {
+    var sentTimeInSeconds: Long? = null
+
     fun isCorrectAnswer(answer: Answer): Boolean {
         return when (type) {
             QuestionType.SINGLE -> {
@@ -192,6 +192,8 @@ data class Question(
             }
         }
     }
+
+    fun generateSentTime() { sentTimeInSeconds = currentTimeMillis().milliseconds.inWholeSeconds }
 
     enum class QuestionType {
         SINGLE,
