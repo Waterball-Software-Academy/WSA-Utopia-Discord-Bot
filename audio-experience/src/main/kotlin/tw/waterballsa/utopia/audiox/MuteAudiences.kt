@@ -16,7 +16,6 @@ private const val REVOKED_SUB_COMMAND = "revoked"
 private const val MUTE_REVOKED_COMMAND = "$MUTE_SLASH $REVOKED_SUB_COMMAND"
 
 private val log = KotlinLogging.logger {}
-private var currentCommandName = ""
 
 fun muteAudiences() = listener {
     /*
@@ -43,21 +42,13 @@ fun muteAudiences() = listener {
             return@on
         }
 
-        val voiceChannel = channel.asVoiceChannel();
         when (fullCommandName) {
             MUTE_AUDIENCES_COMMAND -> {
-                currentCommandName = MUTE_AUDIENCES_COMMAND
-
                 val muteMemberAction: () -> Unit = if (isUnmute()) ::unMuteMember else ::muteMember
-                voiceChannel.members.forEach { _ -> muteMemberAction() }
-                this.reply("Mute audience voice !!").queue()
+                executeMuteCommand(muteMemberAction, "Mute audience voice !!")
             }
 
-            MUTE_REVOKED_COMMAND -> {
-                currentCommandName = MUTE_REVOKED_COMMAND
-                voiceChannel.members.forEach { _ -> unMuteMember() }
-                this.reply("Unmute voice !!").queue()
-            }
+            MUTE_REVOKED_COMMAND -> executeMuteCommand({ unMuteMember() }, "Unmute voice !!")
         }
     }
 }
@@ -81,8 +72,8 @@ private fun SlashCommandInteractionEvent.isUnmute(): Boolean {
     val audience = getOption(OPTION_AUDIENCE_NAME)
     val role = getOption(OPTION_ROLE_NAME)
 
-    var isUnmuteAudiences = member?.id == audience?.asUser?.id
-    var isUnmuteRole = member?.roles?.contains(role?.asRole) == true
+    val isUnmuteAudiences = member?.id == audience?.asUser?.id
+    val isUnmuteRole = member?.roles?.contains(role?.asRole) == true
     return isUnmuteAudiences || isUnmuteRole
 }
 
@@ -91,7 +82,12 @@ private fun SlashCommandInteractionEvent.muteMember() {
     val memberId = member?.id
 
     member?.mute(true)
-        ?.queue { log.info { "[$currentCommandName]: {\"muteLabel\":\"Mute\", \"memberName\":\"${memberName}\", \"memberId\":\"${memberId}\"}" } }
+        ?.queue { log.info { "[$fullCommandName]: {\"muteLabel\":\"Mute\", \"memberName\":\"${memberName}\", \"memberId\":\"${memberId}\"}" } }
+}
+
+private fun SlashCommandInteractionEvent.executeMuteCommand(muteMemberAction: () -> Unit, replyMessage: String) {
+    muteMemberAction.invoke()
+    this.reply(replyMessage).queue()
 }
 
 private fun SlashCommandInteractionEvent.unMuteMember() {
@@ -99,6 +95,6 @@ private fun SlashCommandInteractionEvent.unMuteMember() {
     val memberId = member?.id
 
     member?.mute(false)
-        ?.queue { log.info { "[$currentCommandName]: {\"muteLabel\":\"Unmute\", \"memberName\":\"${memberName}\", \"memberId\":\"${memberId}\"}" } }
+        ?.queue { log.info { "[$fullCommandName]: {\"muteLabel\":\"Unmute\", \"memberName\":\"${memberName}\", \"memberId\":\"${memberId}\"}" } }
 }
 
