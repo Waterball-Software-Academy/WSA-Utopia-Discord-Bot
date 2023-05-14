@@ -23,6 +23,7 @@
         <module>audio-breakout</module>
         <module>random</module>
         <module>actuator</module>
+        <module>document</module>
     </modules>
 
     <properties>
@@ -205,6 +206,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>knowledgeking</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>document</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>

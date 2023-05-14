@@ -1,4 +1,4 @@
-package tw.waterballsa.utopia.jda.extensions
+package extensions
 
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command

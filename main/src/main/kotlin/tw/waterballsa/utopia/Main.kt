@@ -1,6 +1,7 @@
 package tw.waterballsa.utopia
 
 import ch.qos.logback.core.util.OptionHelper
+import generateCommandTableMarkdown
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import org.springframework.context.annotation.*
@@ -11,7 +12,6 @@ import tw.waterballsa.utopia.commons.config.logger
 import tw.waterballsa.utopia.commons.extensions.createDirectoryIfNotExists
 import tw.waterballsa.utopia.commons.utils.loadProperties
 import tw.waterballsa.utopia.jda.WSA_GUILD_BEAN_NAME
-import tw.waterballsa.utopia.jda.generateCommandTableMarkdown
 import tw.waterballsa.utopia.jda.registerAllJdaListeners
 import tw.waterballsa.utopia.jda.runJda
 import java.io.File

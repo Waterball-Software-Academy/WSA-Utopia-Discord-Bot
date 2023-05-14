@@ -29,11 +29,6 @@
             <artifactId>spring-context</artifactId>
             <version>${spring-context.version}</version> <!-- Replace with the latest version of Spring Framework -->
         </dependency>
-        <dependency>
-            <groupId>net.steppschuh.markdowngenerator</groupId>
-            <artifactId>markdowngenerator</artifactId>
-            <version>${markdowngenerator.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
