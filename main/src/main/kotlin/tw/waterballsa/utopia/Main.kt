@@ -1,6 +1,7 @@
 package tw.waterballsa.utopia
 
 import ch.qos.logback.core.util.OptionHelper
+import generateCommandTableMarkdown
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import org.springframework.context.annotation.*
@@ -53,6 +54,7 @@ fun main() {
     TimeZone.setDefault(TimeZone.getTimeZone("Asia/Taipei"))
     File(DATABASE_DIRECTORY).createDirectoryIfNotExists()
     registerAllJdaListeners(context)
+    generateCommandTableMarkdown(context, "wsa-bot-commands.md")
 }
 
 

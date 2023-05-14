@@ -13,7 +13,6 @@
 
     <properties>
         <spring-context.version>5.3.26</spring-context.version>
-
     </properties>
 
     <dependencies>

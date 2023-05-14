@@ -56,6 +56,10 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>knowledgeking</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>document</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
