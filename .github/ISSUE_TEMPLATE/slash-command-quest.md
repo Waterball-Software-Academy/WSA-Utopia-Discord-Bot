@@ -7,9 +7,9 @@ assignees: ''
 
 ---
 
-## Slash Command Pull Request
+## Slash Command Quest
 
-### 描述
+### 任務描述
 請提供有關此 slash command 功能的簡要描述。
 
 ## Slash Command 資訊

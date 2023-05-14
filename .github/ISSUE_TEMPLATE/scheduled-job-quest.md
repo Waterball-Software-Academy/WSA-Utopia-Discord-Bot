@@ -7,9 +7,9 @@ assignees: ''
 
 ---
 
-## Scheduled Job Pull Request
+## Scheduled Job Quest
 
-### 描述
+### 任務描述
 請提供有關此 scheduled job 功能的簡要描述。
 
 ## schedule 資訊
