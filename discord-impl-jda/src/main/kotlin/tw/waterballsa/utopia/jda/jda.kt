@@ -148,17 +148,15 @@ fun runJda() {
 
 fun registerAllJdaListeners(context: AnnotationConfigApplicationContext) {
     val wsa = context.getBean(WSA_GUILD_BEAN_NAME, Guild::class.java)
+    val slashCommands = mutableListOf<CommandData>()
 
     val listenerFunctions = loadListenerFunctionsFromAllModules(context)
-
     listenerFunctions.onEach { compositeListener.register(it) }
-            .flatMap { it.commands }
-            .let { wsa.updateCommands().addCommands(it).queue() }
+        .flatMapTo(slashCommands) { it.commands }
 
     val utopiaListeners = context.getBeansOfType(UtopiaListener::class.java).values
-    utopiaListeners.forEach { compositeListener.register(it) }
+    utopiaListeners.onEach { compositeListener.register(it) }
+        .flatMapTo(slashCommands) { it.commands() }
 
-    utopiaListeners.flatMap { it.commands() }.let {
-        wsa.updateCommands().addCommands(it).queue()
-    }
+    wsa.updateCommands().addCommands(slashCommands).queue()
 }

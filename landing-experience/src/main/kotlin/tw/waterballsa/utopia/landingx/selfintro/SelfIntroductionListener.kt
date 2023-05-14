@@ -23,9 +23,11 @@ class SelfIntroductionListener(private val wsa: WsaDiscordProperties) : UtopiaLi
             val threadName = "【${author.name}】"
 
             message.startedThread ?: let {
-                message.createThreadChannel(threadName).queue {
+                message.createThreadChannel(threadName).queue({
                     log.info { "[Auto create a thread on new message] {\"threadName\":\"${message.startedThread!!.name}\"}" }
-                }
+                }, {
+                    log.info { "[Auto create a thread on new message] {create fail}" }
+                })
             }
         }
     }

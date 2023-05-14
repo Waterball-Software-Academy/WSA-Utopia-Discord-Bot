@@ -21,6 +21,10 @@ open class WsaDiscordProperties(properties: Properties) {
     val wsaGaaSConversationChannelId: String
     val wsaGaaSMemberRoleId: String
     val wsaAlphaRoleId: String
+    val discussionAreaChannelId: String
+    val unlockEntryChannelLink: String
+    val selfIntroChannelLink: String
+    val discussionAreaChannelLink: String
 
     init {
         properties.run {
@@ -37,6 +41,11 @@ open class WsaDiscordProperties(properties: Properties) {
             wsaGaaSMemberRoleId = getProperty("wsa-gaas-member-role-id")
             wsaAlphaRoleId = getProperty("wsa-alpha-role-id")
             knowledgeKingChannelId = getProperty("knowledge-king-channel-id")
+            discussionAreaChannelId = getProperty("wsa-discussion-area-channel-id")
+            unlockEntryChannelLink = getProperty("wsa-unlock-entry-channel-link")
+            selfIntroChannelLink = getProperty("wsa-self-intro-channel-link")
+            discussionAreaChannelLink = getProperty("wsa-discussion-area-channel-link")
+
         }
     }
 }
