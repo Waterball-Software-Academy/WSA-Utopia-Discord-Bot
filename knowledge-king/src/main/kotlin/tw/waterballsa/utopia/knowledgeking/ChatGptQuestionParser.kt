@@ -8,7 +8,6 @@ import tw.waterballsa.utopia.chatgpt.JTokkit
 import tw.waterballsa.utopia.knowledgeking.domain.Question
 import tw.waterballsa.utopia.knowledgeking.domain.SingleAnswerSpec
 import java.util.*
-import kotlin.math.ceil
 
 @Configuration
 open class ChatGptQuestionParserConfig {
@@ -20,7 +19,7 @@ private const val RANDOM_SEED_LENGTH = 50
 
 private val log = KotlinLogging.logger {}
 
-// TODO: 去掉太冷門的
+// TODO: 下一版移除
 private val topics = listOf(
     "資料結構和演算法",
     "資料庫管理系統",
@@ -227,6 +226,7 @@ private val random = Random()
 class ChatGptQuestionParser(private val chatGptAPI: ChatGptAPI) {
     private val questionQueue = QuestionQueue<String>()
     private val jTokkit = JTokkit()
+    private val questionLoader = QuestionLoader()
     private var basedUsageTokens = 2000
     private val programTopicRatio = 0.2
 
@@ -287,19 +287,24 @@ class ChatGptQuestionParser(private val chatGptAPI: ChatGptAPI) {
 
         basedUsageTokens = basedUserContentTokens + completionUsageTokens
 
-        val response = chatGptAPI.chat(
-            arrayOf(ChatGptAPI.Message("user", generateQuestionContent(
-                numberOfQuestions,
-                shuffledTopics.joinToString("、") { "「$it」" },
-                questionQueue.all().joinToString("、") { "「$it」" }
-            ))),
-            completionUsageTokens
-        )
-        val questions = parse(response)
-
-        questions.forEach { addQuestion(it) }
-
-        return questions
+        // TODO: 有可能會有 empty questions 的狀態，先加入 retry 機制，後續可以改進
+        val questionList = executeWithRetry(retries = 3, call = {
+            val response = chatGptAPI.chat(
+                arrayOf(ChatGptAPI.Message("user", generateQuestionContent(
+                    numberOfQuestions,
+                    shuffledTopics.joinToString("、") { "「$it」" },
+                    questionQueue.all().joinToString("、") { "「$it」" }
+                ))),
+                completionUsageTokens
+            )
+            val questions = parse(response)
+            when {
+                questions.isNotEmpty() -> questions
+                else -> throw NullPointerException("Failed to load data from ChatGptAPI")
+            }
+        })
+        questionList!!.forEach { addQuestion(it) }
+        return questionList
     }
 
     fun parse(response: ChatGptAPI.Response): List<Question> = parse(response.firstMessageContent())
@@ -350,8 +355,7 @@ class ChatGptQuestionParser(private val chatGptAPI: ChatGptAPI) {
     }
 
     private fun getRandomTopics(takeNumber: Int): List<String> {
-        val numOfProgramTopic = ceil(takeNumber * programTopicRatio).toInt()
-        return topics.shuffled().take(takeNumber - numOfProgramTopic) + programTopics.shuffled().take(numOfProgramTopic)
+        return questionLoader.getQuestions().shuffled().take(takeNumber)
     }
 
     private fun getTokens(string: String): Int {
@@ -386,6 +390,25 @@ class ChatGptQuestionParser(private val chatGptAPI: ChatGptAPI) {
 //        return sb.toString()
 //    }
 }
+
+inline fun <T> executeWithRetry(
+    predicate: (cause: Throwable) -> Boolean = { true },
+    retries: Int = 1,
+    call: () -> T
+): T? {
+    for (i in 0..retries) {
+        return try {
+            call()
+        } catch (e: Exception) {
+            when {
+                predicate(e) && i < retries -> continue
+                else -> throw e
+            }
+        }
+    }
+    return null
+}
+
 
 private class QuestionQueue<T> {
 
