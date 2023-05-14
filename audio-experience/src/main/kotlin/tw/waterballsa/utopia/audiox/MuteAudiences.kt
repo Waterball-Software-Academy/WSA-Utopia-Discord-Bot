@@ -86,7 +86,8 @@ private fun SlashCommandInteractionEvent.muteMember() {
 }
 
 private fun SlashCommandInteractionEvent.executeMuteCommand(muteMemberAction: () -> Unit, replyMessage: String) {
-    muteMemberAction.invoke()
+    val voiceChannel = channel.asVoiceChannel()
+    voiceChannel.members.forEach { _ -> muteMemberAction.invoke() }
     this.reply(replyMessage).queue()
 }
 
