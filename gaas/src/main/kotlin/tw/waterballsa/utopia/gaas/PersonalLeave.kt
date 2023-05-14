@@ -68,7 +68,7 @@ class PersonalLeave(private val properties: WsaDiscordProperties) : UtopiaListen
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         with(event) {
             val wsaGaaSMemberRoleId = properties.wsaGaaSMemberRoleId
-            val member = member!!
+            val member = member ?: return
 
             when {
                 button.id != customButtonId -> return

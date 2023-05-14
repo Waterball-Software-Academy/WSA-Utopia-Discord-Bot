@@ -1,28 +1,23 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain
 
-import org.slf4j.event.Level
 import java.lang.IllegalArgumentException
 
-class Player(val id: String, var name: String, var exp: Long, level: Int) {
-    var level: Int = 0
-        set(value) {
-            if (value >= 1) {
-                field = value
-            } else {
-                throw IllegalArgumentException("your level must more than 1")
-            }
-        }
+class Player(val id: String, var name: String, var exp: ULong = 0u, level: UInt = 1u) {
+
+    var level: UInt = 1u
+         private set(value) {
+             if (value >= 1u) {
+                 field = value
+             } else {
+                 throw IllegalArgumentException("your level must more than 1")
+             }
+         }
 
     init {
         this.level = level
     }
 
-    fun gainExp(exp: Long) {
-        this.exp += exp
-    }
-
-    fun levelUp() {
-        level += 1
+    fun gainExp(rewardExp: ULong) {
+        exp += rewardExp
     }
 }
-
