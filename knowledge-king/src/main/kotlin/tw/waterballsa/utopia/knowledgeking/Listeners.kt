@@ -16,6 +16,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.ceil
 import kotlin.time.Duration.Companion.seconds
 
 @Component
@@ -57,20 +58,35 @@ class KnowledgeKingListener(
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         with(event) {
             deferReply(true).queue()
-            if (knowledgeKing != null && !knowledgeKing!!.isGameOver()) {
-                val question = knowledgeKing!!.currentQuestion!!
-                for (optionNumber in 0..question.options.size) {
-                    val buttonId = makeButtonId(question.number, optionNumber)
-                    if (buttonId == button.id) {
-                        val contestantId = member?.id
-                        val answer: Char = 'A' + optionNumber
+            when {
+                // 遊戲中
+                knowledgeKing != null && !knowledgeKing!!.isGameOver() -> {
+                    val question = knowledgeKing!!.currentQuestion!!
+                    val contestantId = member?.id
 
-                        log.info { "[Answered] {\"contestantId\": \"$contestantId\", \"answer\": \"$answer\"}" }
+                    when {
+                        // 檢查答題時間
+                        knowledgeKing!!.getElapsedTimeInSeconds(question.sentTimeInSeconds!!) > 15 -> {
+                            log.info { "[Answer Expired] {\"contestantId\": \"$contestantId\"}" }
+                            hook.editOriginal("超過答題時間囉！！").queue()
+                        }
+                        // 正常答題時間
+                        else -> {
+                            for (optionNumber in 0..question.options.size) {
+                                val buttonId = makeButtonId(question.number, optionNumber)
+                                if (buttonId == button.id) {
+                                    val answer: Char = 'A' + optionNumber
 
-                        knowledgeKing!!.answer(contestantId, SingleChoiceAnswer(optionNumber))
-                        hook.editOriginal("已經接受到你的答案。").queue()
+                                    log.info { "[Answered] {\"contestantId\": \"$contestantId\", \"answer\": \"$answer\"}" }
+                                    knowledgeKing!!.answer(contestantId, SingleChoiceAnswer(optionNumber))
+                                    hook.editOriginal("已經接受到你的答案。").queue()
+                                }
+                            }
+                        }
                     }
                 }
+                // 遊戲已結束
+                else -> hook.editOriginal("遊戲已經結束囉，請敬請期待下一次「全民軟體知識王」！").queue()
             }
         }
     }
@@ -82,6 +98,7 @@ class KnowledgeKingListener(
         timer.dailyScheduling(announcementTime) {
             val knowledgeKingChannel = jda.getTextChannelById(wsa.knowledgeKingChannelId)
             val topic = generateTopic()
+
             announceTopic(topic, knowledgeKingChannel!!)
 
             // TODO: call ChatGPT 需要時間，後續可以用 async task 優化，暫時用 time 對齊剩餘秒數
@@ -151,22 +168,13 @@ class KnowledgeKingListener(
                 }
                 // 問題已經過半
                 knowledgeKing!!.isGameHalfway() -> {
-                    val rankingGroup = ranking.getRankingGroups()
-                    when(val firstPlaceRankingGroup = rankingGroup.firstOrNull()) {
-                        null -> knowledgeKingChannel.sendMessage(beautyMessageInBlock(":loudspeaker: 比賽已經走一半了～中場休息一下～"))
-                        else -> knowledgeKingChannel.sendMessage(beautyMessageInBlock("""
-                            :loudspeaker: 比賽已經走一半了～中場休息一下～
-                            目前的領先者為 ${firstPlaceRankingGroup.asMentionsString()}
-                        """.trimIndent())).queue()
-                    }
+                    announceGameHalfWay(knowledgeKingChannel)
                     timer.scheduleDelay(halftimeForBreakInSeconds) {
                         scheduleNextQuestion(knowledgeKingChannel)
                     }
                 }
                 // 其他 -> 下一題
-                else -> {
-                    scheduleNextQuestion(knowledgeKingChannel)
-                }
+                else -> scheduleNextQuestion(knowledgeKingChannel)
             }
         }
     }
@@ -188,26 +196,21 @@ class KnowledgeKingListener(
      * 揭曉最後排名
      */
     private fun revealFinalRanking(ranking: Ranking, knowledgeKingChannel: TextChannel) {
-        // show final message
-        knowledgeKingChannel.sendMessage("""
-            ┌－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┐
-            ｜感謝大家參與本次的「全民軟體知識王」，問答的階段已經結束了｜
-            ｜接下來要準備公佈這次答題正確率的排名，將從第三名開始公布！｜
-            └－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┘
-        """.trimIndent()).queue()
+        announceEndingGame(knowledgeKingChannel)
 
         val rankGroups = ranking.getRankingGroups()
+        var delayTimeInSeconds = 3L
 
         when (rankGroups.isEmpty()) {
             true -> {
                 log.info { "[Reveal Final Ranking] {\"winner\": \"empty\"}" }
                 knowledgeKingChannel.sendMessage(":banana: 本屆沒有智慧王 :monkey:").queueAfter(2, TimeUnit.SECONDS)
             }
+
             else -> {
                 log.info { "[Reveal Final Ranking] {\"winner\": \"${rankGroups.size}\"}" }
-                knowledgeKingChannel.sendMessage("（奏樂）...:trumpet:..:accordion:.:notes:..:drum:..:drum:. :notes:").queue()
-
-                var delayTimeInSeconds = 3L
+                knowledgeKingChannel.sendMessage("（奏樂）...:trumpet:..:accordion:.:notes:..:drum:..:drum:. :notes:")
+                    .queue()
 
                 // start from 3rd place
                 (0..awardRangeWithTopThree).reversed().forEach { index ->
@@ -220,6 +223,8 @@ class KnowledgeKingListener(
                 }
             }
         }
+
+        announcePromotingUtopiaDiscordBot(knowledgeKingChannel, delayTimeInSeconds + 10)
     }
 
     /**
@@ -256,8 +261,7 @@ class KnowledgeKingListener(
      * 公佈主題
      */
     private fun announceTopic(topic: String, knowledgeKingChannel: TextChannel) {
-        knowledgeKingChannel.sendMessage(
-            """
+        knowledgeKingChannel.sendMessage("""        
         ┌－－－－－－－－－－－－－－－－－－－－－－－－－－┐
         ｜:loudspeaker: 水球軟體學院的「全民軟體知識王」比賽即將開始啦！  ｜
         ｜　　　　　　　　　　　　　　　　　　　　　　　　　　｜
@@ -291,13 +295,30 @@ class KnowledgeKingListener(
      */
     private fun announceGameHalfWay(knowledgeKingChannel: TextChannel) {
         val rankingGroup = knowledgeKing!!.rank().getRankingGroups()
-        when(val firstPlaceRankingGroup = rankingGroup.firstOrNull()) {
+        when (val firstPlaceRankingGroup = rankingGroup.firstOrNull()) {
             null -> knowledgeKingChannel.sendMessage(beautyMessageInBlock(":loudspeaker: 比賽已經走一半了～中場休息一下～"))
-            else -> knowledgeKingChannel.sendMessage(beautyMessageInBlock("""
+            else -> knowledgeKingChannel.sendMessage(
+                beautyMessageInBlock(
+                    """
                             :loudspeaker: 比賽已經走一半了～中場休息一下～
                             目前的領先者為 ${firstPlaceRankingGroup.asMentionsString()}
-                        """.trimIndent())).queue()
+                        """.trimIndent()
+                )
+            ).queue()
         }
+    }
+
+    /**
+     * 公佈問答已結束
+     */
+    private fun announceEndingGame(knowledgeKingChannel: TextChannel) {
+        knowledgeKingChannel.sendMessage("""
+        ┌－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┐
+        ｜感謝大家參與本次的「全民軟體知識王」，問答的階段已經結束了｜
+        ｜接下來要準備公佈這次答題正確率的排名，將從第三名開始公布！｜
+        └－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┘
+        """.trimIndent()
+        ).queue()
     }
 
 
@@ -306,30 +327,61 @@ class KnowledgeKingListener(
      */
     private fun announceChampion(channel: TextChannel, rankingGroup: Ranking.RankingGroup?, delayInSeconds: Long) {
         val candidates = rankingGroup?.ranks?.joinToString(", ") { "<@${it.contestantId}>" }
-        when(rankingGroup) {
+        when (rankingGroup) {
             is Ranking.RankingGroup -> {
                 channel.sendMessage("即將公佈冠軍...")
                 channel.sendMessage("冠軍是...").queueAfter(delayInSeconds + 1, TimeUnit.SECONDS)
-                channel.sendMessage(":trophy: 本屆的知識王是 $candidates，得分數為 ${rankingGroup.score} 分").queueAfter(delayInSeconds + 2, TimeUnit.SECONDS)
-                channel.sendMessage(":tada: 恭喜脫穎而出，得到第一名的殊榮 :tada:").queueAfter(delayInSeconds + 3, TimeUnit.SECONDS)
+                channel.sendMessage(":trophy: 本屆的知識王是 $candidates，得分數為 ${rankingGroup.score} 分")
+                    .queueAfter(delayInSeconds + 2, TimeUnit.SECONDS)
+                channel.sendMessage(":tada: 恭喜脫穎而出，得到第一名的殊榮 :tada:")
+                    .queueAfter(delayInSeconds + 3, TimeUnit.SECONDS)
             }
         }
     }
 
+    /**
+     * 公佈第二名
+     */
     private fun announceSecondPlace(channel: TextChannel, rankGroup: Ranking.RankingGroup?, delayInSeconds: Long) {
         val candidates = rankGroup?.ranks?.joinToString(", ") { "<@${it.contestantId}>" }
         when (rankGroup) {
-            null -> channel.sendMessage(":second_place: 第二名從缺 :monkey: :monkey:").queueAfter(delayInSeconds, TimeUnit.SECONDS)
-            else -> channel.sendMessage(":second_place: 第二名是 ${candidates}，得分數為 ${rankGroup.score} 分").queueAfter(delayInSeconds, TimeUnit.SECONDS)
+            null -> channel.sendMessage(":second_place: 第二名從缺 :monkey: :monkey:")
+                .queueAfter(delayInSeconds, TimeUnit.SECONDS)
+
+            else -> channel.sendMessage(":second_place: 第二名是 ${candidates}，得分數為 ${rankGroup.score} 分")
+                .queueAfter(delayInSeconds, TimeUnit.SECONDS)
         }
     }
 
+    /**
+     * 公佈第三名
+     */
     private fun announceThirdPlace(channel: TextChannel, rankGroup: Ranking.RankingGroup?, delayInSeconds: Long) {
         val candidates = rankGroup?.ranks?.joinToString(", ") { "<@${it.contestantId}>" }
         when (rankGroup) {
             null -> channel.sendMessage(":third_place: 第三名從缺 :joy:").queueAfter(delayInSeconds, TimeUnit.SECONDS)
-            else -> channel.sendMessage(":third_place: 第三名是 ${candidates}，得分數為 ${rankGroup.score} 分").queueAfter(delayInSeconds, TimeUnit.SECONDS)
+            else -> channel.sendMessage(":third_place: 第三名是 ${candidates}，得分數為 ${rankGroup.score} 分")
+                .queueAfter(delayInSeconds, TimeUnit.SECONDS)
         }
+    }
+
+    /**
+     * 公佈 discord bot 推廣資訊
+     */
+    private fun announcePromotingUtopiaDiscordBot(channel: TextChannel, delayInSeconds: Long) {
+        channel.sendMessage("""
+        ┌－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┐
+        ｜　　　　　　　　:point_right: 全民軟體知識王由 Utopia Discord Bot 提供 :point_left:　　　　　　　　　 ｜
+        ｜　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　｜
+        ｜　對 Utopia Discord Bot 有興趣的，趕快點擊下面連結加入專案！！　　 　　　　　　　 ｜
+        ｜　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　｜
+        ｜　:regional_indicator_w: Wiki：https://waterballsa.pse.is/utopia-wiki　　　　　　　　　　　　　　　　　   ｜
+        ｜　:link: Discord：https://discord.com/channels/937992003415838761/1089790105369186356 　｜
+        ｜　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　｜
+        ｜　:loudspeaker: 還等什麼～行動起來，一起加入 Utopia Discord Bot 專案及團隊　　　　　　　　　｜
+        └－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┘
+        """.trimIndent()
+        ).queueAfter(delayInSeconds, TimeUnit.SECONDS)
     }
 
     /**
@@ -369,6 +421,7 @@ class KnowledgeKingListener(
             Button.primary(makeButtonId(question.number, 3), "D")
         ).queue {
             log.info { "[Question Posted] \"question type\":\"${question.type}\",\"question number\" : ${question.number}" }
+            question.generateSentTime()
         }
         knowledgeKingChannel.sendMessage(beautyMessageInBlock(":timer: 作答時間開始")).queue()
     }
@@ -385,15 +438,25 @@ class KnowledgeKingListener(
      * TODO: more beautiful, support multiple line and half char width
      */
     private fun beautyMessageInBlock(message: String): String {
-        val partOfMessages = message.split("\n")
-        val maxLength = partOfMessages.maxByOrNull { it.length }?.let {
-            Regex(":(\\w+):").replace(it) { "　" }.length
+        val messageLines = message.split("\n")
+        val maxWidth = messageLines.maxByOrNull { it.length }?.let {
+            ceil(getStringWidth(Regex(":(\\w+):").replace(it) { "　" }) / 2.0).toInt()
         } ?: 20
         return buildString {
-            appendLine("┌${"－".repeat(maxLength)}┐")
+            appendLine("┌${"－".repeat(maxWidth)}┐")
             appendLine("　$message")
-            appendLine("└${"－".repeat(maxLength)}┘")
+            appendLine("└${"－".repeat(maxWidth)}┘")
         }
     }
 
+    private fun getStringWidth(string: String): Int {
+        val regex = Regex("[\\p{InCJKUnifiedIdeographs}[\\u3000-\\u303F][\\uFF01-\\uFF5E]\n]")
+        if (string.isEmpty()) return 0
+        return string.map {
+            when {
+                regex.containsMatchIn(it.toString()) -> 2
+                else -> 1
+            }
+        }.sum()
+    }
 }
