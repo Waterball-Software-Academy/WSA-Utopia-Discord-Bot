@@ -19,6 +19,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import tw.waterballsa.utopia.jda.JdaInstance.compositeListener
+import tw.waterballsa.utopia.jda.extensions.generateCommandTableMarkdown
 import java.lang.reflect.Method
 
 val log = KotlinLogging.logger {}
@@ -161,4 +162,10 @@ fun registerAllJdaListeners(context: AnnotationConfigApplicationContext) {
     utopiaListeners.flatMap { it.commands() }.let {
         wsa.updateCommands().addCommands(it).queue()
     }
+}
+
+fun generateCommandTableMarkdown(context: AnnotationConfigApplicationContext,
+                                 filePath: String) {
+    context.getBean(WSA_GUILD_BEAN_NAME, Guild::class.java)
+            .generateCommandTableMarkdown(filePath)
 }

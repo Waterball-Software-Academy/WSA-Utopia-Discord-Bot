@@ -11,6 +11,7 @@ import tw.waterballsa.utopia.commons.config.logger
 import tw.waterballsa.utopia.commons.extensions.createDirectoryIfNotExists
 import tw.waterballsa.utopia.commons.utils.loadProperties
 import tw.waterballsa.utopia.jda.WSA_GUILD_BEAN_NAME
+import tw.waterballsa.utopia.jda.generateCommandTableMarkdown
 import tw.waterballsa.utopia.jda.registerAllJdaListeners
 import tw.waterballsa.utopia.jda.runJda
 import java.io.File
@@ -53,6 +54,7 @@ fun main() {
     TimeZone.setDefault(TimeZone.getTimeZone("Asia/Taipei"))
     File(DATABASE_DIRECTORY).createDirectoryIfNotExists()
     registerAllJdaListeners(context)
+    generateCommandTableMarkdown(context, "wsa-bot-commands.md")
 }
 
 
