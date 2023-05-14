@@ -109,8 +109,9 @@ internal class KnowledgeKingTest {
         assertEquals("B", ranking.rank(2).contestantId)
         assertEquals("D", ranking.rank(3).contestantId)
 
+        // B & D get negative score
         val rankingGroups = ranking.getRankingGroups()
-        assertEquals(rankingGroups.size, 3)
+        assertEquals(rankingGroups.size, 2)
 
         assertEquals(rankingGroups[0].rankingNum, 1)
         assertEquals(rankingGroups[0].ranks, listOf(ranking.rank(0)))
@@ -119,11 +120,6 @@ internal class KnowledgeKingTest {
         assertEquals(rankingGroups[1].rankingNum, 2)
         assertEquals(rankingGroups[1].ranks, listOf(ranking.rank(1)))
         assertEquals(rankingGroups[1].score, ranking.rank(1).score)
-
-        assertEquals(rankingGroups[2].rankingNum, 3)
-        assertEquals(rankingGroups[2].ranks, listOf(ranking.rank(2), ranking.rank(3)))
-        assertEquals(rankingGroups[2].score, ranking.rank(2).score)
-        assertEquals(rankingGroups[2].score, ranking.rank(3).score)
     }
 
     private fun answer(contestantId: String, singleChoice: Int) {
