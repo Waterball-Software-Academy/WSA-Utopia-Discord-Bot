@@ -1,0 +1,15 @@
+{
+  "enable": [
+    "暴力匹配算法（Brute-Force Algorithm）",
+    "Rabin-Karp 算法",
+    "KMP 算法（Knuth-Morris-Pratt Algorithm）",
+    "Boyer-Moore 算法",
+    "Sunday 算法",
+    "Manacher 算法",
+    "AC 自動機（Aho-Corasick Automaton）",
+    "字符串哈希（String Hashing）",
+    "Z 算法（Z Algorithm）"
+  ],
+  "disable": [
+  ]
+}

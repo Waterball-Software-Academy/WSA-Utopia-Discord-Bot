@@ -1,0 +1,17 @@
+{
+  "enable": [
+    "線性搜尋（Linear Search）",
+    "二分搜尋（Binary Search）",
+    "插值搜尋（Interpolation Search）",
+    "哈希搜尋（Hash Search）",
+    "樹搜尋（Tree Search）",
+    "二元搜尋樹（Binary Search Tree）",
+    "紅黑樹（Red-Black Tree）",
+    "AVL 樹（AVL Tree）",
+    "B 樹（B-Tree）",
+    "B+ 樹（B+Tree）",
+    "Trie 樹（Trie Tree）"
+  ],
+  "disable": [
+  ]
+}

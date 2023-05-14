@@ -1,0 +1,41 @@
+{
+  "enable": [
+    "學習演算法 - 迴歸（Regression）",
+    "學習演算法 - 分類（Classification）",
+    "決策樹（Decision Tree）",
+    "隨機森林（Random Forest）",
+    "K-近鄰演算法（K-Nearest Neighbors，KNN）"
+  ],
+  "disable": [
+    "支持向量機（Support Vector Machine，SVM）",
+    "邏輯迴歸（Logistic Regression）",
+    "神經網路（Neural Network）",
+    "卷積神經網路（Convolutional Neural Network，CNN）",
+    "循環神經網路（Recurrent Neural Network，RNN）",
+    "長短期記憶網路（Long Short-Term Memory，LSTM）",
+    "主成分分析（Principal Component Analysis，PCA）",
+    "獨立成分分析（Independent Component Analysis，ICA）",
+    "非負矩陣分解（Non-Negative Matrix Factorization，NMF）",
+    "K-平均演算法（K-Means Clustering）",
+    "層次聚類（Hierarchical Clustering）",
+    "DBSCAN 聚類（Density-Based Spatial Clustering of Applications with Noise）",
+    "標籤傳播（Label Propagation）",
+    "Q 學習（Q-Learning）",
+    "政策梯度（Policy Gradient）",
+    "貝葉斯分類器（Bayesian Classifier）",
+    "支持向量回歸（Support Vector Regression，SVR）",
+    "隱馬爾可夫模型（Hidden Markov Model，HMM）",
+    "馬爾可夫鏈蒙特卡洛（Markov Chain Monte Carlo，MCMC）",
+    "梯度提升（Gradient Boosting）",
+    "AdaBoost",
+    "XGBoost",
+    "LightGBM",
+    "神經樹（Neural Tree）",
+    "隨機梯度下降（Stochastic Gradient Descent，SGD）",
+    "聯合主題模型（Latent Dirichlet Allocation，LDA）",
+    "生成對抗網路（Generative Adversarial Network，GAN）",
+    "變分自動編碼器（Variational Autoencoder，VAE）",
+    "對比分歧法（Contrastive Divergence，CD）",
+    "自編碼器（AutoEncoder，AE）"
+  ]
+}
