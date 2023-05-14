@@ -27,6 +27,7 @@
         <module>actuator</module>
         <module>document</module>
         <module>audio-experience</module>
+        <module>utopia-gamification-quest</module>
     </modules>
 
     <properties>
@@ -220,6 +221,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>document</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>utopia-gamification-quest</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
