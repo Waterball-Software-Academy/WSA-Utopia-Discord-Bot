@@ -1,5 +1,5 @@
 ---
-name: Event handling quest
+name: Event Handling Quest
 about: 打造一個新的事件處理器
 title: "[任務]"
 labels: ''

@@ -1,5 +1,5 @@
 ---
-name: Scheduled job quest
+name: Scheduled Job Quest
 about: 打造一個新的 scheduled job
 title: "[任務]"
 labels: ''

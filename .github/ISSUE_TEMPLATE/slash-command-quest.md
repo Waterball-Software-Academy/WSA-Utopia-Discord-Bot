@@ -1,5 +1,5 @@
 ---
-name: Slash Command quest
+name: Slash Command Quest
 about: 打造一個新的 slash command
 title: "[任務]"
 labels: ''
