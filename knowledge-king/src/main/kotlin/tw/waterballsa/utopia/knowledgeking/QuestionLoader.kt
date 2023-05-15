@@ -13,12 +13,20 @@ class QuestionLoader {
     private var _questions = listOf<QuestionData>()
 
     init {
-        val mainPath = this.javaClass.classLoader.getResource(mainDirName)!!.path
-        val jsonFiles = loadJsonFile(mainPath)
-
-        _questions = jsonFiles.map {
-            _mapper.readValue(it.readText(), QuestionData::class.java)
-        }
+        topics = listOf(
+            "question/compression.algorithm.json",
+            "question/data.structure.json",
+            "question/machine.learning.algorithm.json",
+            "question/number.theory.algorithm.json",
+            "question/search.algorithm.json",
+            "question/search.graph.algorithm.json",
+            "question/sort.algorithm.json",
+            "question/string.algorithm.json",
+            "question/synchronization.algorithm.json"
+        )
+            .map { this.javaClass.classLoader.getResourceAsStream(it) }
+            .map { _mapper.readValue(it, TopicData::class.java) }
+            .flatMap { it.enable }
     }
 
     private fun loadJsonFile(path: String): List<File> {

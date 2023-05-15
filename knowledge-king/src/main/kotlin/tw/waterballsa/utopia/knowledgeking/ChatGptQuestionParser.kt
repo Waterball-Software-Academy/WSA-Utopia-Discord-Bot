@@ -12,7 +12,7 @@ import java.util.*
 @Configuration
 open class ChatGptQuestionParserConfig {
     @Bean
-    open fun chatGptQuestionParser(chatGptAPI: ChatGptAPI) = ChatGptQuestionParser(chatGptAPI)
+    open fun chatGptQuestionParser(chatGptAPI: ChatGptAPI, questionLoader: QuestionLoader) = ChatGptQuestionParser(chatGptAPI, questionLoader)
 }
 
 private const val RANDOM_SEED_LENGTH = 50
@@ -223,10 +223,9 @@ private val programTopics = listOf(
 
 private val random = Random()
 
-class ChatGptQuestionParser(private val chatGptAPI: ChatGptAPI) {
+class ChatGptQuestionParser(private val chatGptAPI: ChatGptAPI, private val questionLoader: QuestionLoader) {
     private val questionQueue = QuestionQueue<String>()
     private val jTokkit = JTokkit()
-    private val questionLoader = QuestionLoader()
     private var basedUsageTokens = 2000
     private val programTopicRatio = 0.2
 
