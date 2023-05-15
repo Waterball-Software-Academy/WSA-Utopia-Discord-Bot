@@ -9,6 +9,7 @@ const val ENV_PROD = "prod"
 
 
 open class WsaDiscordProperties(properties: Properties) {
+    val knowledgeKingChannelId: String
     val guildId: String
     val unlockEntryMessageId: String
     val selfIntroChannelId: String
@@ -16,7 +17,10 @@ open class WsaDiscordProperties(properties: Properties) {
     val wsaCitizenRoleId: String
     val gentlemenForumCategoryId: String
     val wsaGentlemenBroadcastChannelId: String
-
+    val wsaPartyChannelId: String
+    val wsaGaaSConversationChannelId: String
+    val wsaGaaSMemberRoleId: String
+    val wsaAlphaRoleId: String
 
     init {
         properties.run {
@@ -28,6 +32,11 @@ open class WsaDiscordProperties(properties: Properties) {
             wsaCitizenRoleId = getProperty("wsa-citizen-role-id")
             gentlemenForumCategoryId = getProperty("wsa-gentlemen-forum-category-id")
             wsaGentlemenBroadcastChannelId = getProperty("wsa-gentlemen-broadcast-channel-id")
+            wsaPartyChannelId = getProperty("wsa-party-channel-id")
+            wsaGaaSConversationChannelId = getProperty("wsa-gaas-conversation-channel-id")
+            wsaGaaSMemberRoleId = getProperty("wsa-gaas-member-role-id")
+            wsaAlphaRoleId = getProperty("wsa-alpha-role-id")
+            knowledgeKingChannelId = getProperty("knowledge-king-channel-id")
         }
     }
 }

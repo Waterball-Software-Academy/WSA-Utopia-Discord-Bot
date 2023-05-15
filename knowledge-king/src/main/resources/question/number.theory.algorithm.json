@@ -1,0 +1,17 @@
+{
+  "enable": [
+    "求最大公因數（Greatest Common Divisor，GCD）",
+    "歐幾里德算法（Euclidean Algorithm）",
+    "求最小公倍數（Least Common Multiple，LCM）",
+    "快速冪算法（Fast Power Algorithm）",
+    "費馬小定理（Fermat's Little Theorem）",
+    "模反元素（Modular Inverse）",
+    "中國剩餘定理（Chinese Remainder Theorem，CRT）",
+    "求質因數分解的分解質因數（Pollard's Rho Algorithm）",
+    "求質因數分解的試除法（Trial Division）",
+    "求質因數分解的米勒-拉賓（Miller-Rabin）素性測試",
+    "求質因數分解的埃拉托色尼（Eratosthenes）篩法"
+  ],
+  "disable": [
+  ]
+}

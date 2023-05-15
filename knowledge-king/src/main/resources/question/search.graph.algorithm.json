@@ -1,0 +1,16 @@
+{
+  "enable": [
+    "深度優先搜索（Depth-First Search，DFS）",
+    "廣度優先搜索（Breadth-First Search，BFS）",
+    "迪杰斯特拉算法（Dijkstra's Algorithm）",
+    "A 算法（A Algorithm）",
+    "貝爾曼-福德算法（Bellman-Ford Algorithm）",
+    "弗洛伊德算法（Floyd Algorithm）",
+    "拓撲排序（Topological Sorting）",
+    "克魯斯克爾演算法（Kruskal's Algorithm）",
+    "普林漢姆演算法（Prim's Algorithm）",
+    "關鍵路徑算法（Critical Path Algorithm）"
+  ],
+  "disable": [
+  ]
+}

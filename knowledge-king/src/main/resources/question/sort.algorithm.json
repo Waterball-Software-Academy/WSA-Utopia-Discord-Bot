@@ -1,0 +1,16 @@
+{
+  "enable": [
+    "冒泡排序（Bubble Sort）",
+    "插入排序（Insertion Sort）",
+    "選擇排序（Selection Sort）",
+    "快速排序（Quick Sort）",
+    "合併排序（Merge Sort）",
+    "堆積排序（Heap Sort）",
+    "桶排序（Bucket Sort）",
+    "基數排序（Radix Sort）",
+    "Shell 排序（Shell Sort）",
+    "計數排序（Counting Sort）"
+  ],
+  "disable": [
+  ]
+}

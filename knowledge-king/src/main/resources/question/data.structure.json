@@ -1,0 +1,17 @@
+{
+  "enable" : [
+    "陣列（Array）",
+    "鏈結串列（Linked List）",
+    "堆疊（Stack）",
+    "佇列（Queue）",
+    "樹（Tree）",
+    "圖（Graph）",
+    "哈希表（Hash Table）",
+    "堆（Heap）",
+    "字典（Dictionary）",
+    "集合（Set）"
+  ],
+  "disable": [
+
+  ]
+}

@@ -19,15 +19,7 @@ class CompositeListenerTest {
     fun `register adds listener to the list`() {
         val listener = listener {}
         compositeListener.register(listener)
-        assertThat(compositeListener.listeners).containsExactly(listener)
-    }
-
-    @Test
-    fun `unregister removes listener from the list`() {
-        val listener = listener {}
-        compositeListener.register(listener)
-        compositeListener.unregister(listener)
-        assertThat(compositeListener.listeners).isEmpty()
+        assertThat(compositeListener.deprecatedListeners).containsExactly(listener)
     }
 
     @Test

@@ -11,6 +11,18 @@
     <description>Knowledge King</description>
 
     <dependencies>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>discord-impl-jda</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>chatgpt-api</artifactId>
+        </dependency>
     </dependencies>
 
 
