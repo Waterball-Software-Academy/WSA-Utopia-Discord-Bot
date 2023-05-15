@@ -354,7 +354,7 @@ class ChatGptQuestionParser(private val chatGptAPI: ChatGptAPI, private val ques
     }
 
     private fun getRandomTopics(takeNumber: Int): List<String> {
-        return questionLoader.getQuestions().shuffled().take(takeNumber)
+        return questionLoader.getTopics().shuffled().take(takeNumber)
     }
 
     private fun getTokens(string: String): Int {

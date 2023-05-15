@@ -1,16 +1,13 @@
 package tw.waterballsa.utopia.knowledgeking
 
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import java.io.File
-import java.io.FileNotFoundException
+import javax.inject.Named
 
 
 // TODO: 加入 Ratio
-class QuestionLoader {
-    private val mainDirName = "question"
-    private val _mapper = ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    private var _questions = listOf<QuestionData>()
+@Named
+class QuestionLoader(private val _mapper: ObjectMapper) {
+    private var topics: List<String>
 
     init {
         topics = listOf(
@@ -29,23 +26,11 @@ class QuestionLoader {
             .flatMap { it.enable }
     }
 
-    private fun loadJsonFile(path: String): List<File> {
-        when {
-            File(path).exists() -> return File(path).listFiles()?.filter {
-                it.isFile && it.extension == "json" && it.canRead()
-            } ?: emptyList()
-
-            else -> throw FileNotFoundException("Cannot find path: $path")
-        }
+    fun getTopics(): List<String> {
+        return topics
     }
 
-    fun getQuestions(): List<String> {
-        return _questions.flatMap {
-            it.enable
-        }
-    }
-
-    class QuestionData {
+    class TopicData {
         val enable: List<String> = listOf()
         val disable: List<String> = listOf()
     }

@@ -1,6 +1,8 @@
 package tw.waterballsa.utopia
 
 import ch.qos.logback.core.util.OptionHelper
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
 import generateCommandTableMarkdown
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
@@ -25,6 +27,11 @@ open class MyDependencyInjectionConfig {
     @Bean
     open fun commonAnnotationBeanPostProcessor(): CommonAnnotationBeanPostProcessor {
         return CommonAnnotationBeanPostProcessor()
+    }
+
+    @Bean
+    open fun objectMapper(): ObjectMapper {
+        return ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
 
     @Bean

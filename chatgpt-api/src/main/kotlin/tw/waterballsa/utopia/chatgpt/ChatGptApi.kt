@@ -15,9 +15,7 @@ import javax.inject.Named
 val log = KotlinLogging.logger {}
 
 @Named
-class ChatGptAPI {
-    private val _mapper = ObjectMapper()
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+class ChatGptAPI(private val _mapper: ObjectMapper) {
     private val endpoint = "https://api.openai.com/v1/chat/completions"
     private val _model = "gpt-3.5-turbo"
 
