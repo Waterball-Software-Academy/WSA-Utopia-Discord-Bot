@@ -36,6 +36,9 @@ class MuteAudiences() : UtopiaListener() {
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         with(event) {
+            if(fullCommandName != MUTE_AUDIENCES_COMMAND && fullCommandName != MUTE_REVOKED_COMMAND){
+                return
+            }
             if (isNotMuteCommand() || isNotVoiceChannel()) {
                 return
             }
