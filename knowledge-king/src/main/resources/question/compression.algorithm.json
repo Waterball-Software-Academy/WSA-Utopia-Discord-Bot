@@ -1,0 +1,17 @@
+{
+  "enable": [
+    "哈夫曼編碼（Huffman Coding）",
+    "LZW 壓縮算法（Lempel-Ziv-Welch Algorithm）",
+    "RLE 壓縮算法（Run Length Encoding）",
+    "BWT 轉換（Burrows-Wheeler Transform）",
+    "MTF 編碼（Move-To-Front Coding）",
+    "LZ77 壓縮算法（Lempel-Ziv-77 Algorithm）",
+    "LZ78 壓縮算法（Lempel-Ziv-78 Algorithm）",
+    "Arithmetic Coding",
+    "Range Encoding"
+  ],
+  "disable": [
+    "無損圖像壓縮的 PNG、GIF 和 BMP 格式",
+    "帶有損壓縮的 JPEG、WebP 和 BPG 格式"
+  ]
+}

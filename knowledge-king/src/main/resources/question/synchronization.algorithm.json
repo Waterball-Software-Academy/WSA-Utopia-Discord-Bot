@@ -1,0 +1,16 @@
+{
+  "enable": [
+  ],
+  "disable": [
+    "鎖（Lock）",
+    "互斥量（Mutex）",
+    "條件變量（Condition Variable）",
+    "原子操作（Atomic Operation）",
+    "信號量（Semaphore）",
+    "屏障（Barrier）",
+    "讀寫鎖（Read-Write Lock）",
+    "計數器（Counter）",
+    "遞歸鎖（Recursive Lock）",
+    "集合點（Fence）"
+  ]
+}
