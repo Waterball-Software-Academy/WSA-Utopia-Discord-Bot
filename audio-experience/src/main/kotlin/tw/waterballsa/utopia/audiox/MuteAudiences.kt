@@ -83,12 +83,6 @@ class MuteAudiences() : UtopiaListener() {
             ?.queue { log.info { "[$fullCommandName]: {\"muteLabel\":\"Mute\", \"memberName\":\"${memberName}\", \"memberId\":\"${memberId}\"}" } }
     }
 
-    private fun SlashCommandInteractionEvent.executeMuteCommand(muteMemberAction: () -> Unit, replyMessage: String) {
-        val voiceChannel = channel.asVoiceChannel()
-        voiceChannel.members.forEach { _ -> muteMemberAction.invoke() }
-        reply(replyMessage).queue()
-    }
-
     private fun SlashCommandInteractionEvent.unMuteMember() {
         val memberName = member?.nickname ?: member?.effectiveName
         val memberId = member?.id
@@ -96,4 +90,11 @@ class MuteAudiences() : UtopiaListener() {
         member?.mute(false)
             ?.queue { log.info { "[$fullCommandName]: {\"muteLabel\":\"Unmute\", \"memberName\":\"${memberName}\", \"memberId\":\"${memberId}\"}" } }
     }
+
+    private fun SlashCommandInteractionEvent.executeMuteCommand(muteMemberAction: () -> Unit, replyMessage: String) {
+        val voiceChannel = channel.asVoiceChannel()
+        voiceChannel.members.forEach { _ -> muteMemberAction.invoke() }
+        reply(replyMessage).queue()
+    }
+
 }
