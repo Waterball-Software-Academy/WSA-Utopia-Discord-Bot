@@ -8,7 +8,7 @@ import tw.waterballsa.utopia.knowledgeking.domain.Question
 import tw.waterballsa.utopia.knowledgeking.domain.SingleAnswerSpec
 
 internal class ChatGptQuestionParserTest {
-    private val parser = ChatGptQuestionParser(mock(ChatGptAPI::class.java))
+    private val parser = ChatGptQuestionParser(mock(ChatGptAPI::class.java), mock(QuestionLoader::class.java))
 
     @Test
     fun testParser() {
