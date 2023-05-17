@@ -1,6 +1,7 @@
 package tw.waterballsa.utopia.guessnum1a2b
 
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -26,8 +27,12 @@ class GuessNum1A2BListener : UtopiaListener() {
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         with(event) {
-            if (!isValidCommandName()) {
-                return
+            when {
+                !isValidCommandName() -> return
+                channel !is TextChannel -> {
+                    reply("無法在這個頻道建立遊戲").setEphemeral(true).queue()
+                    return
+                }
             }
 
             if (gameManager.isAvailableGame(member?.id!!)) {
@@ -58,7 +63,7 @@ class GuessNum1A2BListener : UtopiaListener() {
                 return
             }
 
-            val room = getRoom()
+            val room = getRoom() ?: return
             val gameId = GuessNum1A2B.Id(member?.id!!, room.id)
             val game = gameManager.find(gameId)
             game?.let {
@@ -68,8 +73,8 @@ class GuessNum1A2BListener : UtopiaListener() {
         }
     }
 
-    private fun MessageReceivedEvent.getRoom(): ThreadChannel {
-        return channel.asThreadChannel()
+    private fun MessageReceivedEvent.getRoom(): ThreadChannel? {
+        return if (channel is ThreadChannel) channel.asThreadChannel() else null
     }
 
     private fun ThreadChannel.handleEvents(events: List<Event>) {
