@@ -31,7 +31,7 @@ class KnowledgeKingListener(
 
     // Specifies the duration of time given to each contestant to prepare before the start of the game
     // 10.minutes.inWholeMilliseconds
-    private val announcementTime = Calendar.getInstance().apply {
+    private val announcementTime = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei")).apply {
         set(Calendar.HOUR_OF_DAY, 22)
         set(Calendar.MINUTE, 20)
         set(Calendar.SECOND, 0)
