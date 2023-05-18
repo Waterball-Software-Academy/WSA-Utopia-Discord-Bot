@@ -54,8 +54,6 @@ private object JdaInstance {
     val compositeListener = CompositeListener()
     val instance: JDA by lazy {
         val env = getEnv("BOT_TOKEN").trim()
-        // TODO The log should be removed after the issue of the failed launch is solved.
-        log.info { "[Discord bot token] {\"token\"=\"$env\"}" }
         val builder = JDABuilder.createDefault(env)
                 .enableIntents(
                         GatewayIntent.GUILD_MEMBERS,
