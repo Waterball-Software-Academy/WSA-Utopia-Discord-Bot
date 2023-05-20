@@ -4,11 +4,12 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.ScheduledEvent
 import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventCreateEvent
 import net.dv8tion.jda.api.events.guild.scheduledevent.update.ScheduledEventUpdateStatusEvent
+import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.commons.extensions.onEnd
 import tw.waterballsa.utopia.commons.extensions.onStart
 import tw.waterballsa.utopia.commons.extensions.toDate
-import tw.waterballsa.utopia.jda.listener
+import tw.waterballsa.utopia.jda.UtopiaListener
 import java.lang.System.lineSeparator
 import java.nio.file.Files.writeString
 import java.nio.file.Path
@@ -36,37 +37,35 @@ private const val DATABASE_FILENAME_PREFIX = "study-circle-participants-record"
 private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 private val log = KotlinLogging.logger {}
 
-fun collectGaaSEventsOnEventCreated(wsaDiscordProperties: WsaDiscordProperties) = listener {
-    on<ScheduledEventCreateEvent> {
-        val partyChannelId = wsaDiscordProperties.wsaPartyChannelId
-        scheduledEvent
-            .takeIf { it.name.contains("遊戲微服務") && it.channel?.id == partyChannelId }
-            ?.run {
-                log.info { "[GaaSEventCreated] {\"message\":\"New GaaS event has been created and collected, event id: $id\"}" }
-                gaasEventIds.add(id)
-            }
+@Component
+class RecordingParticipants(private val properties: WsaDiscordProperties) : UtopiaListener() {
+    override fun onScheduledEventCreate(event: ScheduledEventCreateEvent) {
+        with(event) {
+            val partyChannelId = properties.wsaPartyChannelId
+            scheduledEvent
+                .takeIf { it.name.contains("遊戲微服務") && it.channel?.id == partyChannelId }
+                ?.run {
+                    log.info { "[GaaSEventCreated] {\"message\":\"New GaaS event has been created and collected, event id: $id\"}" }
+                    gaasEventIds.add(id)
+                }
+        }
     }
-}
 
-fun recordTheGaasMemberParticipationOnGaaSEventStarted() = listener {
-    on<ScheduledEventUpdateStatusEvent> {
-        scheduledEvent
-            .takeIf { it.isGaaSEvent() && it.status == ScheduledEvent.Status.ACTIVE }
-            ?.run {
-                log.info { "[RecordTaskStarted] {\"message\":\"Start recording task, event id: $id\"}" }
-                recordEventParticipationStats()
+    override fun onScheduledEventUpdateStatus(event: ScheduledEventUpdateStatusEvent) {
+        with(event) {
+            when  {
+                !scheduledEvent.isGaaSEvent() -> return
+                scheduledEvent.status == ScheduledEvent.Status.ACTIVE -> {
+                    log.info { "[RecordTaskStarted] {\"message\":\"Start recording task, event id: ${scheduledEvent.id}\"}" }
+                    scheduledEvent.recordEventParticipationStats()
+                }
+                scheduledEvent.isCanceledOrCompleted() -> {
+                    log.info { "[RemoveCancelOrCompletedGaaSEvent] {\"message\":\"Remove cancel or completed event, event id: ${scheduledEvent.id}\"}" }
+                    gaasEventIds.remove(scheduledEvent.id)
+                }
+                else -> return
             }
-    }
-}
-
-fun removeGaaSEventOnCanceledOrCompleted() = listener {
-    on<ScheduledEventUpdateStatusEvent> {
-        scheduledEvent
-            .takeIf { it.isGaaSEvent() && it.isCanceledOrCompleted() }
-            ?.run {
-                log.info { "[RemoveCancelOrCompletedGaaSEvent] {\"message\":\"Remove cancel or completed event, event id: $id\"}" }
-                gaasEventIds.remove(id)
-            }
+        }
     }
 }
 
@@ -79,7 +78,7 @@ private fun ScheduledEvent.isCanceledOrCompleted() =
 * When the event starts, it is checked whether it is a GaaS study group, and if so,
 * a task is started to periodically check the list of participants and record their attendance.
 * */
-fun ScheduledEvent.recordEventParticipationStats() {
+private fun ScheduledEvent.recordEventParticipationStats() {
     val filePath = createParticipantsStatsFile()
     val today = LocalDate.now()
     val startTime = today.atTime(21, 0, 0).toDate()

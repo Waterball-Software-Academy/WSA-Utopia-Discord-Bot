@@ -1,10 +1,12 @@
 package tw.waterballsa.utopia.gaas
 
+import org.springframework.stereotype.Component
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import kotlin.io.path.*
 
-internal class ObservedMemberRepository {
+@Component
+class ObservedMemberRepository {
 
     companion object {
         private const val DATABASE_FILE_NANE = "member-list.db"
@@ -28,8 +30,8 @@ internal class ObservedMemberRepository {
             .associateByTo(idToRecord) { it.id }
     }
 
-    internal fun addObservedMember(observedMemberRecord: ObservedMemberRecord): ObservedMemberRecord {
-        return synchronized(idToRecord) {
+    internal fun addObservedMember(observedMemberRecord: ObservedMemberRecord): ObservedMemberRecord =
+        synchronized(idToRecord) {
             idToRecord.computeIfAbsent(observedMemberRecord.id) { observedMemberRecord }
                 .also {
                     observedMemberPath.writeLines(
@@ -38,7 +40,6 @@ internal class ObservedMemberRepository {
                     )
                 }
         }
-    }
 
     internal fun exists(id: String): Boolean = synchronized(idToRecord) { idToRecord.containsKey(id) }
 
