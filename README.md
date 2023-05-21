@@ -50,7 +50,7 @@ java -jar main/target/main-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 # 烏托邦功勛榜
 貢獻 feature 前請先參考 [How to contribute a new feature?
-](https://github.com/Waterball-Software-Academy/WSA-Utopia-Discord-Bot/blob/main/docs/how-to-contribute-a-new-feature.md)
+](https://github.com/Waterball-Software-Academy/WSA-Utopia-Discord-Bot/wiki/No.2-%E5%BB%BA%E7%AB%8B%E6%96%B0%E7%9A%84%E5%8A%9F%E8%83%BD%E6%A8%A1%E7%B5%84-(Create-Feature-Module))
 
 <a href = "https://github.com/Waterball-Software-Academy/WSA-Utopia-Discord-Bot/graphs/contributors">
   <img src = "https://contrib.rocks/image?repo=Waterball-Software-Academy/WSA-Utopia-Discord-Bot"/>
