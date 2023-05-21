@@ -1,3 +1,6 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=WSA-Utopia-Discord-Bot&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=WSA-Utopia-Discord-Bot)
+[![Discord invite](https://img.shields.io/badge/chat-on%20Discord-brightgreen.svg?style=social&amp;logo=discord)](https://discord.gg/waterballsa)
+
 # 環境準備
 - Java 17
 - Maven
