@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - dev/init_sonar_github_action
   pull_request:
     types: [ opened, synchronize, reopened ]
 jobs:
