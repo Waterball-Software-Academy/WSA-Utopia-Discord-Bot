@@ -26,26 +26,28 @@ class KnowledgeKingListener(
     private val chatGptQuestionParser: ChatGptQuestionParser
 ) : UtopiaListener() {
 
+    companion object {
+        private const val customButtonId = "kkg"  // knowledge king game
+
+        private val prepareDurationInMillis = 5.seconds.inWholeMilliseconds
+        private val timeBetweenAnnounceAndFirstQuestion = 60.seconds
+
+        // Specifies the duration of time given to each contestant to prepare before the start of the game
+        private val announcementTime = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei")).apply {
+            set(Calendar.HOUR_OF_DAY, 22)
+            set(Calendar.MINUTE, 20)
+            set(Calendar.SECOND, 0)
+        }!!
+
+        private const val numberOfQuestions = 8
+        private const val timeBetweenQuestionsInSeconds = 15L
+        private const val timeBetweenAnswerRevealedAndNextQuestionInSeconds = 8L
+        private const val halftimeForBreakInSeconds = 20L
+        private const val awardRangeWithTopThree = 3
+    }
+
     private val log = KotlinLogging.logger {}
     private val timer = Timer()
-
-    // Specifies the duration of time given to each contestant to prepare before the start of the game
-    // 10.minutes.inWholeMilliseconds
-    private val announcementTime = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei")).apply {
-        set(Calendar.HOUR_OF_DAY, 22)
-        set(Calendar.MINUTE, 20)
-        set(Calendar.SECOND, 0)
-    }!!
-
-    private val prepareDurationInMillis = 5.seconds.inWholeMilliseconds
-    private val timeBetweenAnnounceAndFirstQuestion = 60.seconds
-
-    private val numberOfQuestions = 8
-    private val timeBetweenQuestionsInSeconds = 15L
-    private val timeBetweenAnswerRevealedAndNextQuestionInSeconds = 8L
-    private val halftimeForBreakInSeconds = 20L
-    private val awardRangeWithTopThree = 3
-
     private var knowledgeKing: KnowledgeKing? = null
 
     init {
@@ -57,6 +59,8 @@ class KnowledgeKingListener(
      * */
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         with(event) {
+            if (!validateButton(button)) return
+
             deferReply(true).queue()
             when {
                 // 遊戲中
@@ -258,6 +262,20 @@ class KnowledgeKingListener(
     }
 
     /**
+     * 產生主題
+     */
+    private fun generateTopic(): String {
+        return "Computer Science" // only support for CS in the current version
+    }
+
+    /**
+     * 驗證按鈕
+     */
+    private fun validateButton(button: Button): Boolean {
+        return button.id?.startsWith(customButtonId) ?: false
+    }
+
+    /**
      * 公佈主題
      */
     private fun announceTopic(topic: String, knowledgeKingChannel: TextChannel) {
@@ -320,7 +338,6 @@ class KnowledgeKingListener(
         """.trimIndent()
         ).queue()
     }
-
 
     /**
      * 公佈第一名
@@ -385,13 +402,6 @@ class KnowledgeKingListener(
     }
 
     /**
-     * 產生主題
-     */
-    private fun generateTopic(): String {
-        return "Computer Science" // only support for CS in the current version
-    }
-
-    /**
      * 處理下一個 event
      */
     private fun handleEvents(events: List<Event>, wsa: WsaDiscordProperties, jda: JDA) {
@@ -430,7 +440,7 @@ class KnowledgeKingListener(
      * 產生選項按鈕 id
      */
     private fun makeButtonId(questionNumber: Int, optionNumber: Int): String {
-        return "${knowledgeKing!!.id}-$questionNumber-$optionNumber"
+        return "$customButtonId-${knowledgeKing!!.id}-$questionNumber-$optionNumber"
     }
 
     /**
