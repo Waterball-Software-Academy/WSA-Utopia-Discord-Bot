@@ -333,7 +333,7 @@ class KnowledgeKingListener(
         knowledgeKingChannel.sendMessage("""
         ┌－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┐
         ｜感謝大家參與本次的「全民軟體知識王」，問答的階段已經結束了｜
-        ｜接下來要準備公佈這次答題正確率的排名，將從第三名開始公布！｜
+        ｜接下來要準備公佈這次答題正確率的排名，從後面名次開始公布！｜
         └－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┘
         """.trimIndent()
         ).queue()
@@ -387,16 +387,16 @@ class KnowledgeKingListener(
      */
     private fun announcePromotingUtopiaDiscordBot(channel: TextChannel, delayInSeconds: Long) {
         channel.sendMessage("""
-        ┌－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┐
-        ｜　　　　　　　　:point_right: 全民軟體知識王由 Utopia Discord Bot 提供 :point_left:　　　　　　　　　 ｜
-        ｜　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　｜
-        ｜　對 Utopia Discord Bot 有興趣的，趕快點擊下面連結加入專案！！　　 　　　　　　　 ｜
-        ｜　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　｜
-        ｜　:regional_indicator_w: Wiki：https://waterballsa.pse.is/utopia-wiki　　　　　　　　　　　　　　　　　   ｜
-        ｜　:link: Discord：https://discord.com/channels/937992003415838761/1089790105369186356 　｜
-        ｜　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　｜
-        ｜　:loudspeaker: 還等什麼～行動起來，一起加入 Utopia Discord Bot 專案及團隊　　　　　　　　　｜
-        └－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┘
+        ┌－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┐
+        ｜　　　　:point_right: 全民軟體知識王由 Utopia Discord Bot 提供 :point_left:　　　　　 ｜
+        ｜　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　｜
+        ｜　對 Utopia Discord Bot 有興趣的，趕快點擊下面連結加入專案！！　  ｜
+        ｜　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　｜
+        ｜　:regional_indicator_w: Wiki：https://waterballsa.pse.is/utopia-wiki　　　　　　　　　   ｜
+        ｜　:link: Discord：https://discord.com/channels/937992003415838761/1089790105369186356　　　　　｜
+        ｜　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　｜
+        ｜　:loudspeaker: 還等什麼～行動起來，一起加入 Utopia Discord Bot 專案及團隊　｜
+        └－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－┘
         """.trimIndent()
         ).queueAfter(delayInSeconds, TimeUnit.SECONDS)
     }
