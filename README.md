@@ -2,10 +2,12 @@
 [![Discord invite](https://img.shields.io/badge/chat-on%20Discord-brightgreen.svg?style=social&amp;logo=discord)](https://discord.gg/waterballsa)
 
 # 環境準備
+
 - Java 17
-- Maven
+- Maven (use the maven wrapper)
 
 可以透過下列指令檢查使用的是否為 java 17 版本
+
 ```
 > java --version
 openjdk 17.0.4 2022-07-19
@@ -23,6 +25,7 @@ OS name: "mac os x", version: "13.0.1", arch: "aarch64", family: "mac"
 # 如何在本地環境執行專案
 
 ## 環境變數
+
 | 環境變數  | description |
 |----------------|-----------------------|
 | BOT_TOKEN      |   Discord bot token   |
@@ -33,14 +36,17 @@ OS name: "mac os x", version: "13.0.1", arch: "aarch64", family: "mac"
 export {環境變數}=..
 
 範例
+
 ```
 export DEPLOYMENT_ENV=beta
 ```
+
 ## 執行
 
-打包 jar 
+打包 jar
+
 ```
-> mvn clean package
+> ./mvnw clean package
 ```
 
 執行
@@ -52,6 +58,7 @@ java -jar main/target/main-1.0-SNAPSHOT-jar-with-dependencies.jar
 更多相關資訊請參考 [烏托邦 WIKI](https://github.com/Waterball-Software-Academy/WSA-Utopia-Discord-Bot/wiki)
 
 # 烏托邦功勛榜
+
 貢獻 feature 前請先參考 [How to contribute a new feature?
 ](https://github.com/Waterball-Software-Academy/WSA-Utopia-Discord-Bot/wiki/No.2-%E5%BB%BA%E7%AB%8B%E6%96%B0%E7%9A%84%E5%8A%9F%E8%83%BD%E6%A8%A1%E7%B5%84-(Create-Feature-Module))
 
