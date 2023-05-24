@@ -14,7 +14,7 @@ openjdk 17.0.4 2022-07-19
 OpenJDK Runtime Environment Temurin-17.0.4+8 (build 17.0.4+8)
 OpenJDK 64-Bit Server VM Temurin-17.0.4+8 (build 17.0.4+8, mixed mode, sharing)
 
-> mvn --version
+> ./mvnw --version
 Apache Maven 3.8.6 (84538c9988a25aec085021c365c560670ad80f63)
 Maven home: /opt/homebrew/Cellar/maven/3.8.6/libexec
 Java version: 18.0.2, vendor: Homebrew, runtime: /opt/homebrew/Cellar/openjdk/18.0.2/libexec/openjdk.jdk/Contents/Home
