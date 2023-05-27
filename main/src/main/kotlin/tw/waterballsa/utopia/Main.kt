@@ -3,7 +3,6 @@ package tw.waterballsa.utopia
 import ch.qos.logback.core.util.OptionHelper
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import generateCommandTableMarkdown
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import org.springframework.context.annotation.*
@@ -13,6 +12,7 @@ import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.commons.config.logger
 import tw.waterballsa.utopia.commons.extensions.createDirectoryIfNotExists
 import tw.waterballsa.utopia.commons.utils.loadProperties
+import tw.waterballsa.utopia.document.generateCommandTableMarkdown
 import tw.waterballsa.utopia.jda.WSA_GUILD_BEAN_NAME
 import tw.waterballsa.utopia.jda.registerAllJdaListeners
 import tw.waterballsa.utopia.jda.runJda
