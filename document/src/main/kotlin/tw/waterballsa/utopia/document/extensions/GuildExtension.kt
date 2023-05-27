@@ -1,4 +1,4 @@
-package extensions
+package tw.waterballsa.utopia.document.extensions
 
 import net.dv8tion.jda.api.entities.Guild
 

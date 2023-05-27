@@ -1,11 +1,11 @@
-package extensions
+package tw.waterballsa.utopia.document.extensions
 
-import domain.CommandDocument
-import domain.CommandInfo
-import domain.CommandOption
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.Command.Subcommand
 import net.dv8tion.jda.api.interactions.commands.ICommandReference
+import tw.waterballsa.utopia.document.domain.CommandDocument
+import tw.waterballsa.utopia.document.domain.CommandInfo
+import tw.waterballsa.utopia.document.domain.CommandOption
 
 fun List<Command>.toCommandDocument(): CommandDocument {
     val commandInfos = flatMap { command ->

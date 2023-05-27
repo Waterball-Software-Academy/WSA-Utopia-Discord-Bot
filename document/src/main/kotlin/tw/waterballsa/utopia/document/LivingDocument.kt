@@ -1,6 +1,8 @@
-import extensions.generateCommandTableMarkdown
+package tw.waterballsa.utopia.document
+
 import net.dv8tion.jda.api.entities.Guild
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import tw.waterballsa.utopia.document.extensions.generateCommandTableMarkdown
 import tw.waterballsa.utopia.jda.WSA_GUILD_BEAN_NAME
 import tw.waterballsa.utopia.jda.log
 import java.io.File

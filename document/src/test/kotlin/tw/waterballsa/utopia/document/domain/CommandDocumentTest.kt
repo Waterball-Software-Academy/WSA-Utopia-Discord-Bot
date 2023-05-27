@@ -1,4 +1,4 @@
-package domain
+package tw.waterballsa.utopia.document.domain
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

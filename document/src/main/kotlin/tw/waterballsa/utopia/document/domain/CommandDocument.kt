@@ -1,4 +1,4 @@
-package domain
+package tw.waterballsa.utopia.document.domain
 
 import net.steppschuh.markdowngenerator.table.Table
 import tw.waterballsa.utopia.jda.log
