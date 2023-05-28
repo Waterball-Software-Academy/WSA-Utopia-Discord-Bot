@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import org.springframework.stereotype.Component
-import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.commons.extensions.scheduleDelay
 import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.jda.extensions.getOptionAsLongInRange
@@ -43,13 +42,13 @@ private val timer = Timer()
  * @author johnny@waterballsa.tw
  */
 @Component
-class PollCommandListener(private val wsa: WsaDiscordProperties) : UtopiaListener() {
+class PollCommandListener : UtopiaListener() {
     // embedded session id (message's id) to polling session
     private val sessionIdToSession: ConcurrentHashMap<String, PollingSession> = ConcurrentHashMap()
 
     override fun commands(): List<CommandData> {
         return listOf(
-                Commands.slash("poll", "<TODO>")
+                Commands.slash("poll", "Initiate a polling session and permit Discord members to cast their votes for various options within a specified amount of time.")
                         .addRequiredOption(OptionType.INTEGER, OPTION_TIME, "The duration of the poll session")
                         .addRequiredOption(OptionType.STRING, OPTION_TIMEUNIT, "(Day | Minute | Second)")
                         .addRequiredOption(OptionType.STRING, OPTION_QUESTION, "Question")
@@ -72,7 +71,7 @@ class PollCommandListener(private val wsa: WsaDiscordProperties) : UtopiaListene
                 message.addReaction(Emoji.fromUnicode(EMOJI_UNICODES[i])).complete()
             }
 
-            scheduleTaskToEndThePollingSession(wsa, jda, pollingSession)
+            scheduleTaskToEndThePollingSession(jda, pollingSession)
         }
     }
 
@@ -93,8 +92,6 @@ class PollCommandListener(private val wsa: WsaDiscordProperties) : UtopiaListene
         return PollingSetting(time!!, timeUnit, question, options)
     }
 
-    // TODO:
-    // 一人一票的限制
     override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
         with(event) {
             val session = sessionIdToSession[messageId] ?: return
@@ -115,7 +112,7 @@ class PollCommandListener(private val wsa: WsaDiscordProperties) : UtopiaListene
         }
     }
 
-    private fun scheduleTaskToEndThePollingSession(wsa: WsaDiscordProperties, jda: JDA, pollingSession: PollingSession) {
+    private fun scheduleTaskToEndThePollingSession(jda: JDA, pollingSession: PollingSession) {
         val setting = pollingSession.setting
         timer.scheduleDelay(setting.timeUnit.toMillis(setting.time)) {
             val pollingResult = pollingSession.end()
