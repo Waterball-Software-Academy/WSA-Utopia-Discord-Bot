@@ -35,3 +35,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=WSA-Utopia-Discord-Bot -Dsonar.organization=waterball-software-academy -Dsonar.host.url=https://sonarcloud.io -Dsonar.sources=src/main
+      - name: 'Commit Status: Set workflow result status'
+        uses: myrotvorets/set-commit-status-action@1.1.6
+        # Always run this step regardless of job failing early:
+        if: ${{ always() }}
+        env:
+          DEPLOY_SUCCESS: Quality gate passed.
+          DEPLOY_FAILURE: Failed to pass the quality gate!
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status == 'success' && 'success' || 'failure' }}
+          sha: ${{ github.event.workflow_run.head_sha }}
+          description: ${{ job.status == 'success' && env.DEPLOY_SUCCESS || env.DEPLOY_FAILURE }}
