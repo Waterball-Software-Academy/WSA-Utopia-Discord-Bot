@@ -21,6 +21,7 @@
         <module>forum-experience</module>
         <module>gaas</module>
         <module>audio-breakout</module>
+        <module>audience-counter</module>
         <module>guess-num-1A2B</module>
         <module>random</module>
         <module>actuator</module>
@@ -199,6 +200,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>audio-breakout</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>audience-counter</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>

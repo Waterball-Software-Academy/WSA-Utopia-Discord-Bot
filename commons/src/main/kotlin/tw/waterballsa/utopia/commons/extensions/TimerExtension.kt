@@ -6,6 +6,8 @@ import kotlin.concurrent.timerTask
 import kotlin.time.Duration.Companion.hours
 
 private val log = KotlinLogging.logger {}
+
+
 fun Timer.onStart(task: TimerTask, startTime: Date, period: Long) = schedule(task, startTime, period)
 
 fun Timer.onEnd(task: TimerTask, endTime: Date) {
@@ -15,7 +17,6 @@ fun Timer.onEnd(task: TimerTask, endTime: Date) {
         log.info { "[TimerTaskFinished] {\"message\":\"Timer task has been closed.\"}" }
     }, endTime)
 }
-
 
 fun Timer.dailyScheduling(hourOfDay: Int, minutes: Int, seconds: Int, task: Runnable) {
     dailyScheduling(Calendar.getInstance().apply {
