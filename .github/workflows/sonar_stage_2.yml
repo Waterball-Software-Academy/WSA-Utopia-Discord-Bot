@@ -35,4 +35,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=WSA-Utopia-Discord-Bot -Dsonar.organization=waterball-software-academy -Dsonar.host.url=https://sonarcloud.io -Dsonar.sources=src/main -Dsonar.pullrequest.key=${{ github.event.workflow_run.pull_requests[0].number }} -Dsonar.pullrequest.branch=${{ github.event.workflow_run.pull_requests[0].head.ref }} -Dsonar.pullrequest.base=${{ github.event.workflow_run.pull_requests[0].base.ref }} -Dsonar.scm.revision=${{ github.event.workflow_run.head_sha }}
+        run: |
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          -Dsonar.projectKey=WSA-Utopia-Discord-Bot \
+          -Dsonar.organization=waterball-software-academy \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.sources=src/main \
+          -Dsonar.pullrequest.gihtub.repository=chen-tf/WSA-Utopia-Discord-Bot \
+          -Dsonar.pullrequest.base=main \
+          -Dsonar.pullrequest.branch=chen-tf-patch-3 \
+          -Dsonar.pullrequest.key=3
