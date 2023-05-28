@@ -1,4 +1,4 @@
-name: SonarCloud
+name: SonarCloud(Stage2)
 on:
   workflow_run:
     workflows: [ "SonarCloud(Stage1)" ]
