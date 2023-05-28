@@ -1,6 +1,7 @@
 package tw.waterballsa.utopia.audiox
 
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
@@ -35,25 +36,25 @@ class MuteAudiences() : UtopiaListener() {
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         with(event) {
-            val memberChannel = member?.voiceState?.channel
-            log.info { "[Mute Command]: {\"commandInChannel\":\"$channel\", \"userInChannel\":\"$memberChannel\"}" }
-            if (isNotMuteCommand() && isNotVoiceChannel()) {
+            if (isNotMuteCommand() || isNotVoiceChannel()) {
                 return
             }
+            val memberChannel = member?.voiceState?.channel
+            log.info { "[Mute Command]: {\"commandInChannel\":\"$channel\", \"userInChannel\":\"$memberChannel\"}" }
 
             when (fullCommandName) {
                 MUTE_AUDIENCES_COMMAND -> {
-                    val muteMemberAction = if (isUnmute()) unMuteMember() else muteMember()
-                    executeMuteCommand({ muteMemberAction }, "Mute audience voice !!")
+                    val muteMemberAction: (Member, String) -> Unit = if (isUnmute()) ::unMuteMember else ::muteMember
+                    executeMuteCommand(muteMemberAction, "Mute audience voice !!")
                 }
 
-                MUTE_REVOKED_COMMAND -> executeMuteCommand({ unMuteMember() }, "Unmute voice !!")
+                MUTE_REVOKED_COMMAND -> executeMuteCommand(::unMuteMember, "Unmute voice !!")
             }
         }
     }
 
     private fun SlashCommandInteractionEvent.isNotMuteCommand(): Boolean {
-        return fullCommandName != MUTE_AUDIENCES_COMMAND || fullCommandName != MUTE_REVOKED_COMMAND
+        return fullCommandName != MUTE_AUDIENCES_COMMAND && fullCommandName != MUTE_REVOKED_COMMAND
     }
 
     private fun SlashCommandInteractionEvent.isNotVoiceChannel(): Boolean {
@@ -75,25 +76,28 @@ class MuteAudiences() : UtopiaListener() {
         return isUnmuteAudiences || isUnmuteRole
     }
 
-    private fun SlashCommandInteractionEvent.muteMember() {
-        val memberName = member?.nickname ?: member?.effectiveName
-        val memberId = member?.id
+    private fun muteMember(member: Member, fullCommandName: String) {
+        val memberName = member.nickname ?: member.effectiveName
+        val memberId = member.id
 
-        member?.mute(true)
-            ?.queue { log.info { "[$fullCommandName]: {\"muteLabel\":\"Mute\", \"memberName\":\"${memberName}\", \"memberId\":\"${memberId}\"}" } }
+        member.mute(true)
+            .queue { log.info { "[$fullCommandName]: {\"muteLabel\":\"Mute\", \"memberName\":\"${memberName}\", \"memberId\":\"${memberId}\"}" } }
     }
 
-    private fun SlashCommandInteractionEvent.unMuteMember() {
-        val memberName = member?.nickname ?: member?.effectiveName
-        val memberId = member?.id
+    private fun unMuteMember(member: Member, fullCommandName: String) {
+        val memberName = member.nickname ?: member.effectiveName
+        val memberId = member.id
 
-        member?.mute(false)
-            ?.queue { log.info { "[$fullCommandName]: {\"muteLabel\":\"Unmute\", \"memberName\":\"${memberName}\", \"memberId\":\"${memberId}\"}" } }
+        member.mute(false)
+            .queue { log.info { "[$fullCommandName]: {\"muteLabel\":\"Unmute\", \"memberName\":\"${memberName}\", \"memberId\":\"${memberId}\"}" } }
     }
 
-    private fun SlashCommandInteractionEvent.executeMuteCommand(muteMemberAction: () -> Unit, replyMessage: String) {
+    private fun SlashCommandInteractionEvent.executeMuteCommand(
+        muteMemberAction: (member: Member, command: String) -> Unit,
+        replyMessage: String
+    ) {
         val voiceChannel = channel.asVoiceChannel()
-        voiceChannel.members.forEach { _ -> muteMemberAction.invoke() }
+        voiceChannel.members.forEach { muteMemberAction(it, fullCommandName) }
         reply(replyMessage).queue()
     }
 
