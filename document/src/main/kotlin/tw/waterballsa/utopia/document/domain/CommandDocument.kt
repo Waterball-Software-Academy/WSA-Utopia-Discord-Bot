@@ -1,11 +1,13 @@
 package tw.waterballsa.utopia.document.domain
 
+import mu.KotlinLogging
 import net.steppschuh.markdowngenerator.table.Table
-import tw.waterballsa.utopia.jda.log
 
 const val HEADER_COMMANDS = "Commands"
 const val ARGUMENTS = "Arguments"
 const val DESCRIPTION = "Description"
+
+private val log = KotlinLogging.logger {}
 
 class CommandDocument(
         private val commandInfos: List<CommandInfo> = emptyList()
