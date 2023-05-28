@@ -1,7 +1,7 @@
 name: SonarCloud
 on:
   workflow_run:
-    workflows: [ "SonarCloud(Entry)" ]
+    workflows: [ "SonarCloud(Stage1)" ]
     types:
       - completed
 jobs:

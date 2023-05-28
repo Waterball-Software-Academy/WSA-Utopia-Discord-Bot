@@ -1,4 +1,4 @@
-name: SonarCloud(Entry)
+name: SonarCloud(Stage1)
 on:
   push:
     branches:
