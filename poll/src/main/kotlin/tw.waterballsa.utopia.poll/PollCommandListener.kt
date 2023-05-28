@@ -1,21 +1,27 @@
 package tw.waterballsa.utopia.poll
 
+import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
+import tw.waterballsa.utopia.commons.extensions.scheduleDelay
 import tw.waterballsa.utopia.jda.UtopiaListener
-import tw.waterballsa.utopia.jda.extensions.getOptionAsIntInRange
+import tw.waterballsa.utopia.jda.extensions.getOptionAsLongInRange
 import tw.waterballsa.utopia.jda.extensions.getOptionAsStringWithValidation
 import java.awt.Color
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 private const val OPTION_TIME = "time"
@@ -26,7 +32,11 @@ private const val OPTION_QUESTION = "question"
 
 private const val OPTION_OPTIONS = "options"
 
-private val EMOJI_UNICODES: Array<String> = arrayOf("0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣")
+private val EMOJI_UNICODES: Array<String> = arrayOf("0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "\uD83D\uDD1F")
+
+private val log = KotlinLogging.logger {}
+
+private val timer = Timer()
 
 /**
  * /poll time=1 timeUnit=minutes question="Which operating system do you prefer?" options="Windows,MacOS,Linux,Other"
@@ -34,8 +44,8 @@ private val EMOJI_UNICODES: Array<String> = arrayOf("0️⃣", "1️⃣", "2️�
  */
 @Component
 class PollCommandListener(private val wsa: WsaDiscordProperties) : UtopiaListener() {
-    // embedded message's id to polling session
-    private val messageIdToSession: MutableMap<String, PollingSession> = mutableMapOf()
+    // embedded session id (message's id) to polling session
+    private val sessionIdToSession: ConcurrentHashMap<String, PollingSession> = ConcurrentHashMap()
 
     override fun commands(): List<CommandData> {
         return listOf(
@@ -52,42 +62,75 @@ class PollCommandListener(private val wsa: WsaDiscordProperties) : UtopiaListene
             if (!fullCommandName.startsWith("poll")) {
                 return
             }
-            val setting = getPollingSetting()
+            val pollingSetting = parsePollingSettingFromOptions() ?: return
 
-            val message = channel.sendMessageEmbeds(setting.toMessageEmbeds()).complete()
-            val session = PollingSession(id = message.id, setting = setting)
-            messageIdToSession[message.id] = session
-            options.forEachIndexed { i, _ ->
+            val message = channel.sendMessageEmbeds(pollingSetting.toMessageEmbeds()).complete()
+            val pollingSession = PollingSession(id = message.id, channelId = channel.id, setting = pollingSetting)
+            sessionIdToSession[message.id] = pollingSession
+
+            pollingSetting.options.forEachIndexed { i, _ ->
                 message.addReaction(Emoji.fromUnicode(EMOJI_UNICODES[i])).complete()
             }
+
+            scheduleTaskToEndThePollingSession(wsa, jda, pollingSession)
         }
     }
 
 
-    private fun SlashCommandInteractionEvent.getPollingSetting(): PollingSetting {
-        val time = getOptionAsIntInRange(OPTION_TIME, 0..500)
-        val timeUnit = getOptionAsStringWithValidation(OPTION_TIMEUNIT, "should be one of (Day | Minute | Second)") {
+    private fun SlashCommandInteractionEvent.parsePollingSettingFromOptions(): PollingSetting? {
+        val time = getOptionAsLongInRange(OPTION_TIME, 0..500L)
+        val timeUnit = getOptionAsStringWithValidation(OPTION_TIMEUNIT, "should be one of (Days | Minutes | Seconds)") {
             TimeUnit.values().any { unit -> unit.name == it.uppercase() }
-        }.let { TimeUnit.valueOf(it!!.uppercase()) }
+        }?.let { TimeUnit.valueOf(it.uppercase()) } ?: return null
 
-        val question = getOption(OPTION_QUESTION)?.asString
-        val options = getOption(OPTION_OPTIONS)?.asString?.split(Regex("\\s*,\\s*"))
+        val question = getOption(OPTION_QUESTION)!!.asString
+        val options = getOption(OPTION_OPTIONS)!!.asString.split(Regex("\\s*,\\s*"))
+        if (options.size > EMOJI_UNICODES.size) {
+            reply("The number of options cannot be greater than ${EMOJI_UNICODES.size}.").complete()
+            return null
+        }
 
-        return PollingSetting(time!!, timeUnit, question!!, options!!)
+        return PollingSetting(time!!, timeUnit, question, options)
     }
 
+    // TODO:
+    // 一人一票的限制
     override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
         with(event) {
-            val session = messageIdToSession[messageId] ?: return
+            val session = sessionIdToSession[messageId] ?: return
             if (userId == jda.selfUser.id) {
                 return
             }
             session.vote(Vote(userId, emoji))
         }
     }
+
+    override fun onMessageReactionRemove(event: MessageReactionRemoveEvent) {
+        with(event) {
+            val session = sessionIdToSession[messageId] ?: return
+            if (userId == jda.selfUser.id) {
+                return
+            }
+            session.devote(Vote(userId, emoji))
+        }
+    }
+
+    private fun scheduleTaskToEndThePollingSession(wsa: WsaDiscordProperties, jda: JDA, pollingSession: PollingSession) {
+        val setting = pollingSession.setting
+        timer.scheduleDelay(setting.timeUnit.toMillis(setting.time)) {
+            val pollingResult = pollingSession.end()
+
+            sessionIdToSession.remove(pollingSession.id)
+            val channel = jda.getTextChannelById(pollingSession.channelId)!!
+            val message = channel.retrieveMessageById(pollingSession.id).complete()
+            message.reply("The polling session has ended. Result：\n${pollingResult.messageBody}")
+                    .complete()
+        }
+    }
 }
 
-data class PollingSetting(val time: Int, val timeUnit: TimeUnit, val question: String, val options: List<String>) {
+
+data class PollingSetting(val time: Long, val timeUnit: TimeUnit, val question: String, val options: List<String>) {
     private val optionsMessageBody = options.mapIndexed { i, option ->
         "${EMOJI_UNICODES[i]} $option"
     }.joinToString("\n")
@@ -111,21 +154,52 @@ data class PollingSetting(val time: Int, val timeUnit: TimeUnit, val question: S
                             .setColor(Color.BLUE)
                             .build(),
             )
+
+    fun getOption(index: Int): String = options[index]
 }
 
 data class Vote(val userId: String, val emoji: EmojiUnion)
 
 class PollingSession(
-        val id: String, private val setting: PollingSetting) {
+        val id: String, val channelId: String, val setting: PollingSetting) {
     private val voterIdToVotedOptionIndices = hashMapOf<String, MutableList<Int>>()
+
     fun vote(vote: Vote) {
-        val emojiIndex = EMOJI_UNICODES.indexOf(vote.emoji.name)
-        if (emojiIndex < 0) {
-            return
+        findVoterOptionIndices(vote) {
+            log.info { """[Voted] {"userId": ${vote.userId}, "optionIndex": $it}" }""" }
+            add(it)
         }
-        voterIdToVotedOptionIndices.computeIfAbsent(vote.userId) { mutableListOf() }
-                .add(emojiIndex)
     }
+
+    fun devote(vote: Vote) {
+        findVoterOptionIndices(vote) {
+            log.info { """[Devoted] {"userId": ${vote.userId}, "optionIndex": $it}" }""" }
+            remove(it)
+        }
+    }
+
+    private fun findVoterOptionIndices(vote: Vote, newIndexConsumer: MutableList<Int>.(int: Int) -> Unit) {
+        val emojiIndex = EMOJI_UNICODES.indexOf(vote.emoji.name)
+        if (emojiIndex >= 0) {
+            newIndexConsumer.invoke(voterIdToVotedOptionIndices.computeIfAbsent(vote.userId) { mutableListOf() }, emojiIndex)
+        }
+    }
+
+    fun end(): PollingResult {
+        return PollingResult(voterIdToVotedOptionIndices, setting)
+    }
+}
+
+class PollingResult(private val voterIdToVotedOptionIndices: Map<String, MutableList<Int>>, private val setting: PollingSetting) {
+    val messageBody: String
+        get() {
+            return voterIdToVotedOptionIndices.values
+                    .flatten()
+                    .groupingBy { it }
+                    .eachCount()
+                    .map { (index, count) -> "${setting.getOption(index)}: $count votes." }
+                    .joinToString("\n")
+        }
 }
 
 private fun SlashCommandData.addRequiredOption(type: OptionType, name: String, description: String) =

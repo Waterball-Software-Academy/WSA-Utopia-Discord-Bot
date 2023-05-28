@@ -24,13 +24,13 @@ private val log = KotlinLogging.logger {}
 class MuteAudiences() : UtopiaListener() {
     override fun commands(): List<CommandData> {
         return listOf(
-            Commands.slash(MUTE_SLASH, "Mute")
-                .addSubcommands(
-                    SubcommandData(AUDIENCES_SUBCOMMAND, "Mute Audiences")
-                        .addOption(OptionType.USER, OPTION_AUDIENCE_NAME, "Allow who to voice", false)
-                        .addOption(OptionType.ROLE, OPTION_ROLE_NAME, "Allow role to voice", false),
-                    SubcommandData(REVOKED_SUB_COMMAND, "Unmute")
-                )
+                Commands.slash(MUTE_SLASH, "Mute")
+                        .addSubcommands(
+                                SubcommandData(AUDIENCES_SUBCOMMAND, "Mute Audiences")
+                                        .addOption(OptionType.USER, OPTION_AUDIENCE_NAME, "Allow who to voice", false)
+                                        .addOption(OptionType.ROLE, OPTION_ROLE_NAME, "Allow role to voice", false),
+                                SubcommandData(REVOKED_SUB_COMMAND, "Unmute")
+                        )
         )
     }
 
