@@ -57,6 +57,7 @@ java -jar main/target/main-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 
 
+
 更多相關資訊請參考 [烏托邦 WIKI](https://github.com/Waterball-Software-Academy/WSA-Utopia-Discord-Bot/wiki)
 
 # 烏托邦功勛榜
