@@ -43,4 +43,5 @@ jobs:
           -Dsonar.sources=src/main
           -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
           -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }}
+          -Dsonar.pullrequest.github.repository=Waterball-Software-Academy/WSA-Utopia-Discord-Bot
           -Dsonar.scm.revision=${{ github.event.pull_request.head.sha }}
