@@ -2,6 +2,7 @@ package tw.waterballsa.utopia.gaas
 
 import dev.minn.jda.ktx.generics.getChannel
 import net.dv8tion.jda.api.entities.Message.MentionType
+import net.dv8tion.jda.api.entities.ScheduledEvent
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
@@ -39,6 +40,7 @@ class PersonalLeave(private val properties: WsaDiscordProperties): UtopiaListene
         private const val DATABASE_DIRECTORY = "data/gaas/leave"
         private const val DATABASE_FILENAME_PREFIX = "GaaS-leave"
         private lateinit var eventTime: LocalDateTime
+        private val eventNameKeywords = listOf("遊戲微服務", "讀書會")
     }
 
     override fun onScheduledEventCreate(event: ScheduledEventCreateEvent) {
@@ -51,7 +53,7 @@ class PersonalLeave(private val properties: WsaDiscordProperties): UtopiaListene
             val conversationChannel = jda.getGuildById(guildId)!!.getChannel<TextChannel>(gaaSConversationChannelId)!!
 
             scheduledEvent
-                .takeIf { it.name.contains("遊戲微服務") && it.channel?.id == partyChannelId }
+                .takeIf { it.isGaaSEvent() && it.channel?.id == partyChannelId }
                 ?.run {
                     conversationChannel
                         .sendMessage("<@&$wsaGaaSMemberRoleId>\n哈囉各位讀書會夥伴！如果不能參加 **[${eventTime.toLocalDate()}]** 讀書會的夥伴，請點擊按鈕請假喔")
@@ -105,6 +107,8 @@ class PersonalLeave(private val properties: WsaDiscordProperties): UtopiaListene
                     replyEphemerally("哈囉，$nickname！我們收到你的請假申請囉，期待你下週能來和我們暢聊你的開發成果。")
                 }
     }
+
+    private fun ScheduledEvent.isGaaSEvent(): Boolean = eventNameKeywords.all { it in name }
 
     private fun createLeaveRecordFile(): Path =
         Path(DATABASE_DIRECTORY)
