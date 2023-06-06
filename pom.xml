@@ -30,6 +30,7 @@
         <module>audio-experience</module>
         <module>utopia-gamification-quest</module>
         <module>poll</module>
+        <module>russian-roulette</module>
     </modules>
 
     <properties>
