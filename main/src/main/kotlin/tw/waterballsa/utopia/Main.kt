@@ -6,11 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import org.springframework.context.annotation.*
+import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 import tw.waterballsa.utopia.commons.config.ENV_BETA
 import tw.waterballsa.utopia.commons.config.ENV_PROD
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.commons.config.logger
 import tw.waterballsa.utopia.commons.extensions.createDirectoryIfNotExists
+import tw.waterballsa.utopia.commons.mongo.MongoDBConfiguration
 import tw.waterballsa.utopia.commons.utils.loadProperties
 import tw.waterballsa.utopia.document.generateCommandTableMarkdown
 import tw.waterballsa.utopia.jda.WSA_GUILD_BEAN_NAME
@@ -23,7 +26,9 @@ private const val DATABASE_DIRECTORY = "data"
 
 @Configuration
 @ComponentScan("tw.waterballsa.utopia")
+@EnableMongoRepositories
 open class MyDependencyInjectionConfig {
+
     @Bean
     open fun commonAnnotationBeanPostProcessor(): CommonAnnotationBeanPostProcessor {
         return CommonAnnotationBeanPostProcessor()
@@ -52,6 +57,11 @@ open class MyDependencyInjectionConfig {
     open fun wsaGuild(wsaProperties: WsaDiscordProperties, jda: JDA): Guild {
         return jda.getGuildById(wsaProperties.guildId)
                 ?: throw RuntimeException("You must run JDA before instantiating the ApplicationContext.")
+    }
+
+    @Bean
+    open fun mongoTemplate(wsaProperties: WsaDiscordProperties): MongoTemplate {
+        return MongoDBConfiguration(wsaProperties).mongoTemplate
     }
 }
 

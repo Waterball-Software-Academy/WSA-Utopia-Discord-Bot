@@ -21,6 +21,7 @@ open class WsaDiscordProperties(properties: Properties) {
     val wsaGaaSConversationChannelId: String
     val wsaGaaSMemberRoleId: String
     val wsaAlphaRoleId: String
+    val mongoDatabase: String
 
     init {
         properties.run {
@@ -37,6 +38,7 @@ open class WsaDiscordProperties(properties: Properties) {
             wsaGaaSMemberRoleId = getProperty("wsa-gaas-member-role-id")
             wsaAlphaRoleId = getProperty("wsa-alpha-role-id")
             knowledgeKingChannelId = getProperty("knowledge-king-channel-id")
+            mongoDatabase = getProperty("mongo-database")
         }
     }
 }
