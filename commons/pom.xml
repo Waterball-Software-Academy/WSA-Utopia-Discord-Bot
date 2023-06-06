@@ -11,7 +11,8 @@
     <description>Common libraries</description>
 
     <properties>
-        <mongodb-driver-sync.version>4.9.0</mongodb-driver-sync.version>
+        <mongodb-driver-sync.version>4.6.1</mongodb-driver-sync.version>
+        <spring-data-mongo.version>3.4.12</spring-data-mongo.version>
     </properties>
 
     <dependencies>
@@ -19,6 +20,11 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
             <version>${mongodb-driver-sync.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-mongodb</artifactId>
+            <version>${spring-data-mongo.version}</version>
         </dependency>
     </dependencies>
 </project>
