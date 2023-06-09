@@ -28,6 +28,7 @@
         <module>document</module>
         <module>audio-experience</module>
         <module>utopia-gamification-quest</module>
+        <module>poll</module>
     </modules>
 
     <properties>
@@ -231,6 +232,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>audio-experience</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>poll</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>

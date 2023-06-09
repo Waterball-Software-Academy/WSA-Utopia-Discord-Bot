@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration
 import tw.waterballsa.utopia.jda.JdaInstance.compositeListener
 import java.lang.reflect.Method
 
-val log = KotlinLogging.logger {}
+private val log = KotlinLogging.logger {}
 
 internal class CompositeListener : EventListener {
     internal val listeners: MutableList<UtopiaListener> = mutableListOf()
