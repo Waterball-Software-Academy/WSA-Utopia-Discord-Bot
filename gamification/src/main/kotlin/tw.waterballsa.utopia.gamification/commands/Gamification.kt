@@ -26,9 +26,6 @@ class Player(val id: Snowflake, var name: String, var exp: Long, level: Int) {
     }
 }
 
-import org.slf4j.event.Level
-import java.lang.IllegalArgumentException
-
 class Player(val id: Snowflake, var name: String, var exp: Long, level: Int) {
     var level: Int
         set(value) {
