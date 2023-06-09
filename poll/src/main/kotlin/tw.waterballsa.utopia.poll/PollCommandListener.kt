@@ -19,6 +19,7 @@ import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.jda.extensions.getOptionAsLongInRange
 import tw.waterballsa.utopia.jda.extensions.getOptionAsStringWithValidation
 import java.awt.Color
+import java.lang.System.lineSeparator
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -77,7 +78,7 @@ class PollCommandListener : UtopiaListener() {
 
 
     private fun SlashCommandInteractionEvent.parsePollingSettingFromOptions(): PollingSetting? {
-        val time = getOptionAsLongInRange(OPTION_TIME, 0..500L)
+        val time = getOptionAsLongInRange(OPTION_TIME, 0..500L)!!
         val timeUnit = getOptionAsStringWithValidation(OPTION_TIMEUNIT, "should be one of (Days | Minutes | Seconds)") {
             TimeUnit.values().any { unit -> unit.name == it.uppercase() }
         }?.let { TimeUnit.valueOf(it.uppercase()) } ?: return null
@@ -89,7 +90,7 @@ class PollCommandListener : UtopiaListener() {
             return null
         }
 
-        return PollingSetting(time!!, timeUnit, question, options)
+        return PollingSetting(time, timeUnit, question, options)
     }
 
     override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
@@ -130,7 +131,7 @@ class PollCommandListener : UtopiaListener() {
 data class PollingSetting(val time: Long, val timeUnit: TimeUnit, val question: String, val options: List<String>) {
     private val optionsMessageBody = options.mapIndexed { i, option ->
         "${EMOJI_UNICODES[i]} $option"
-    }.joinToString("\n")
+    }.joinToString(lineSeparator())
 
 
     fun toMessageEmbeds(): Collection<MessageEmbed> =
@@ -195,7 +196,7 @@ class PollingResult(private val voterIdToVotedOptionIndices: Map<String, Mutable
                     .groupingBy { it }
                     .eachCount()
                     .map { (index, count) -> "${setting.getOption(index)}: $count votes." }
-                    .joinToString("\n")
+                    .joinToString(lineSeparator())
         }
 }
 
