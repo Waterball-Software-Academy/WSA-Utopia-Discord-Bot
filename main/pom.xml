@@ -38,6 +38,10 @@
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>rock-paper-scissors</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>forum-experience</artifactId>
         </dependency>
         <dependency>

@@ -23,6 +23,7 @@
         <module>audio-breakout</module>
         <module>audience-counter</module>
         <module>guess-num-1A2B</module>
+        <module>rock-paper-scissors</module>
         <module>random</module>
         <module>actuator</module>
         <module>document</module>
@@ -147,6 +148,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>guess-num-1A2B</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>rock-paper-scissors</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
