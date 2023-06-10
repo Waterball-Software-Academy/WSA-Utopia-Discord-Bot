@@ -4,9 +4,9 @@ package tw.waterballsa.utopia.guessnum1a2b.domain
 
 class GuessNum1A2B(
     private val gameId: Id,
-    private val answer: String = generateAnswer()
+    val answer: String = generateAnswer()
 ) {
-    data class Id(val playerId: String, private val roomId: String)
+    data class Id(val playerId: String, val roomId: String)
 
     fun startGame(): List<Event> {
         return listOf(GameStartedEvent(gameId))

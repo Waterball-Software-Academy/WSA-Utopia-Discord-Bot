@@ -16,7 +16,7 @@ val logger = KotlinLogging.logger {}
 const val GUESS_NUM_1A2B_COMMAND_NAME = "1a2b"
 
 @Component
-class GuessNum1A2BListener : UtopiaListener() {
+class GuessNum1A2BListener(private val roomRepository: RoomRepository) : UtopiaListener() {
     private val gameManager = GameManager()
 
     override fun commands(): List<CommandData> {
@@ -42,6 +42,13 @@ class GuessNum1A2BListener : UtopiaListener() {
                 val gameId = GuessNum1A2B.Id(member?.id!!, room.id)
                 val newGame = gameManager.register(gameId)
                 val events = newGame.startGame()
+
+                // 建
+                val roomModel = Room(gameId.roomId, gameId.playerId, newGame.answer)
+
+                // 存
+                roomRepository.save(roomModel)
+
                 room.handleEvents(events)
             }
         }
@@ -69,6 +76,13 @@ class GuessNum1A2BListener : UtopiaListener() {
             game?.let {
                 val events = game.guess(message.contentDisplay)
                 room.handleEvents(events)
+
+                // 查
+                val roomModel = roomRepository.findById(gameId.roomId).get()
+                // 改
+                roomModel.guessRecords.add(message.contentDisplay)
+                // 存
+                roomRepository.save(roomModel)
             }
         }
     }
@@ -102,6 +116,13 @@ class GuessNum1A2BListener : UtopiaListener() {
         sendMessage("恭喜猜對，遊戲結束!!").complete()
         gameManager.unregister(event.gameId)
         closeRoom()
+
+        // 查
+        val roomModel = roomRepository.findById(event.gameId.roomId).get()
+        // 改
+        roomModel.isVictory = true
+        // 存
+        roomRepository.save(roomModel)
     }
 
     private fun ThreadChannel.closeRoom() {
