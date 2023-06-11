@@ -22,6 +22,7 @@ import kotlin.concurrent.timerTask
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.createFile
+import kotlin.io.path.exists
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.minutes
 
@@ -128,8 +129,9 @@ private fun writeParticipantsIntoFile(newContent: Collection<String>, filePath: 
     }.also { result -> writeString(filePath, result, APPEND) }
 }
 
-private fun createParticipantsStatsFile(): Path =
-    Path(DATABASE_DIRECTORY)
+private fun createParticipantsStatsFile(): Path {
+    val path = Path(DATABASE_DIRECTORY)
         .createDirectories()
         .resolve("$DATABASE_FILENAME_PREFIX-${LocalDate.now()}.db")
-        .createFile()
+    return if (path.exists()) path else path.createFile()
+}

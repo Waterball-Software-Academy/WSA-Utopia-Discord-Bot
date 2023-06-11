@@ -1,7 +1,6 @@
-package tw.waterballsa.utopia.gaas
+package tw.waterballsa.utopia.gaas.extensions
 
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData

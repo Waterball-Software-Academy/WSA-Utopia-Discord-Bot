@@ -13,6 +13,9 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
+import tw.waterballsa.utopia.commons.extensions.createFileWithFileName
+import tw.waterballsa.utopia.gaas.extensions.isGaaSMember
+import tw.waterballsa.utopia.gaas.extensions.replyEphemerally
 import tw.waterballsa.utopia.jda.UtopiaListener
 import java.lang.System.lineSeparator
 import java.nio.file.Files.writeString
@@ -20,11 +23,9 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption.APPEND
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalDateTime.*
+import java.time.LocalDateTime.now
 import java.time.ZoneId.systemDefault
 import kotlin.io.path.Path
-import kotlin.io.path.createDirectories
-import kotlin.io.path.createFile
 
 /*
 * PersonalLeave is a feature of GaaS that allows members to request time off.
@@ -33,7 +34,7 @@ import kotlin.io.path.createFile
 * */
 
 @Component
-class PersonalLeave(private val properties: WsaDiscordProperties): UtopiaListener() {
+class PersonalLeave(private val properties: WsaDiscordProperties) : UtopiaListener() {
     companion object {
         private const val customButtonId = "gaas-leave"
         private const val customModalId = "leave-modal"
@@ -97,22 +98,19 @@ class PersonalLeave(private val properties: WsaDiscordProperties): UtopiaListene
     }
 
     override fun onModalInteraction(event: ModalInteractionEvent) {
-            event.takeIf { it.modalId == customModalId }
-                ?.run {
-                    val filePath = createLeaveRecordFile()
-                    val member = interaction.member!!
-                    val nickname = member.nickname ?: member.user.name
-                    val leaveReason = getValue("leave-reason")?.asString
-                    writeString(filePath, "$nickname : $leaveReason${lineSeparator()}", APPEND)
-                    replyEphemerally("哈囉，$nickname！我們收到你的請假申請囉，期待你下週能來和我們暢聊你的開發成果。")
-                }
+        event.takeIf { it.modalId == customModalId }
+            ?.run {
+                val filePath = createLeaveRecordFile()
+                val member = interaction.member!!
+                val nickname = member.nickname ?: member.user.name
+                val leaveReason = getValue("leave-reason")?.asString
+                writeString(filePath, "$nickname : $leaveReason${lineSeparator()}", APPEND)
+                replyEphemerally("哈囉，$nickname！我們收到你的請假申請囉，期待你下週能來和我們暢聊你的開發成果。")
+            }
     }
 
     private fun ScheduledEvent.isGaaSEvent(): Boolean = eventNameKeywords.all { it in name }
 
     private fun createLeaveRecordFile(): Path =
-        Path(DATABASE_DIRECTORY)
-            .createDirectories()
-            .resolve("$DATABASE_FILENAME_PREFIX-${LocalDate.now()}.db")
-            .createFile()
+        Path(DATABASE_DIRECTORY).createFileWithFileName("$DATABASE_FILENAME_PREFIX-${LocalDate.now()}.db")
 }

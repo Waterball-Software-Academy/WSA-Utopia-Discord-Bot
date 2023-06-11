@@ -1,9 +1,9 @@
 package tw.waterballsa.utopia.gaas
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
+import tw.waterballsa.utopia.gaas.extensions.replyEphemerally
 
 @Component
 class ObserveMemberListener(

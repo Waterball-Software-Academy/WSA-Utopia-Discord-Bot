@@ -2,9 +2,11 @@ package tw.waterballsa.utopia.gaas
 
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
+import tw.waterballsa.utopia.gaas.extensions.isAlphaMember
+import tw.waterballsa.utopia.gaas.extensions.isGaaSMember
+import tw.waterballsa.utopia.gaas.extensions.replyEphemerally
 import tw.waterballsa.utopia.jda.UtopiaListener
 
 
