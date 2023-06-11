@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
-import tw.waterballsa.utopia.gaas.extensions.createFileWithFileName
+import tw.waterballsa.utopia.commons.extensions.createFileWithFileName
 import tw.waterballsa.utopia.gaas.extensions.isGaaSMember
 import tw.waterballsa.utopia.gaas.extensions.replyEphemerally
 import tw.waterballsa.utopia.jda.UtopiaListener

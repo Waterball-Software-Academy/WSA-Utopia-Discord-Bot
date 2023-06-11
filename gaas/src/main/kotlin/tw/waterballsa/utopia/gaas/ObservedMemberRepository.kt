@@ -1,7 +1,7 @@
 package tw.waterballsa.utopia.gaas
 
 import org.springframework.stereotype.Component
-import tw.waterballsa.utopia.gaas.extensions.createFileWithFileName
+import tw.waterballsa.utopia.commons.extensions.createFileWithFileName
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import kotlin.io.path.*
