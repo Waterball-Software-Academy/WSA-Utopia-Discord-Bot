@@ -25,6 +25,7 @@ import java.time.ZoneId.systemDefault
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.createFile
+import kotlin.io.path.exists
 
 /*
 * PersonalLeave is a feature of GaaS that allows members to request time off.
@@ -110,9 +111,10 @@ class PersonalLeave(private val properties: WsaDiscordProperties): UtopiaListene
 
     private fun ScheduledEvent.isGaaSEvent(): Boolean = eventNameKeywords.all { it in name }
 
-    private fun createLeaveRecordFile(): Path =
-        Path(DATABASE_DIRECTORY)
+    private fun createLeaveRecordFile(): Path {
+        val path = Path(DATABASE_DIRECTORY)
             .createDirectories()
             .resolve("$DATABASE_FILENAME_PREFIX-${LocalDate.now()}.db")
-            .createFile()
+        return if (path.exists()) path else path.createFile()
+    }
 }
