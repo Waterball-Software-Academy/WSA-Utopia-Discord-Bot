@@ -3,6 +3,8 @@ package tw.waterballsa.utopia.gaas
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
+import tw.waterballsa.utopia.gaas.extensions.isAlphaMember
+import tw.waterballsa.utopia.gaas.extensions.replyEphemerally
 import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.jda.extensions.getOptionAsIntWithValidation
 import tw.waterballsa.utopia.jda.extensions.getOptionAsPositiveInt

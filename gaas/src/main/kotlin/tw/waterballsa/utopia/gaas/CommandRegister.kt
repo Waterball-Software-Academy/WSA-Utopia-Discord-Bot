@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import org.springframework.stereotype.Component
+import tw.waterballsa.utopia.gaas.extensions.addRequiredOption
 import tw.waterballsa.utopia.jda.UtopiaListener
 
 internal const val OPTION_EVENT_DATE_YEAR = "event-date-year"

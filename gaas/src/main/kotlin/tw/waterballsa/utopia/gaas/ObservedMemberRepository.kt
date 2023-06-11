@@ -1,6 +1,7 @@
 package tw.waterballsa.utopia.gaas
 
 import org.springframework.stereotype.Component
+import tw.waterballsa.utopia.gaas.extensions.createFileWithFileName
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import kotlin.io.path.*
@@ -13,12 +14,7 @@ class ObservedMemberRepository {
         private const val DATABASE_FILE_PATH = "data/gaas/observed"
     }
 
-    private val observedMemberPath: Path = Path(DATABASE_FILE_PATH)
-        .createDirectories()
-        .resolve(DATABASE_FILE_NANE)
-        .takeIf { it.notExists() }
-        ?.createFile()
-        ?: Path(DATABASE_FILE_PATH, DATABASE_FILE_NANE)
+    private val observedMemberPath: Path = Path(DATABASE_FILE_PATH).createFileWithFileName(DATABASE_FILE_NANE)
 
     private val idToRecord = mutableMapOf<String, ObservedMemberRecord>()
 
