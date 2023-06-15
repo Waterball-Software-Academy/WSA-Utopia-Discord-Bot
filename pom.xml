@@ -126,11 +126,6 @@
             <artifactId>jda-ktx</artifactId>
             <version>${jda-ktx.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>mongodb</artifactId>
-        </dependency>
     </dependencies>
 
     <dependencyManagement>
