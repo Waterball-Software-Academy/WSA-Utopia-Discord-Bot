@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>root</artifactId>
+        <groupId>tw.waterballsa.utopia</groupId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>persistence</artifactId>
+    <name>persistence</name>
+    <description>For any persistence related operation</description>
+
+    <properties>
+        <mongodb-driver-sync.version>4.6.1</mongodb-driver-sync.version>
+        <spring-data-mongo.version>3.4.12</spring-data-mongo.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>${mongodb-driver-sync.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-mongodb</artifactId>
+            <version>${spring-data-mongo.version}</version>
+        </dependency>
+    </dependencies>
+
+
+</project>

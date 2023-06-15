@@ -69,8 +69,8 @@
             <artifactId>document</artifactId>
         </dependency>
         <dependency>
-                 <groupId>tw.waterballsa.utopia</groupId>
-                 <artifactId>utopia-gamification-quest</artifactId>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>utopia-gamification-quest</artifactId>
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
@@ -85,11 +85,14 @@
             <artifactId>russian-roulette</artifactId>
             <version>${revision}</version>
         </dependency>
-
         <!--        <dependency>-->
         <!--            <groupId>tw.waterballsa.utopia</groupId>-->
         <!--            <artifactId>poll</artifactId>-->
         <!--        </dependency>-->
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>persistence</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

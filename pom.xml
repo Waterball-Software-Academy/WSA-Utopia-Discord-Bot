@@ -127,6 +127,10 @@
             <version>${jda-ktx.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mongodb</artifactId>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -244,6 +248,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>poll</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>persistence</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>
