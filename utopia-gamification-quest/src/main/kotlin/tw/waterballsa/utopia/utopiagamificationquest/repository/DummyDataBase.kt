@@ -15,8 +15,8 @@ class DummyDataBase(
         return missionRepository.findMissionsByPlayerId(playerId)
     }
 
-    fun saveMission(mission: Mission) {
-        missionRepository.saveMission(mission)
+    fun saveMission(mission: Mission): Mission {
+        return missionRepository.saveMission(mission)
     }
 
     fun removeMission(mission: Mission) {
@@ -27,6 +27,3 @@ class DummyDataBase(
         return playerRepository.savePlayer(newPlayer)
     }
 }
-
-
-

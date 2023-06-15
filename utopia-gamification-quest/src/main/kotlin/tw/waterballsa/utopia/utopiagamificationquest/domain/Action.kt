@@ -11,13 +11,13 @@ abstract class Action {
             isCompleted = true
         }
 
-        abstract fun isSuffice(action: Action): Boolean
+        abstract fun isFulfilled(action: Action): Boolean
     }
 
     abstract fun match(criteria: Criteria): Boolean
 
     fun updateProgress(criteria: Criteria) {
-        if (criteria.isSuffice(this)) {
+        if (criteria.isFulfilled(this)) {
             criteria.complete()
         }
     }

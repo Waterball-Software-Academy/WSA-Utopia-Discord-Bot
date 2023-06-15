@@ -12,11 +12,12 @@ class MissionDataBase {
     private val missions = hashMapOf<UUID, Mission>()
 
     fun findMissionsByPlayerId(playerId: String): List<Mission> {
-        return missions.filter { it.value.player.id == playerId }.values.toList()
+        return missions.values.filter { it.player.id == playerId }
     }
 
-    fun saveMission(mission: Mission) {
+    fun saveMission(mission: Mission): Mission {
         missions[mission.id] = mission
+        return mission
     }
 
     fun removeMission(mission: Mission) {

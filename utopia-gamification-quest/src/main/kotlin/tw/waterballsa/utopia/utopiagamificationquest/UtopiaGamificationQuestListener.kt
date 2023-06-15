@@ -46,13 +46,17 @@ class UtopiaGamificationQuestListener(
             val userPrivateChannel = user.openPrivateChannel().complete() ?: return
             val firstQuest = quests.participateInDiscussionQuest
 
-            val player = repository.savePlayer(Player(user.id, user.name))
-            val mission = Mission(player, firstQuest)
-            repository.saveMission(mission)
+            val mission = saveMission(Player(user.id, user.name), firstQuest)
             userPrivateChannel.publishMission(mission).queue {
                 reply("已經接取第一個任務，去私訊查看任務內容").setEphemeral(true).queue()
             }
         }
+    }
+
+    private fun saveMission(newPlayer: Player, quest: Quest): Mission {
+        val player = repository.savePlayer(newPlayer)
+        val mission = Mission(player, quest)
+        return repository.saveMission(mission)
     }
 
     private fun PrivateChannel.publishMission(mission: Mission): MessageCreateAction {
@@ -75,11 +79,28 @@ class UtopiaGamificationQuestListener(
                     .onEach { it.updateProgress(action) }
                     .filter { it.isCompleted() }
                     .onEach {
-                        notifyPlayerToClaimMissionReward(it, user)
                         repository.saveMission(it)
+                        notifyPlayerToClaimMissionReward(it, user)
                     }
         }
     }
+
+    private fun notifyPlayerToClaimMissionReward(mission: Mission, user: User) {
+        user.openPrivateChannel().queue {
+            it.sendClaimMissionRewardMessage(mission)
+        }
+    }
+
+    private fun PrivateChannel.sendClaimMissionRewardMessage(mission: Mission) {
+        with(mission) {
+            sendMessage(quest.reward.respond)
+                    .addActionRow(
+                            button(getButtonId(quest.title, player.id), "領取獎勵")
+                    ).queue()
+        }
+    }
+
+    private fun getButtonId(questTitle: String, playerId: String): String = "$BUTTON_QUEST_TAG-$playerId-$questTitle"
 
     private fun MessageReactionAddEvent.toAction(): MessageReactionAction = MessageReactionAction(messageId, emoji.name)
 
@@ -105,23 +126,6 @@ class UtopiaGamificationQuestListener(
 
     private fun MessageReceivedEvent.toAction(): MessageSentAction = MessageSentAction(channel.id, message.contentDisplay)
 
-    private fun notifyPlayerToClaimMissionReward(mission: Mission, user: User) {
-        user.openPrivateChannel().queue {
-            it.sendClaimMissionRewardMessage(mission)
-        }
-    }
-
-    private fun PrivateChannel.sendClaimMissionRewardMessage(mission: Mission) {
-        sendMessage(mission.quest.reward.respond)
-                .addActionRow(
-                        button(
-                                getButtonId(mission.quest.title, mission.player.id),
-                                "領取獎勵")
-                ).queue()
-    }
-
-    private fun getButtonId(questTitle: String, playerId: String): String = "$BUTTON_QUEST_TAG-$playerId-$questTitle"
-
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         with(event) {
             val (buttonTag, playerId, questTitle) = button.id?.split("-") ?: return
@@ -131,8 +135,9 @@ class UtopiaGamificationQuestListener(
             }
 
             val userPrivateChannel = user.openPrivateChannel().complete() ?: return
-            val missions = repository.findMissionsByPlayerId(playerId).ifEmpty { return }
-            val mission = missions.find { it.quest.title == questTitle } ?: return
+            val mission = repository
+                    .findMissionsByPlayerId(playerId)
+                    .find { it.quest.title == questTitle } ?: return
 
             if (!mission.isCompleted()) {
                 return
@@ -143,20 +148,21 @@ class UtopiaGamificationQuestListener(
             replyGetRewardMessage(mission).complete()
 
             mission.quest.nextQuest?.let { nextQuest ->
-                val player = repository.savePlayer(Player(playerId, user.name))
-                val nextMission = Mission(player, nextQuest)
-                repository.saveMission(nextMission)
+                val nextMission = saveMission(Player(playerId, user.name), nextQuest)
                 userPrivateChannel.publishMission(nextMission).queue()
             }
         }
     }
 
     private fun ButtonInteractionEvent.replyGetRewardMessage(mission: Mission): ReplyCallbackAction {
-        return reply(
-                """
-                ${mission.player.name} 已獲得 ${mission.quest.reward.exp} exp!!
-                目前等級：${mission.player.level}
-                目前經驗值：${mission.player.exp}
-                """.trimIndent())
+        with(mission) {
+            return reply(
+                    """
+                    ${player.name} 已獲得 ${quest.reward.exp} exp!!
+                    目前等級：${player.level}
+                    目前經驗值：${player.exp}
+                    """.trimIndent())
+        }
+
     }
 }

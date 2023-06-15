@@ -17,7 +17,7 @@ class MessageSentCriteria(
         private val regex: Regex = ".*".toRegex(),
         private var count: Int = 0,
 ) : Action.Criteria() {
-    override fun isSuffice(action: Action): Boolean {
+    override fun isFulfilled(action: Action): Boolean {
         return when (action) {
             is MessageSentAction -> action.channelId == channelId && ++count >= discussionCount && action.context matches regex
             else -> false
