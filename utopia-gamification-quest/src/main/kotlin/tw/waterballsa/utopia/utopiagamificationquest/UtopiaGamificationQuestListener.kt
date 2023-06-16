@@ -85,6 +85,8 @@ class UtopiaGamificationQuestListener(
         }
     }
 
+    private fun MessageReactionAddEvent.toAction(): MessageReactionAction = MessageReactionAction(messageId, emoji.name)
+
     private fun notifyPlayerToClaimMissionReward(mission: Mission, user: User) {
         user.openPrivateChannel().queue {
             it.sendClaimMissionRewardMessage(mission)
@@ -101,8 +103,6 @@ class UtopiaGamificationQuestListener(
     }
 
     private fun getButtonId(questTitle: String, playerId: String): String = "$BUTTON_QUEST_TAG-$playerId-$questTitle"
-
-    private fun MessageReactionAddEvent.toAction(): MessageReactionAction = MessageReactionAction(messageId, emoji.name)
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
         with(event) {
