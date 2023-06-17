@@ -16,7 +16,7 @@ abstract class Action {
 
     abstract fun match(criteria: Criteria): Boolean
 
-    fun updateProgress(criteria: Criteria) {
+    fun execute(criteria: Criteria) {
         if (criteria.isFulfilled(this)) {
             criteria.complete()
         }

@@ -15,6 +15,10 @@ class DummyDataBase(
         return missionRepository.findMissionsByPlayerId(playerId)
     }
 
+    fun findUncompletedMissionsByPlayerId(playerId: String): List<Mission> {
+        return missionRepository.findUncompletedMissionsByPlayerId(playerId)
+    }
+
     fun saveMission(mission: Mission): Mission {
         return missionRepository.saveMission(mission)
     }

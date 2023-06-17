@@ -8,12 +8,8 @@ class Mission(val id: UUID, val player: Player, val quest: Quest) {
 
     fun match(action: Action): Boolean = action.match(quest.criteria)
 
-    fun updateProgress(action: Action): Boolean {
-        if (!action.match(quest.criteria)) {
-            return false
-        }
-        action.updateProgress(quest.criteria)
-        return true
+    fun carryOut(action: Action) {
+        action.execute(quest.criteria)
     }
 
     fun isCompleted(): Boolean = quest.criteria.isCompleted

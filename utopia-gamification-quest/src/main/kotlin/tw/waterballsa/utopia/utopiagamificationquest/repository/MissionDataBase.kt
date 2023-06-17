@@ -15,6 +15,10 @@ class MissionDataBase {
         return missions.values.filter { it.player.id == playerId }
     }
 
+    fun findUncompletedMissionsByPlayerId(playerId: String): List<Mission> {
+        return missions.values.filter { it.player.id == playerId && !it.isCompleted() }
+    }
+
     fun saveMission(mission: Mission): Mission {
         missions[mission.id] = mission
         return mission

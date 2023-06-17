@@ -72,11 +72,11 @@ class UtopiaGamificationQuestListener(
         with(event) {
 
             val user = user ?: return
-            val missions = repository.findMissionsByPlayerId(user.id).ifEmpty { return }
+            val uncompletedMissions = repository.findUncompletedMissionsByPlayerId(user.id).ifEmpty { return }
             val action = toAction()
 
-            missions.filter { !it.isCompleted() && it.match(action) }
-                    .onEach { it.updateProgress(action) }
+            uncompletedMissions.filter { it.match(action) }
+                    .onEach { it.carryOut(action) }
                     .filter { it.isCompleted() }
                     .onEach {
                         repository.saveMission(it)
@@ -111,11 +111,11 @@ class UtopiaGamificationQuestListener(
             }
 
             val playerId = author.id
-            val missions = repository.findMissionsByPlayerId(playerId).ifEmpty { return }
+            val uncompletedMissions = repository.findUncompletedMissionsByPlayerId(playerId).ifEmpty { return }
             val action = toAction()
 
-            missions.filter { !it.isCompleted() && it.match(action) }
-                    .onEach { it.updateProgress(action) }
+            uncompletedMissions.filter { it.match(action) }
+                    .onEach { it.carryOut(action) }
                     .filter { it.isCompleted() }
                     .onEach {
                         repository.saveMission(it)
