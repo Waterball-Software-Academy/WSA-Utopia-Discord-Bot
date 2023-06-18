@@ -44,7 +44,7 @@ class UtopiaGamificationQuestListener(
             }
 
             val userPrivateChannel = user.openPrivateChannel().complete() ?: return
-            val firstQuest = quests.participateInDiscussionQuest
+            val firstQuest = quests.unlockAcademyQuest
 
             val mission = saveMission(Player(user.id, user.name), firstQuest)
             userPrivateChannel.publishMission(mission).queue {
