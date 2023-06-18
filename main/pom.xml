@@ -68,10 +68,10 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>document</artifactId>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>tw.waterballsa.utopia</groupId>-->
-        <!--            <artifactId>utopia-gamification-quest</artifactId>-->
-        <!--        </dependency>-->
+        <dependency>
+                 <groupId>tw.waterballsa.utopia</groupId>
+                 <artifactId>utopia-gamification-quest</artifactId>
+        </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>audio-experience</artifactId>
