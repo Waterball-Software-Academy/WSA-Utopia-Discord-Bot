@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
-import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.requests.GatewayIntent.*
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners.*
@@ -47,7 +47,6 @@ internal class CompositeListener : EventListener {
         log.debug { "[Register UtopiaListener] {\"class\":\"${e.javaClass.canonicalName}\"}" }
         deprecatedListeners.add(e)
     }
-
 }
 
 private object JdaInstance {
@@ -56,11 +55,11 @@ private object JdaInstance {
         val env = getEnv("BOT_TOKEN").trim()
         val builder = JDABuilder.createDefault(env)
                 .enableIntents(
-                        GatewayIntent.GUILD_MEMBERS,
-                        GatewayIntent.MESSAGE_CONTENT,
-                        GatewayIntent.GUILD_MESSAGE_REACTIONS,
-                        GatewayIntent.DIRECT_MESSAGE_REACTIONS,
-                        GatewayIntent.SCHEDULED_EVENTS,
+                        GUILD_MEMBERS,
+                        MESSAGE_CONTENT,
+                        GUILD_MESSAGE_REACTIONS,
+                        DIRECT_MESSAGE_REACTIONS,
+                        SCHEDULED_EVENTS,
                 )
                 .enableCache(CacheFlag.SCHEDULED_EVENTS)
                 .addEventListeners(compositeListener)
@@ -71,15 +70,11 @@ private object JdaInstance {
 @Configuration
 open class JdaConfig {
     @Bean
-    open fun jda(): JDA {
-        return JdaInstance.instance
-    }
+    open fun jda(): JDA = JdaInstance.instance
 }
 
 abstract class UtopiaListener : ListenerAdapter() {
-    open fun commands(): List<CommandData> {
-        return emptyList()
-    }
+    open fun commands(): List<CommandData> = emptyList()
 }
 
 @Deprecated("Please use 'UtopiaListener' instead")

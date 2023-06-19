@@ -3,8 +3,10 @@ package tw.waterballsa.utopia.gaas
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.commons.extensions.createFileWithFileName
 import java.nio.file.Path
-import java.nio.file.StandardOpenOption
-import kotlin.io.path.*
+import java.nio.file.StandardOpenOption.APPEND
+import kotlin.io.path.Path
+import kotlin.io.path.readLines
+import kotlin.io.path.writeLines
 
 @Component
 class ObservedMemberRepository {
@@ -32,7 +34,7 @@ class ObservedMemberRepository {
                 .also {
                     observedMemberPath.writeLines(
                         lines = listOf(it.toString()),
-                        options = arrayOf(StandardOpenOption.APPEND)
+                        options = arrayOf(APPEND)
                     )
                 }
         }
@@ -48,7 +50,7 @@ class ObservedMemberRepository {
     internal fun removeObservedMemberByIds(ids: Collection<String>) {
         synchronized(idToRecord) {
             idToRecord.keys.removeAll(ids.toSet())
-            observedMemberPath.writeLines(idToRecord.values.map { it.toString() })
+            observedMemberPath.writeLines(idToRecord.values.map(ObservedMemberRecord::toString))
         }
     }
 }

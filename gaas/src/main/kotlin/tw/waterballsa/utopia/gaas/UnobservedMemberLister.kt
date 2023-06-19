@@ -11,7 +11,7 @@ class UnobservedMemberLister(
     observedMemberRepository: ObservedMemberRepository
 ) : AbstractObserverMemberListener(properties, observedMemberRepository) {
 
-    override fun getRegisteredCommandName(): String = "gaas unobserve"
+    override fun getRegisteredCommandName(): String = "gaas unobserved"
 
     override fun SlashCommandInteractionEvent.meetObserveCommandCondition(): Boolean = observedMemberRepository.exists(targetUser.id)
 
