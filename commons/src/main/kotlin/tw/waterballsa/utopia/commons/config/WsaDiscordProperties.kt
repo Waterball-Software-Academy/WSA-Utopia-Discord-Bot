@@ -9,6 +9,10 @@ const val ENV_PROD = "prod"
 
 
 open class WsaDiscordProperties(properties: Properties) {
+    val engineerLifeChannelId: String
+    val engineerLifeChannelLink: String
+    val careerAdvancementTopicChannelId: String
+    val careerAdvancementTopicChannelLink: String
     val knowledgeKingChannelId: String
     val guildId: String
     val unlockEntryMessageId: String
@@ -45,7 +49,10 @@ open class WsaDiscordProperties(properties: Properties) {
             unlockEntryChannelLink = getProperty("wsa-unlock-entry-channel-link")
             selfIntroChannelLink = getProperty("wsa-self-intro-channel-link")
             discussionAreaChannelLink = getProperty("wsa-discussion-area-channel-link")
-
+            careerAdvancementTopicChannelId = getProperty("career-advancement-topic-channel-id")
+            careerAdvancementTopicChannelLink = getProperty("career-advancement-topic-channel-link")
+            engineerLifeChannelId = getProperty("engineer-life-channel-id")
+            engineerLifeChannelLink = getProperty("engineer-life-channel-link")
         }
     }
 }

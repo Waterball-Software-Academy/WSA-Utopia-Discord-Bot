@@ -1,10 +1,12 @@
 package tw.waterballsa.utopia.utopiagamificationquest
 
+import com.mongodb.client.model.ReturnDocument
 import dev.minn.jda.ktx.interactions.components.button
 import dev.minn.jda.ktx.messages.Embed
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -50,6 +52,7 @@ class UtopiaGamificationQuestListener(
             userPrivateChannel.publishMission(mission).queue {
                 reply("已經接取第一個任務，去私訊查看任務內容").setEphemeral(true).queue()
             }
+
         }
     }
 
@@ -72,8 +75,8 @@ class UtopiaGamificationQuestListener(
         with(event) {
 
             val user = user ?: return
-            val uncompletedMissions = repository.findUncompletedMissionsByPlayerId(user.id).ifEmpty { return }
-            val action = toAction()
+            val action = toAction() ?: return
+            val uncompletedMissions = repository.findUncompletedMissionsByPlayerId(action.player.id).ifEmpty { return }
 
             uncompletedMissions.filter { it.match(action) }
                     .onEach { it.carryOut(action) }
@@ -85,7 +88,9 @@ class UtopiaGamificationQuestListener(
         }
     }
 
-    private fun MessageReactionAddEvent.toAction(): MessageReactionAction = MessageReactionAction(messageId, emoji.name)
+    private fun MessageReactionAddEvent.toAction(): MessageReactionAction? = user?.let {
+        MessageReactionAction(Player(it.id, it.name), messageId, emoji.name)
+    }
 
     private fun notifyPlayerToClaimMissionReward(mission: Mission, user: User) {
         user.openPrivateChannel().queue {
@@ -110,9 +115,9 @@ class UtopiaGamificationQuestListener(
                 return
             }
 
-            val playerId = author.id
-            val uncompletedMissions = repository.findUncompletedMissionsByPlayerId(playerId).ifEmpty { return }
             val action = toAction()
+            val uncompletedMissions = repository.findUncompletedMissionsByPlayerId(action.player.id).ifEmpty { return }
+
 
             uncompletedMissions.filter { it.match(action) }
                     .onEach { it.carryOut(action) }
@@ -124,7 +129,14 @@ class UtopiaGamificationQuestListener(
         }
     }
 
-    private fun MessageReceivedEvent.toAction(): MessageSentAction = MessageSentAction(channel.id, message.contentDisplay)
+    private fun MessageReceivedEvent.toAction(): MessageSentAction = MessageSentAction(
+            Player(author.id, author.name),
+            channel.id,
+            message.contentDisplay,
+            message.referencedMessage?.let { true } ?: false,
+            message.attachments.any { it.isImage },
+            (channel as? VoiceChannel)?.members?.size ?: 0
+    )
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         with(event) {

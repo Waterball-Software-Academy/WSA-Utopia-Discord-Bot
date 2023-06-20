@@ -1,6 +1,8 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain
 
-abstract class Action {
+abstract class Action(
+        val player: Player
+) {
 
     abstract class Criteria {
 
