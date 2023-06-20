@@ -52,17 +52,16 @@ class ExpiredMemberListener(
     ): TimerTask = timerTask {
         observedMemberRepository.findAll()
             .filter { it.isCreatedTimeOver30Days() }
-            .takeIf { it.isNotEmpty() }
-            ?.onEach { removeRoleFromRecord(guild, it, role) }
-            ?.map { it.id }
-            ?.let { observedMemberRepository.removeObservedMemberByIds(it) }
+            .onEach { removeRoleFromRecord(guild, it, role) }
+            .map { it.id }
+            .let { observedMemberRepository.removeObservedMemberByIds(it) }
     }
 
     private fun removeRoleFromRecord(guild: Guild, record: ObservedMemberRecord, role: Role) {
-        val userSnowflake = UserSnowflake.fromId(record.id)
+        val userId = UserSnowflake.fromId(record.id)
         val removedMember = guild.getMemberById(record.id)!!
         guild.publishRemovalMessage(removedMember)
-        guild.removeRoleFromMember(userSnowflake, role).queue {
+        guild.removeRoleFromMember(userId, role).queue {
             log.info { "[Observe] {\"Observe\" : \"Remove the expired Member [${record.name}]. \"}" }
         }
     }
