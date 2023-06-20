@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
+import org.springframework.beans.factory.config.ConfigurableBeanFactory.*
 import org.springframework.context.annotation.*
 import tw.waterballsa.utopia.commons.config.ENV_BETA
 import tw.waterballsa.utopia.commons.config.ENV_PROD
@@ -25,14 +26,12 @@ private const val DATABASE_DIRECTORY = "data"
 @ComponentScan("tw.waterballsa.utopia")
 open class MyDependencyInjectionConfig {
     @Bean
-    open fun commonAnnotationBeanPostProcessor(): CommonAnnotationBeanPostProcessor {
-        return CommonAnnotationBeanPostProcessor()
-    }
+    open fun commonAnnotationBeanPostProcessor(): CommonAnnotationBeanPostProcessor =
+        CommonAnnotationBeanPostProcessor()
 
     @Bean
-    open fun objectMapper(): ObjectMapper {
-        return ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    }
+    open fun objectMapper(): ObjectMapper =
+        ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     @Bean
     open fun wsaProperties(): WsaDiscordProperties {
@@ -49,10 +48,13 @@ open class MyDependencyInjectionConfig {
     }
 
     @Bean(WSA_GUILD_BEAN_NAME)
-    open fun wsaGuild(wsaProperties: WsaDiscordProperties, jda: JDA): Guild {
-        return jda.getGuildById(wsaProperties.guildId)
-                ?: throw RuntimeException("You must run JDA before instantiating the ApplicationContext.")
-    }
+    open fun wsaGuild(wsaProperties: WsaDiscordProperties, jda: JDA): Guild =
+        jda.getGuildById(wsaProperties.guildId)
+            ?: throw RuntimeException("You must run JDA before instantiating the ApplicationContext.")
+
+    @Bean
+    @Scope(scopeName = SCOPE_PROTOTYPE)
+    open fun timer(): Timer = Timer()
 }
 
 fun main() {
@@ -63,5 +65,3 @@ fun main() {
     registerAllJdaListeners(context)
     generateCommandTableMarkdown(context, "wsa-bot-commands.md")
 }
-
-
