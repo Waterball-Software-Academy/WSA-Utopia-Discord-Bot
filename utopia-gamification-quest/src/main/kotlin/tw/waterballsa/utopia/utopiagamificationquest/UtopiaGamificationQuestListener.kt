@@ -133,7 +133,7 @@ class UtopiaGamificationQuestListener(
             Player(author.id, author.name),
             channel.id,
             message.contentDisplay,
-            message.referencedMessage?.let { true } ?: false,
+            message.referencedMessage != null,
             message.attachments.any { it.isImage },
             (channel as? VoiceChannel)?.members?.size ?: 0
     )

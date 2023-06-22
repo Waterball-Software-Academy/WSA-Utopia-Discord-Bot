@@ -18,17 +18,17 @@ class MessageSentAction(
 
 class MessageSentCriteria(
         private val channelId: String,
-        private val discussionCount: Int,
+        private val goalCount: Int,
         private val isReplied: Boolean = false,
         private val containsImage: Boolean = false,
         private val voicePopulation: Int = 0,
         private val regex: Regex = ".*".toRegex(),
-        private var count: Int = 0
+        private var completedTimes: Int = 0
 ) : Action.Criteria() {
 
     override fun isFulfilled(action: Action): Boolean {
         return when (action) {
-            is MessageSentAction -> action.channelId.contains(channelId) && action.voicePopulation >= voicePopulation && action.isReplied == isReplied && action.containsImage == containsImage && action.context matches regex && ++count >= discussionCount
+            is MessageSentAction -> action.channelId.contains(channelId) && action.voicePopulation >= voicePopulation && action.isReplied == isReplied && action.containsImage == containsImage && action.context matches regex && ++completedTimes >= goalCount
             else -> false
         }
     }
