@@ -29,6 +29,8 @@ open class WsaDiscordProperties(properties: Properties) {
     val unlockEntryChannelLink: String
     val selfIntroChannelLink: String
     val discussionAreaChannelLink: String
+    val flagPostChannelId: String
+    val flagPostChannelLink: String
 
     init {
         properties.run {
@@ -49,6 +51,8 @@ open class WsaDiscordProperties(properties: Properties) {
             unlockEntryChannelLink = getProperty("wsa-unlock-entry-channel-link")
             selfIntroChannelLink = getProperty("wsa-self-intro-channel-link")
             discussionAreaChannelLink = getProperty("wsa-discussion-area-channel-link")
+            flagPostChannelId = getProperty("wsa-flag-post-channel-id")
+            flagPostChannelLink = getProperty("wsa-flag-post-channel-link")
             careerAdvancementTopicChannelId = getProperty("career-advancement-topic-channel-id")
             careerAdvancementTopicChannelLink = getProperty("career-advancement-topic-channel-link")
             engineerLifeChannelId = getProperty("engineer-life-channel-id")

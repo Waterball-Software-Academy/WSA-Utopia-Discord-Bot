@@ -2,6 +2,7 @@ package tw.waterballsa.utopia.utopiagamificationquest.domain.actions
 
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Action
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
+import kotlin.reflect.safeCast
 
 class MessageSentAction(
         player: Player,
@@ -26,16 +27,12 @@ class MessageSentCriteria(
         private var completedTimes: Int = 0
 ) : Action.Criteria() {
 
-    override fun meet(action: Action): Boolean {
-        return when (action) {
-            is MessageSentAction -> action.channelId.contains(channelId) &&
-                    action.numberOfVoiceChannelMembers >= numberOfVoiceChannelMembers &&
-                    action.hasReplied == hasReplied &&
-                    action.hasImage == hasImage &&
-                    action.context matches regex &&
-                    ++completedTimes >= goalCount
+    override fun meet(action: Action) = MessageSentAction::class.safeCast(action)?.let { meetCriteria(it) } ?: false
 
-            else -> false
-        }
-    }
+    private fun meetCriteria(action: MessageSentAction): Boolean = action.channelId == channelId
+            && action.numberOfVoiceChannelMembers >= numberOfVoiceChannelMembers
+            && action.hasReplied == hasReplied
+            && action.hasImage == hasImage
+            && action.context matches regex
+            && ++completedTimes >= goalCount
 }

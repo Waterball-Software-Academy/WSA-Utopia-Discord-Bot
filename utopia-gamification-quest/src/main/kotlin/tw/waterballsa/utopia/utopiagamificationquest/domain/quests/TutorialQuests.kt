@@ -1,8 +1,10 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain.quests
 
-import tw.waterballsa.utopia.utopiagamificationquest.domain.*
+import tw.waterballsa.utopia.utopiagamificationquest.domain.Quest
+import tw.waterballsa.utopia.utopiagamificationquest.domain.Reward
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.MessageReactionCriteria
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.MessageSentCriteria
+import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.PostCriteria
 
 private const val unlockEmoji = "🔑"
 
@@ -69,11 +71,27 @@ val Quests.firstMessageActionQuest: Quest
             """.trimIndent()
 
         reward = Reward(
-                "已完成閒聊區第一次留言!!",
+                "已完成閒聊區第一次留言！",
                 100u,
         )
 
         criteria = MessageSentCriteria(wsa.discussionAreaChannelId, 1)
+
+        nextQuest = flagPostQuest
+    }
+val Quests.flagPostQuest: Quest
+    get() = quest {
+        title = "全民插旗子"
+        description =
+            """
+            ${wsa.flagPostChannelLink}
+            在全民插旗子頻道發佈一則貼文
+            """.trimIndent()
+        reward = Reward(
+            "已完成插旗子任務！",
+            100u
+        )
+        criteria = PostCriteria(wsa.flagPostChannelId, 1)
 
         nextQuest = SendContainsImageMessageInEngineerLifeChannelQuest
     }
@@ -88,7 +106,7 @@ val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
             """.trimIndent()
 
         reward = Reward(
-                "已發布照片!!",
+                "已發布照片！",
                 100u,
         )
 
@@ -103,11 +121,11 @@ val Quests.ReplyToAnyoneInCareerAdvancementTopicChannelQuest: Quest
         description =
                 """
             ${wsa.careerAdvancementTopicChannelLink}
-            到職涯公略區回復其他人的訊息八
+            到職涯攻略區回覆其他人的訊息吧
             """.trimIndent()
 
         reward = Reward(
-                "已回復訊息!!",
+                "已回覆訊息！",
                 100u,
         )
 
@@ -127,7 +145,7 @@ val Quests.SendMessageInVoiceChannelQuest: Quest
             """.trimIndent()
 
         reward = Reward(
-                "已發表一則訊息!!",
+                "已發表一則訊息！",
                 100u,
         )
 
