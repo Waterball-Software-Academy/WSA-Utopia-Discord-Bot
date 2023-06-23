@@ -92,7 +92,7 @@ val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
                 100u,
         )
 
-        criteria = MessageSentCriteria(wsa.engineerLifeChannelId, 1, containsImage = true)
+        criteria = MessageSentCriteria(wsa.engineerLifeChannelId, 1, hasImage = true)
 
         nextQuest = ReplyToAnyoneInCareerAdvancementTopicChannelQuest
     }
@@ -111,7 +111,7 @@ val Quests.ReplyToAnyoneInCareerAdvancementTopicChannelQuest: Quest
                 100u,
         )
 
-        criteria = MessageSentCriteria(wsa.careerAdvancementTopicChannelId, 1, isReplied = true)
+        criteria = MessageSentCriteria(wsa.careerAdvancementTopicChannelId, 1, hasReplied = true)
 
         nextQuest = SendMessageInVoiceChannelQuest
     }
@@ -131,7 +131,7 @@ val Quests.SendMessageInVoiceChannelQuest: Quest
                 100u,
         )
 
-        criteria = MessageSentCriteria(anyChannel, 1, voicePopulation = 2)
+        criteria = MessageSentCriteria(anyChannel, 1, numberOfVoiceChannelMembers = 2)
 
     }
 
