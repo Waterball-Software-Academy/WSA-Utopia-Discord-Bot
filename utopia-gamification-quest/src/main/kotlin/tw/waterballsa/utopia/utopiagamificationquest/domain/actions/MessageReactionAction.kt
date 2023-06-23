@@ -1,8 +1,13 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain.actions
 
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Action
+import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 
-class MessageReactionAction(val messageId: String, val emoji: String) : Action() {
+class MessageReactionAction(
+        player: Player,
+        val messageId: String,
+        val emoji: String
+) : Action(player) {
 
     override fun match(criteria: Criteria): Boolean = criteria is MessageReactionCriteria
 
