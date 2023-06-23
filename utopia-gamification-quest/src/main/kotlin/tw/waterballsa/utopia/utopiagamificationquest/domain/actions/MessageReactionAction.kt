@@ -18,7 +18,7 @@ class MessageReactionCriteria(
         private val unlockEmoji: String
 ) : Action.Criteria() {
 
-    override fun isFulfilled(action: Action): Boolean {
+    override fun meet(action: Action): Boolean {
         return when (action) {
             is MessageReactionAction -> action.messageId == unlockMessageId && action.emoji == unlockEmoji
             else -> false

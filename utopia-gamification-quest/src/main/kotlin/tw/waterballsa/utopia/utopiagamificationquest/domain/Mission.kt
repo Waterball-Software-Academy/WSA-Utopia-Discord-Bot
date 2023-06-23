@@ -14,6 +14,5 @@ class Mission(val id: UUID, val player: Player, val quest: Quest) {
 
     fun isCompleted(): Boolean = quest.criteria.isCompleted
 
-
-    fun givePlayerExp() = player.gainExp(quest.reward.exp)
+    fun rewardPlayer() = player.gainExp(quest.reward.exp)
 }
