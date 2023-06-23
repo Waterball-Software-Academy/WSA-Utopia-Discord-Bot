@@ -28,7 +28,8 @@ class ExpiredMemberListener(
 ) : UtopiaListener() {
 
     companion object {
-        private const val FAMOUS_QUOTES_FROM_XI = "https://tenor.com/view/we-missed-him-xi-jinping-talking-gif-14355481"
+        private const val FAMOUS_QUOTES_FROM_XI =
+            "https://tenor.com/view/%E6%88%91%E4%BB%AC%E6%80%80%E5%BF%B5%E4%BB%96-%E6%88%91%E5%80%91%E6%87%B7%E5%BF%B5%E4%BB%96-%E6%87%B7%E5%BF%B5-%E6%80%80%E5%BF%B5-%E4%B8%BB%E5%B8%AD-gif-22955757"
     }
 
     init {
@@ -58,17 +59,21 @@ class ExpiredMemberListener(
     }
 
     private fun removeRoleFromRecord(guild: Guild, record: ObservedMemberRecord, role: Role) {
-        val userId = UserSnowflake.fromId(record.id)
-        val removedMember = guild.getMemberById(record.id)!!
-        guild.publishRemovalMessage(removedMember)
-        guild.removeRoleFromMember(userId, role).queue {
-            log.info { "[Observe] {\"Observe\" : \"Remove the expired Member [${record.name}]. \"}" }
+        guild.run {
+            val userId = UserSnowflake.fromId(record.id)
+            val removedMember = retrieveMemberById(record.id).complete()
+            publishRemovalMessage(removedMember)
+            removeRoleFromMember(userId, role).queue {
+                log.info { "[Observe] {\"Observe\" : \"Remove the expired Member [${record.name}]. \"}" }
+            }
         }
     }
 
     private fun Guild.publishRemovalMessage(removedMember: Member) {
         val gaasChannel = getTextChannelById(properties.wsaGaaSConversationChannelId)!!
-        gaasChannel.sendMessage("${removedMember.asMention} 已經離開我們了，我們懷念他。")
-        gaasChannel.sendMessage(FAMOUS_QUOTES_FROM_XI)
+        gaasChannel.run {
+            sendMessage("由於加入社團後，太久都沒有行動，因此 ${removedMember.asMention} 已經離開我們了，我們懷念他。").queue()
+            sendMessage(FAMOUS_QUOTES_FROM_XI).queue()
+        }
     }
 }
