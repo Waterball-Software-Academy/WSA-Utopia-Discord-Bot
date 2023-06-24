@@ -83,15 +83,14 @@ class UtopiaGamificationQuestListener(
         }
     }
 
-    private fun ButtonInteractionEvent.publishPlayerExpNotification(mission: Mission): ReplyCallbackAction {
-        with(mission) {
-            return reply("""
+    private fun ButtonInteractionEvent.publishPlayerExpNotification(mission: Mission): ReplyCallbackAction =
+            with(mission) {
+                reply("""
                     ${player.name} 已獲得 ${quest.reward.exp} exp!!
                     目前等級：${player.level}
                     目前經驗值：${player.exp}
                     """.trimIndent())
-        }
-    }
+            }
 
     private fun Mission.nextMission(): Mission? = quest.nextQuest?.let { player.acceptQuest(it) }
 
@@ -99,14 +98,13 @@ class UtopiaGamificationQuestListener(
 
     private fun Player.acceptQuest(quest: Quest): Mission = missionRepository.saveMission(Mission(this, quest))
 
-    private fun PrivateChannel.publishMission(mission: Mission): MessageCreateAction {
-        with(mission) {
-            return sendMessageEmbeds(Embed {
-                title = quest.title
-                description = quest.description
-            })
-        }
-    }
+    private fun PrivateChannel.publishMission(mission: Mission): MessageCreateAction =
+            with(mission) {
+                sendMessageEmbeds(Embed {
+                    title = quest.title
+                    description = quest.description
+                })
+            }
 
     override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
         with(event) {
