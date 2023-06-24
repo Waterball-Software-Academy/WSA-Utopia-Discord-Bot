@@ -26,7 +26,7 @@ class MessageSentCriteria(
         private var completedTimes: Int = 0
 ) : Action.Criteria() {
 
-    override fun isFulfilled(action: Action): Boolean {
+    override fun meet(action: Action): Boolean {
         return when (action) {
             is MessageSentAction -> action.channelId.contains(channelId) &&
                     action.numberOfVoiceChannelMembers >= numberOfVoiceChannelMembers &&

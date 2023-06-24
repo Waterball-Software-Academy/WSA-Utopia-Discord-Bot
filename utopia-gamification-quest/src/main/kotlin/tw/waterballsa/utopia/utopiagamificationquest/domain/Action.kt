@@ -4,6 +4,14 @@ abstract class Action(
         val player: Player
 ) {
 
+    abstract fun match(criteria: Criteria): Boolean
+
+    fun execute(criteria: Criteria) {
+        if (criteria.meet(this)) {
+            criteria.complete()
+        }
+    }
+
     abstract class Criteria {
 
         var isCompleted: Boolean = false
@@ -13,14 +21,6 @@ abstract class Action(
             isCompleted = true
         }
 
-        abstract fun isFulfilled(action: Action): Boolean
-    }
-
-    abstract fun match(criteria: Criteria): Boolean
-
-    fun execute(criteria: Criteria) {
-        if (criteria.isFulfilled(this)) {
-            criteria.complete()
-        }
+        abstract fun meet(action: Action): Boolean
     }
 }
