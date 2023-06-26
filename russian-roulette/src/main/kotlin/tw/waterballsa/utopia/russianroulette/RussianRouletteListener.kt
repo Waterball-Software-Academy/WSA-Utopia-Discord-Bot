@@ -15,6 +15,7 @@ private const val BUTTON_ID = "trigger"
 @Component
 class RussianRouletteListener : UtopiaListener() {
     private val playerIdToGame = hashMapOf<String, RouletteGame>()
+
     override fun commands(): List<CommandData> = listOf(
         Commands.slash(COMMAND_NAME, "Start the game.")
     )
@@ -25,7 +26,6 @@ class RussianRouletteListener : UtopiaListener() {
                 return
             }
 
-            val player = member!!
             playerIdToGame[player.id] = RouletteGame()
 
             reply("${player.asMention}，俄羅斯輪盤開始")
@@ -59,12 +59,15 @@ class RussianRouletteListener : UtopiaListener() {
 
     private fun ButtonInteractionEvent.handleShoot(rouletteGame: RouletteGame, hint: String) {
         rouletteGame.pullTrigger()
-        if (rouletteGame.isGameOver) {
+        if (rouletteGame.isGameOver()) {
             reply(hint).queue { playerIdToGame.remove(player.id) }
             return
         }
     }
 }
+
+private val SlashCommandInteractionEvent.player
+    get() = member!!
 
 private val ButtonInteractionEvent.player
     get() = member!!
