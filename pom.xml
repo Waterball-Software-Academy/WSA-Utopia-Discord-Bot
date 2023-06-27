@@ -52,7 +52,7 @@
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <jda-ktx.version>0.10.0-beta.1</jda-ktx.version>
         <mockito-junit-jupiter.version>5.2.0</mockito-junit-jupiter.version>
-        <jtokkit.version>0.5.0</jtokkit.version>
+        <jtokkit.version>0.5.1</jtokkit.version>
         <markdowngenerator.version>1.3.1.1</markdowngenerator.version>
         <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
     </properties>
