@@ -44,6 +44,20 @@
 | rock-paper-scissors |           | start a new rock paper scissors game! |
 
 ## utopia
+
 | Commands | Arguments | Description    |
 |:--------:| --------- | -------------- |
 |  utopia  |           | utopia command |
+
+## roulette
+
+| Commands | Arguments | Description     |
+|:--------:| --------- | --------------- |
+| roulette |           | Start the game. |
+
+## buffer
+
+|    Commands     | Arguments                                                                                                        | Description |
+|:---------------:| ---------------------------------------------------------------------------------------------------------------- | ----------- |
+|  buffer query   | year(INTEGER): 輸入年分<br>mouth(INTEGER): 輸入月分<br>day(INTEGER): 輸入日期<br>channel(CHANNEL): 輸入頻道<br>user(USER): 輸入使用者 | 查詢留言數       |
+| buffer retrieve | channel(CHANNEL): 輸入頻道                                                                                           | 查找頻道開啟以來的留言 |

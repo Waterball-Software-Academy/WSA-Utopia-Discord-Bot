@@ -30,6 +30,7 @@
         <module>audio-experience</module>
         <module>utopia-gamification-quest</module>
         <module>poll</module>
+        <module>automatic-channel-comment-tracking</module>
         <module>russian-roulette</module>
     </modules>
 
@@ -244,6 +245,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>poll</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>automatic-channel-comment-tracking</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>
