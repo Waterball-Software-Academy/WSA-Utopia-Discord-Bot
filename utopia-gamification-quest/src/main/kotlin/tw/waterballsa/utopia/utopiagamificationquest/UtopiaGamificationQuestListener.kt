@@ -6,6 +6,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
+import net.dv8tion.jda.api.events.guild.GuildAuditLogEntryCreateEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -16,6 +17,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import org.springframework.stereotype.Component
+import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Action
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
@@ -23,6 +25,7 @@ import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Quest
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.MessageReactionAction
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.MessageSentAction
+import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.PostAction
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.Quests
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.unlockAcademyQuest
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.MissionRepository
@@ -34,6 +37,7 @@ const val BUTTON_QUEST_TAG = "quest"
 
 @Component
 class UtopiaGamificationQuestListener(
+        private val properties: WsaDiscordProperties,
         private val missionRepository: MissionRepository,
         private val playerRepository: PlayerRepository,
         private val quests: Quests,
@@ -137,6 +141,19 @@ class UtopiaGamificationQuestListener(
                 message.attachments.any { it.isImage },
                 (channel as? VoiceChannel)?.members?.size ?: 0
         )
+
+    override fun onGuildAuditLogEntryCreate(event: GuildAuditLogEntryCreateEvent) {
+        with(event) {
+            val player = user
+            val uncompletedMissions = missionRepository.findIncompletedMissionsByPlayerId(player.id)
+            player.fulfillMissions(action, uncompletedMissions)
+        }
+    }
+
+    private val GuildAuditLogEntryCreateEvent.user get() = entry.user ?: jda.retrieveUserById(entry.userId).complete()
+
+    private val GuildAuditLogEntryCreateEvent.action
+        get() = PostAction(Player(user.id, user.name), properties.flagPostChannelId)
 
     private fun User.fulfillMissions(action: Action, missions: Collection<Mission>) {
         missions.filter { mission -> mission.match(action) }

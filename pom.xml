@@ -43,7 +43,7 @@
         <junit.version>5.9.2</junit.version>
         <logback-classic-version>1.4.6</logback-classic-version>
         <kotlin-logging-jvm-version>3.0.5</kotlin-logging-jvm-version>
-        <JDA.version>5.0.0-beta.1</JDA.version>
+        <JDA.version>5.0.0-beta.11</JDA.version>
         <kotlin-reflect.version>1.8.10</kotlin-reflect.version>
         <reflections.version>0.10.2</reflections.version>
         <assertj-core.version>3.24.2</assertj-core.version>
