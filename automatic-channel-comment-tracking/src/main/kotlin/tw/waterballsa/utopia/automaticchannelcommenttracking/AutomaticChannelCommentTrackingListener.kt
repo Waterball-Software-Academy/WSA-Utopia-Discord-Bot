@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
+import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.automaticchannelcommenttracking.repository.CommentCountRepository
@@ -20,6 +21,7 @@ import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.jda.UtopiaListener
 import java.time.*
 import java.time.format.DateTimeFormatter
+
 // 6
 // 27 26 25 24 26 22  21
 // 45 92 24 68 87 219 198
@@ -56,12 +58,13 @@ class AutomaticChannelCommentTrackingListener(
             Commands.slash(BUFFER_COMMAND_TAG, "只有buffer有權限")
                 .addSubcommands(
                     SubcommandData(QUERY_COMMAND_NAME, "查詢留言數")
-                        .addOption(OptionType.INTEGER, YEAR, "輸入年分", false)
-                        .addOption(OptionType.INTEGER, MONTH, "輸入月分", false)
-                        .addOption(OptionType.INTEGER, DAY, "輸入日期", false)
-                        .addOption(OptionType.CHANNEL, CHANNEL, "輸入頻道", false)
-                        .addOption(OptionType.USER, USER, "輸入使用者", false),
-
+                        .addOptions(
+                            OptionData(OptionType.INTEGER, YEAR, "輸入年分", false),
+                            OptionData(OptionType.INTEGER, MONTH, "輸入月分", false),
+                            OptionData(OptionType.INTEGER, DAY, "輸入日期", false),
+                            OptionData(OptionType.CHANNEL, CHANNEL, "輸入頻道", false),
+                            OptionData(OptionType.USER, USER, "輸入使用者", false)
+                        ),
                     SubcommandData(RETRIEVE_COMMAND_NAME, "把頻道開啟以來的留言寫入資料庫")
                         .addOption(OptionType.CHANNEL, CHANNEL, "輸入頻道", true)
                 )
