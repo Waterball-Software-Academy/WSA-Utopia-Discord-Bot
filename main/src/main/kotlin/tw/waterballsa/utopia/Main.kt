@@ -17,7 +17,6 @@ import tw.waterballsa.utopia.document.generateCommandTableMarkdown
 import tw.waterballsa.utopia.jda.WSA_GUILD_BEAN_NAME
 import tw.waterballsa.utopia.jda.registerAllJdaListeners
 import tw.waterballsa.utopia.jda.runJda
-import tw.waterballsa.utopia.persistence.config.MongoDBConfiguration
 import java.io.File
 import java.util.*
 

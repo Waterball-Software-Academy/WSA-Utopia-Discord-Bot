@@ -91,7 +91,11 @@
         <!--        </dependency>-->
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
-            <artifactId>persistence</artifactId>
+            <artifactId>mongo-gateway-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>mongo-gateway</artifactId>
         </dependency>
     </dependencies>
 
