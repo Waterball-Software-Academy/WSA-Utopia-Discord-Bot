@@ -10,14 +10,8 @@ import com.knuddels.jtokkit.api.ModelType
 class JTokkit {
     companion object {
         private val registry = Encodings.newLazyEncodingRegistry()
-        private lateinit var encoding: Encoding
+        private val encoding = registry.getEncodingForModel(ModelType.GPT_3_5_TURBO)
     }
 
-    init {
-        encoding = registry.getEncodingForModel(ModelType.GPT_3_5_TURBO)
-    }
-
-    fun measureNumOfTokens(string: String): Int {
-        return encoding.countTokens(string)
-    }
+    fun measureNumOfTokens(string: String): Int = encoding.countTokens(string)
 }
