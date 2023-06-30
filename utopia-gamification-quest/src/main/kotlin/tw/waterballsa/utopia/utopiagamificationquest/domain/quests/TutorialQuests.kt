@@ -2,9 +2,8 @@ package tw.waterballsa.utopia.utopiagamificationquest.domain.quests
 
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Quest
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Reward
-import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.MessageReactionCriteria
-import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.MessageSentCriteria
-import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.PostCriteria
+import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.*
+import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.QuizButton
 
 private const val unlockEmoji = "🔑"
 
@@ -28,30 +27,35 @@ val Quests.unlockAcademyQuest: Quest
 
 val Quests.selfIntroductionQuest: Quest
     get() = quest {
+        val content = """
+        【 <您的暱稱> 】 
+        **工作職位：** <您的工作職位>
+        **公司產業：** <您工作所在公司的產業類型>
+        **專長：** <您的專長>
+        **興趣：** <您的興趣>
+        **簡介**： <您的簡介>
+        
+        **三件關於我的事，猜猜哪一件是假的**：
+        1.
+        2.
+        3.
+        """.trimIndent()
+
         title = "任務：自我介紹"
         description =
             """
             ${wsa.selfIntroChannelLink}
             到自我介紹串發一篇自我介紹吧!請依照以下格式
             ```
-            【 <您的暱稱> 】 
-            **工作職位：** <您的工作職位>
-            **公司產業：** <您工作所在公司的產業類型>
-            **專長：** <您的專長>
-            **興趣：** <您的興趣>
-            **簡介**： <您的簡介>
-            
-            **三件關於我的事，猜猜哪一件是假的**：
-            1.
-            2.
-            3.
+            $content
             ```
             """.trimIndent()
 
         reward = Reward(
-                "已完成自我介紹，任務完成",
-                100u
+            "已完成自我介紹，任務完成",
+            100u
         )
+
         criteria = MessageSentCriteria(wsa.selfIntroChannelId, 1, regex = getSelfIntroductionRegex())
 
         nextQuest = firstMessageActionQuest
@@ -151,6 +155,22 @@ val Quests.SendMessageInVoiceChannelQuest: Quest
 
         criteria = MessageSentCriteria(anyChannel, 1, numberOfVoiceChannelMembers = 2)
 
+        nextQuest = quizQuest
     }
 
+val Quests.quizQuest: Quest
+    get() = quest {
+        title = "任務:考試"
+        description =
+            """
+            按下按鈕開始考試並通關。
+            """.trimIndent()
 
+        reward = Reward(
+            "已通過考試！",
+            100u,
+        )
+
+        criteria = ButtonInteractionCriteria(QuizButton.NAME, 1)
+
+    }

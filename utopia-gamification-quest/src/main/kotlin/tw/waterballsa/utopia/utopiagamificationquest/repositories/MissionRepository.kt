@@ -8,13 +8,16 @@ import java.util.*
 
 interface MissionRepository {
     fun findMission(query: Query): Mission?
-    fun findIncompletedMissionsByPlayerId(playerId: String): List<Mission>
+    fun findIncompleteMissionsByPlayerId(playerId: String): List<Mission>
+    fun findAllByPlayerId(playerId: String): List<Mission>
     fun saveMission(mission: Mission): Mission
     fun removeMission(mission: Mission)
 
-    class Query(private val playerId: String,
-                private val isCompleted: Boolean = false,
-                private val questTitle: String? = null) {
+    class Query(
+        private val playerId: String,
+        private val isCompleted: Boolean = false,
+        private val questTitle: String? = null
+    ) {
 
         fun match(mission: Mission): Boolean {
             return mission.player.id == playerId
@@ -30,10 +33,13 @@ class ImMemoryMissionRepository : MissionRepository {
     private val missions = hashMapOf<UUID, Mission>()
 
     override fun findMission(query: MissionRepository.Query): Mission? =
-            missions.values.find { query.match(it) }
+        missions.values.find { query.match(it) }
 
-    override fun findIncompletedMissionsByPlayerId(playerId: String): List<Mission> =
-            missions.values.filter { it.player.id == playerId && !it.isCompleted() }
+    override fun findIncompleteMissionsByPlayerId(playerId: String): List<Mission> =
+        missions.values.filter { it.player.id == playerId && !it.isCompleted() }
+
+    override fun findAllByPlayerId(playerId: String): List<Mission> =
+        missions.values.filter { it.player.id == playerId }
 
     override fun saveMission(mission: Mission): Mission {
         missions[mission.id] = mission
@@ -48,9 +54,9 @@ class ImMemoryMissionRepository : MissionRepository {
 }
 
 class MissionData(
-        private val missionId: UUID,
-        val playerId: String,
-        private val quest: Quest
+    private val missionId: UUID,
+    val playerId: String,
+    private val quest: Quest
 ) {
 
     fun toDomain(player: Player): Mission = Mission(missionId, player, quest)
