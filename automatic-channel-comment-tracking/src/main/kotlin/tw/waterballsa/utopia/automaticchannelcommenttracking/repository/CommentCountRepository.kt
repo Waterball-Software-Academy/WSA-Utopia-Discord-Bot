@@ -11,12 +11,12 @@ import tw.waterballsa.utopia.automaticchannelcommenttracking.domain.UsersMessage
 import java.io.File
 
 
-@Component
-class JsonRepository(
+class CommentCountRepository(
     private val jsonMapper: ObjectMapper
 ) {
     private val jsonFile = File("data/role.json")
     private val module = SimpleModule()
+
 
     init {
         module.addKeyDeserializer(Query::class.java, QueryDeserializer())
@@ -59,12 +59,12 @@ class JsonRepository(
 }
 
 data class Query(
-    private val date: String = ignore,
-    private val userId: String = ignore,
-    private val channelId: String = ignore
+    private val date: String = IGNORE,
+    private val userId: String = IGNORE,
+    private val channelId: String = IGNORE
 ) {
     companion object {
-        const val ignore = ""
+        const val IGNORE = ""
     }
 
     fun match(query: Query): Boolean {
@@ -80,7 +80,7 @@ data class Query(
 
 private class QueryDeserializer : KeyDeserializer() {
 
-    override fun deserializeKey(jsonString: String, ctxt: DeserializationContext): Any? {
+    override fun deserializeKey(jsonString: String, ctxt: DeserializationContext): Any {
         val date = jsonString.substringAfter("date=").substringBefore(",")
         val userId = jsonString.substringAfter("userId=").substringBefore(",")
         val channelId = jsonString.substringAfter("channelId=").substringBefore(")")

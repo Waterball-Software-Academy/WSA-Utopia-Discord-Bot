@@ -1,6 +1,7 @@
 package tw.waterballsa.utopia.automaticchannelcommenttracking
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Member
@@ -13,34 +14,58 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import org.springframework.stereotype.Component
-import tw.waterballsa.utopia.automaticchannelcommenttracking.repository.JsonRepository
+import tw.waterballsa.utopia.automaticchannelcommenttracking.repository.CommentCountRepository
 import tw.waterballsa.utopia.automaticchannelcommenttracking.repository.Query
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.jda.UtopiaListener
 import java.time.*
 import java.time.format.DateTimeFormatter
-
 // 6
 // 27 26 25 24 26 22  21
 // 45 92 24 68 87 219 198
-const val BUFFER_COMMAND_TAG = "buffer"
-const val QUERY_COMMAND_NAME = "query"
-const val RETRIEVE_COMMAND_NAME = "retrieve"
+
 
 val logger = KotlinLogging.logger {}
 
 @Component
 class AutomaticChannelCommentTrackingListener(
     private val wsa: WsaDiscordProperties,
-    private val jda: JDA,
-    private val jsonRepository: JsonRepository,
-    private val jsonMapper: ObjectMapper
+    private val jda: JDA
 ) : UtopiaListener() {
 
-    companion object {
-        private val taipeiZoneId: ZoneId = ZoneId.of("Asia/Taipei")
 
-        private val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    companion object {
+        private val jsonMapper = ObjectMapper()
+        private val commentCountRepository = CommentCountRepository(jsonMapper)
+
+        private const val BUFFER_COMMAND_TAG = "buffer"
+        private const val QUERY_COMMAND_NAME = "query"
+        private const val RETRIEVE_COMMAND_NAME = "retrieve"
+
+        private val TAIPEI_ZONE_ID: ZoneId = ZoneId.of("Asia/Taipei")
+        private val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+        private const val YEAR = "year"
+        private const val MONTH = "month"
+        private const val DAY = "day"
+
+        private const val CHANNEL = "channel"
+        private const val USER = "user"
+
+        private fun getCommands(): List<CommandData> = listOf(
+            Commands.slash(BUFFER_COMMAND_TAG, "只有buffer有權限")
+                .addSubcommands(
+                    SubcommandData(QUERY_COMMAND_NAME, "查詢留言數")
+                        .addOption(OptionType.INTEGER, YEAR, "輸入年分", false)
+                        .addOption(OptionType.INTEGER, MONTH, "輸入月分", false)
+                        .addOption(OptionType.INTEGER, DAY, "輸入日期", false)
+                        .addOption(OptionType.CHANNEL, CHANNEL, "輸入頻道", false)
+                        .addOption(OptionType.USER, USER, "輸入使用者", false),
+
+                    SubcommandData(RETRIEVE_COMMAND_NAME, "把頻道開啟以來的留言寫入資料庫")
+                        .addOption(OptionType.CHANNEL, CHANNEL, "輸入頻道", true)
+                )
+        )
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
@@ -50,27 +75,12 @@ class AutomaticChannelCommentTrackingListener(
     }
 
     private fun incrementMessageCount(message: Message) {
-        jsonRepository.incrementCountByQuery(Query(message.toDate(), message.author.id, message.channel.id))
+        commentCountRepository.incrementCountByQuery(Query(message.toDate(), message.author.id, message.channel.id))
     }
 
-    private fun Message.toDate(): String = timeCreated.atZoneSameInstant(taipeiZoneId).format(dateFormat)
+    private fun Message.toDate(): String = timeCreated.atZoneSameInstant(TAIPEI_ZONE_ID).format(DATE_FORMAT)
 
-    override fun commands(): List<CommandData> {
-        return listOf(
-            Commands.slash(BUFFER_COMMAND_TAG, "只有buffer有權限")
-                .addSubcommands(
-                    SubcommandData(QUERY_COMMAND_NAME, "查詢留言數")
-                        .addOption(OptionType.INTEGER, "year", "輸入年分", false)
-                        .addOption(OptionType.INTEGER, "mouth", "輸入月分", false)
-                        .addOption(OptionType.INTEGER, "day", "輸入日期", false)
-                        .addOption(OptionType.CHANNEL, "channel", "輸入頻道", false)
-                        .addOption(OptionType.USER, "user", "輸入使用者", false),
-
-                    SubcommandData(RETRIEVE_COMMAND_NAME, "把頻道開啟以來的留言寫入資料庫")
-                        .addOption(OptionType.CHANNEL, "channel", "輸入頻道", true)
-                )
-        )
-    }
+    override fun commands(): List<CommandData> = getCommands()
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         with(event) {
@@ -80,7 +90,7 @@ class AutomaticChannelCommentTrackingListener(
                 return
             }
 
-            if (member.isNotAlphaMember()) {
+            if (member.isAlphaMember().not()) {
                 reply("你沒有權限").queue()
                 return
             }
@@ -93,18 +103,10 @@ class AutomaticChannelCommentTrackingListener(
         }
     }
 
-    private fun SlashCommandInteractionEvent.splitCommandName(delimiters: String): Pair<String, String> {
-        val result = fullCommandName.split(" ")
-        if (result.size != 2) {
-            return Pair("", "")
-        }
-        return Pair(result[0], result[1])
-    }
+    private fun SlashCommandInteractionEvent.splitCommandName(delimiters: String): Pair<String, String> =
+        fullCommandName.split(" ").run { if (size == 2) first() to last() else "" to "" }
 
-    private fun Member?.isNotAlphaMember(): Boolean {
-        val roles = this?.roles?.mapNotNull { it.id } ?: return false
-        return wsa.wsaAlphaRoleId !in roles
-    }
+    private fun Member?.isAlphaMember(): Boolean = this?.roles?.any { it.id == wsa.wsaAlphaRoleId } ?: false
 
     private fun SlashCommandInteractionEvent.handleQueryCommand() {
 
@@ -112,31 +114,31 @@ class AutomaticChannelCommentTrackingListener(
         val channelId = getOptionChannelId()
         val userId = getOptionUserId()
 
-        val result = jsonRepository.findByQuery(Query(date, userId, channelId))
+        val result = commentCountRepository.findByQuery(Query(date, userId, channelId))
 
         reply(jsonMapper.writeValueAsString(result)).setEphemeral(true).queue()
     }
 
     private fun SlashCommandInteractionEvent.getOptionDate(): String {
-        val year = getOption("year")?.asInt ?: return Query.ignore
-        val month = getOption("mouth")?.asInt ?: return Query.ignore
-        val day = getOption("day")?.asInt ?: return Query.ignore
+        val year = getOption(YEAR)?.asInt ?: return Query.IGNORE
+        val month = getOption(MONTH)?.asInt ?: return Query.IGNORE
+        val day = getOption(DAY)?.asInt ?: return Query.IGNORE
 
         return getDate(year, month, day)
     }
 
     private fun getDate(year: Int, month: Int, day: Int): String {
-        try {
-            return LocalDate.of(year, month, day)?.format(dateFormat) ?: return Query.ignore
+        return try {
+            LocalDate.of(year, month, day)?.format(DATE_FORMAT) ?: return Query.IGNORE
         } catch (e: DateTimeException) {
-            return Query.ignore
+            Query.IGNORE
         }
     }
 
     private fun SlashCommandInteractionEvent.getOptionChannelId(): String =
-        getOption("channel")?.asChannel?.id ?: Query.ignore
+        getOption(CHANNEL)?.asChannel?.id ?: Query.IGNORE
 
-    private fun SlashCommandInteractionEvent.getOptionUserId(): String = getOption("user")?.asUser?.id ?: Query.ignore
+    private fun SlashCommandInteractionEvent.getOptionUserId(): String = getOption(USER)?.asUser?.id ?: Query.IGNORE
 
     private fun SlashCommandInteractionEvent.handleRetrieveCommand() {
         val optionChannel = getOptionTextChannel() ?: run {
@@ -148,17 +150,15 @@ class AutomaticChannelCommentTrackingListener(
 
         val messages = optionChannel.getAllMessages().ifEmpty { return }
 
-        jsonRepository.removeByQuery(Query(channelId = optionChannel.id))
+        commentCountRepository.removeByQuery(Query(channelId = optionChannel.id))
 
-        messages.forEach {
-            incrementMessageCount(it)
-        }
+        messages.forEach { message -> incrementMessageCount(message) }
 
         hook.editOriginal("結束").queue()
     }
 
     private fun SlashCommandInteractionEvent.getOptionTextChannel(): TextChannel? =
-        getOption("channel")?.asChannel?.asTextChannel()
+        getOption(CHANNEL)?.asChannel?.asTextChannel()
 
     private fun TextChannel.getAllMessages(): List<Message> {
         val messages = mutableListOf<Message>(retrieveMessageById(latestMessageId).complete())
@@ -173,7 +173,3 @@ class AutomaticChannelCommentTrackingListener(
         }
     }
 }
-
-
-
-
