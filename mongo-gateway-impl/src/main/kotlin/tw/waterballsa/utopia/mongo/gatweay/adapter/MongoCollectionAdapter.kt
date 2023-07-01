@@ -3,10 +3,12 @@ package tw.waterballsa.utopia.mongo.gatweay.adapter
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import tw.waterballsa.utopia.mongo.gateway.MongoCollection
+
 
 private const val MONGO_ID_FIELD_NAME = "_id"
 
@@ -15,7 +17,7 @@ class MongoCollectionAdapter<TDocument, ID>(
         private val documentInformation: MappingMongoDocumentInformation<TDocument, ID>
 ) : MongoCollection<TDocument, ID> {
 
-    private val objectMapper: ObjectMapper = ObjectMapper()
+    private var objectMapper: ObjectMapper = ObjectMapper()
             .registerKotlinModule()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
@@ -37,19 +39,21 @@ class MongoCollectionAdapter<TDocument, ID>(
 
     private fun TDocument.toBsonDocument(): org.bson.Document {
         return objectMapper.convertValue(this, org.bson.Document::class.java)!!
-                .renameKey(documentInformation.idFieldName, MONGO_ID_FIELD_NAME)
+                .convertIdField(documentInformation.idFieldName, MONGO_ID_FIELD_NAME)
     }
 
     private fun org.bson.Document.toDomainDocument(): TDocument {
-        renameKey(MONGO_ID_FIELD_NAME, documentInformation.idFieldName)
+        convertIdField(MONGO_ID_FIELD_NAME, documentInformation.idFieldName)
         return objectMapper.readValue(objectMapper.writeValueAsString(this), documentInformation.documentClassType)
     }
 
-    private fun org.bson.Document.renameKey(oldKey: String, newKey: String): org.bson.Document {
+    private fun org.bson.Document.convertIdField(oldKey: String, newKey: String): org.bson.Document {
         containsKey(oldKey).let {
-            append(newKey, get(oldKey)!!)
+            val value = get(oldKey)?.let { if (it is ObjectId) it.toString() else it }
+            append(newKey, value)
             remove(oldKey)
         }
         return this
     }
 }
+
