@@ -91,7 +91,7 @@ class TestMongoCollectionAdapter : TestMongoBase() {
         }
 
         @Test
-        fun idMismatch() {
+        fun twoDocuments() {
             createTestDocument(id = "123")
             createTestDocument(id = "456")
 
