@@ -22,12 +22,18 @@ import tw.waterballsa.utopia.jda.UtopiaListener
 import java.time.*
 import java.time.format.DateTimeFormatter
 
-// 6
-// 27 26 25 24 26 22  21
-// 45 92 24 68 87 219 198
-
-
 val logger = KotlinLogging.logger {}
+
+private const val BUFFER_COMMAND_TAG = "buffer"
+private const val QUERY_COMMAND_NAME = "query"
+private const val RETRIEVE_COMMAND_NAME = "retrieve"
+
+private const val YEAR = "year"
+private const val MONTH = "month"
+private const val DAY = "day"
+
+private const val CHANNEL = "channel"
+private const val USER = "user"
 
 @Component
 class AutomaticChannelCommentTrackingListener(
@@ -40,62 +46,48 @@ class AutomaticChannelCommentTrackingListener(
         private val jsonMapper = ObjectMapper()
         private val commentCountRepository = CommentCountRepository(jsonMapper)
 
-        private const val BUFFER_COMMAND_TAG = "buffer"
-        private const val QUERY_COMMAND_NAME = "query"
-        private const val RETRIEVE_COMMAND_NAME = "retrieve"
+        private val TAIPEI_ZONE_ID = ZoneId.of("Asia/Taipei")
+        private val DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-        private val TAIPEI_ZONE_ID: ZoneId = ZoneId.of("Asia/Taipei")
-        private val DATE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-
-        private const val YEAR = "year"
-        private const val MONTH = "month"
-        private const val DAY = "day"
-
-        private const val CHANNEL = "channel"
-        private const val USER = "user"
-
-        private fun getCommands(): List<CommandData> = listOf(
-            Commands.slash(BUFFER_COMMAND_TAG, "只有buffer有權限")
-                .addSubcommands(
-                    SubcommandData(QUERY_COMMAND_NAME, "查詢留言數")
-                        .addOptions(
-                            OptionData(OptionType.INTEGER, YEAR, "輸入年分", false),
-                            OptionData(OptionType.INTEGER, MONTH, "輸入月分", false),
-                            OptionData(OptionType.INTEGER, DAY, "輸入日期", false),
-                            OptionData(OptionType.CHANNEL, CHANNEL, "輸入頻道", false),
-                            OptionData(OptionType.USER, USER, "輸入使用者", false)
-                        ),
-                    SubcommandData(RETRIEVE_COMMAND_NAME, "把頻道開啟以來的留言寫入資料庫")
-                        .addOption(OptionType.CHANNEL, CHANNEL, "輸入頻道", true)
-                )
-        )
     }
 
-    override fun onMessageReceived(event: MessageReceivedEvent) {
-        with(event) {
-            incrementMessageCount(message)
-        }
-    }
+    override fun commands(): List<CommandData> = listOf(
+        Commands.slash(BUFFER_COMMAND_TAG, "只有buffer有權限")
+            .addSubcommands(
+                SubcommandData(QUERY_COMMAND_NAME, "查詢留言數")
+                    .addOptions(
+                        OptionData(OptionType.INTEGER, YEAR, "輸入年分", false),
+                        OptionData(OptionType.INTEGER, MONTH, "輸入月分", false),
+                        OptionData(OptionType.INTEGER, DAY, "輸入日期", false),
+                        OptionData(OptionType.CHANNEL, CHANNEL, "輸入頻道", false),
+                        OptionData(OptionType.USER, USER, "輸入使用者", false)
+                    ),
+                SubcommandData(RETRIEVE_COMMAND_NAME, "把頻道開啟以來的留言寫入資料庫")
+                    .addOption(OptionType.CHANNEL, CHANNEL, "輸入頻道", true)
+            )
+    )
 
-    private fun incrementMessageCount(message: Message) {
-        commentCountRepository.incrementCountByQuery(Query(message.toDate(), message.author.id, message.channel.id))
+    override fun onMessageReceived(event: MessageReceivedEvent) = incrementMessageCount(event.message)
+
+    private fun incrementMessageCount(message: Message) = with(message) {
+        commentCountRepository.incrementCountByQuery(Query(toDate(), author.id, channel.id))
     }
 
     private fun Message.toDate(): String = timeCreated.atZoneSameInstant(TAIPEI_ZONE_ID).format(DATE_FORMAT)
-
-    override fun commands(): List<CommandData> = getCommands()
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         with(event) {
             val (tag, command) = splitCommandName(" ")
 
-            if (tag != BUFFER_COMMAND_TAG) {
-                return
-            }
+            when {
+                tag != BUFFER_COMMAND_TAG -> {
+                    return
+                }
 
-            if (member.isAlphaMember().not()) {
-                reply("你沒有權限").queue()
-                return
+                member.isAlphaMember().not() -> {
+                    reply("你沒有權限").queue()
+                    return
+                }
             }
 
             when (command) {
@@ -107,7 +99,7 @@ class AutomaticChannelCommentTrackingListener(
     }
 
     private fun SlashCommandInteractionEvent.splitCommandName(delimiters: String): Pair<String, String> =
-        fullCommandName.split(" ").run { if (size == 2) first() to last() else "" to "" }
+        fullCommandName.split(delimiters).run { if (size == 2) first() to last() else "" to "" }
 
     private fun Member?.isAlphaMember(): Boolean = this?.roles?.any { it.id == wsa.wsaAlphaRoleId } ?: false
 
