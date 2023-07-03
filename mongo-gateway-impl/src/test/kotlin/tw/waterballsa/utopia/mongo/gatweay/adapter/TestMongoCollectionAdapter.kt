@@ -101,6 +101,34 @@ class TestMongoCollectionAdapter : TestMongoBase() {
         }
     }
 
+    @Nested
+    inner class Remove {
+
+        @Test
+        fun notExist() {
+            assertThat(mongoCollectionAdapter.remove(TestDocument(id = "123")))
+                    .isFalse
+        }
+
+        @Test
+        fun exist() {
+            createTestDocument(id = "123")
+
+            assertThat(mongoCollectionAdapter.remove(TestDocument(id = "123")))
+                    .isTrue
+        }
+    }
+
+    @Test
+    fun removeAll() {
+        createTestDocument(id = "123")
+        createTestDocument(id = "456")
+        createTestDocument(id = "78")
+
+        assertThat(mongoCollectionAdapter.removeAll(listOf(TestDocument(id = "123"), TestDocument(id = "456"))))
+                .isEqualTo(2L)
+    }
+
     private fun createTestDocument(id: String? = null, age: Int? = null, name: String? = null) {
         mongoTemplate.insert(Document(mapOf(
                 Pair("_id", id),
@@ -113,4 +141,4 @@ class TestMongoCollectionAdapter : TestMongoBase() {
 }
 
 
-data class TestDocument(val id: String? = null, val age: Int?, val name: String?)
+data class TestDocument(val id: String? = null, val age: Int? = null, val name: String? = null)

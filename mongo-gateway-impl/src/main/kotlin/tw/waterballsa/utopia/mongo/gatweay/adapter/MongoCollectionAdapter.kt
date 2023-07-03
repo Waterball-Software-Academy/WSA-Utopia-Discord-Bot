@@ -37,6 +37,17 @@ class MongoCollectionAdapter<TDocument, ID>(
                 .toList()
     }
 
+    override fun remove(document: TDocument): Boolean {
+        return mongoTemplate.remove(document.toBsonDocument(), documentInformation.collectionName).deletedCount == 1L
+    }
+
+    override fun removeAll(documents: Collection<TDocument>): Long {
+        val ids = documents.map { it.toBsonDocument().get(MONGO_ID_FIELD_NAME) }
+                .toList()
+        return mongoTemplate.remove(Query.query(Criteria.where(MONGO_ID_FIELD_NAME).`in`(ids)), documentInformation.collectionName)
+                .deletedCount
+    }
+
     private fun TDocument.toBsonDocument(): org.bson.Document {
         return objectMapper.convertValue(this, org.bson.Document::class.java)!!
                 .convertIdField(documentInformation.idFieldName, MONGO_ID_FIELD_NAME)

@@ -7,4 +7,8 @@ interface MongoCollection<TDocument, ID> {
     fun findOne(id: ID): TDocument?
 
     fun findAll(): List<TDocument>
+
+    fun remove(document: TDocument): Boolean
+
+    fun removeAll(documents: Collection<TDocument>): Long
 }
