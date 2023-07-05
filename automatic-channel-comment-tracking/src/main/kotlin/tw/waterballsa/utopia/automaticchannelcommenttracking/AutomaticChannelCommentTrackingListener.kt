@@ -90,6 +90,10 @@ class AutomaticChannelCommentTrackingListener(
                 }
             }
 
+            if (member.isAlphaMember()) {
+
+            }
+
             when (command) {
                 QUERY_COMMAND_NAME -> handleQueryCommand()
                 RETRIEVE_COMMAND_NAME -> handleRetrieveCommand()
