@@ -1,7 +1,10 @@
 package tw.waterballsa.utopia.jda.extensions
 
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
+import net.dv8tion.jda.api.interactions.commands.OptionType
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 
 fun GenericCommandInteractionEvent.getOptionAsZeroOrPositiveInt(name: String): Int? {
     return getOptionAsIntWithValidation(name, "a zero or positive integer") {
@@ -51,7 +54,6 @@ fun GenericCommandInteractionEvent.getOptionAsIntWithValidation(name: String,
     return getOptionWithValidation(name, optionTypeName, validation) { it?.asInt }
 }
 
-
 fun <T> GenericCommandInteractionEvent.getOptionWithValidation(name: String,
                                                                optionTypeName: String,
                                                                validation: (T) -> Boolean,
@@ -68,3 +70,8 @@ fun <T> GenericCommandInteractionEvent.getOptionWithValidation(name: String,
     }
     return null
 }
+
+fun SubcommandData.addRequiredOption(type: OptionType, name: String, description: String) =
+    addOption(type, name, description, true)
+
+fun IReplyCallback.replyEphemerally(message: String) = reply(message).setEphemeral(true).queue()

@@ -85,6 +85,11 @@
             <artifactId>russian-roulette</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>message-cherry-pick</artifactId>
+        </dependency>
+
         <!--        <dependency>-->
         <!--            <groupId>tw.waterballsa.utopia</groupId>-->
         <!--            <artifactId>poll</artifactId>-->
