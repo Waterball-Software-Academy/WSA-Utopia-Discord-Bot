@@ -33,6 +33,7 @@
         <module>russian-roulette</module>
         <module>mongo-gateway-impl</module>
         <module>mongo-gateway</module>
+        <module>utopia-quiz</module>
     </modules>
 
     <properties>
@@ -255,6 +256,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>mongo-gateway</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>utopia-quiz</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>
