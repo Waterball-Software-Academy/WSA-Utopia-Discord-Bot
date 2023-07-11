@@ -25,13 +25,14 @@ private const val DATABASE_DIRECTORY = "data"
 @Configuration
 @ComponentScan("tw.waterballsa.utopia")
 open class MyDependencyInjectionConfig {
+
     @Bean
     open fun commonAnnotationBeanPostProcessor(): CommonAnnotationBeanPostProcessor =
-        CommonAnnotationBeanPostProcessor()
+            CommonAnnotationBeanPostProcessor()
 
     @Bean
     open fun objectMapper(): ObjectMapper =
-        ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     @Bean
     open fun wsaProperties(): WsaDiscordProperties {
@@ -49,8 +50,8 @@ open class MyDependencyInjectionConfig {
 
     @Bean(WSA_GUILD_BEAN_NAME)
     open fun wsaGuild(wsaProperties: WsaDiscordProperties, jda: JDA): Guild =
-        jda.getGuildById(wsaProperties.guildId)
-            ?: throw RuntimeException("You must run JDA before instantiating the ApplicationContext.")
+            jda.getGuildById(wsaProperties.guildId)
+                    ?: throw RuntimeException("You must run JDA before instantiating the ApplicationContext.")
 
     @Bean
     @Scope(scopeName = SCOPE_PROTOTYPE)

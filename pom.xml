@@ -31,6 +31,8 @@
         <module>utopia-gamification-quest</module>
         <module>poll</module>
         <module>russian-roulette</module>
+        <module>mongo-gateway-impl</module>
+        <module>mongo-gateway</module>
     </modules>
 
     <properties>
@@ -126,7 +128,6 @@
             <artifactId>jda-ktx</artifactId>
             <version>${jda-ktx.version}</version>
         </dependency>
-
     </dependencies>
 
     <dependencyManagement>
@@ -244,6 +245,16 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>poll</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>mongo-gateway-impl</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>mongo-gateway</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>

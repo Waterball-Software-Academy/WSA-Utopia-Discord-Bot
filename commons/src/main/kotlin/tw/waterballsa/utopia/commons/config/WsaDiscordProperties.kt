@@ -31,6 +31,7 @@ open class WsaDiscordProperties(properties: Properties) {
     val discussionAreaChannelLink: String
     val flagPostChannelId: String
     val flagPostChannelLink: String
+    val mongoDatabase: String
 
     init {
         properties.run {
@@ -57,6 +58,7 @@ open class WsaDiscordProperties(properties: Properties) {
             careerAdvancementTopicChannelLink = getProperty("career-advancement-topic-channel-link")
             engineerLifeChannelId = getProperty("engineer-life-channel-id")
             engineerLifeChannelLink = getProperty("engineer-life-channel-link")
+            mongoDatabase = getProperty("mongo-database")
         }
     }
 }
