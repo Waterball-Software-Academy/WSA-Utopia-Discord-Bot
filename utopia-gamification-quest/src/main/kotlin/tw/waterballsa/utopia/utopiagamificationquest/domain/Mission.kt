@@ -15,4 +15,11 @@ class Mission(val id: UUID, val player: Player, val quest: Quest) {
     fun isCompleted(): Boolean = quest.criteria.isCompleted
 
     fun rewardPlayer() = player.gainExp(quest.reward.exp)
+
+    fun nextMission(): Mission? {
+        if (isCompleted().not()) {
+            return null
+        }
+        return quest.nextQuest?.let { Mission(player, it) }
+    }
 }
