@@ -11,4 +11,6 @@ interface MongoCollection<TDocument, ID> {
     fun remove(document: TDocument): Boolean
 
     fun removeAll(documents: Collection<TDocument>): Long
+
+    fun find(query: Query): List<TDocument>
 }
