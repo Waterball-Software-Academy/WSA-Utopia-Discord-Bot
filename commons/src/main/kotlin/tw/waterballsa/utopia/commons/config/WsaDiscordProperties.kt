@@ -29,7 +29,10 @@ open class WsaDiscordProperties(properties: Properties) {
     val mongoDatabase: String
     val resumeCheckChannelId: String
     val featuredVideosChannelId: String
-
+    val flagPostGuideId: String
+    val waterBallJournalPostId: String
+    val waterBallLoseWeightPostId: String
+    val wsaGuideLineChannelId: String
 
     init {
         properties.run {
@@ -54,6 +57,10 @@ open class WsaDiscordProperties(properties: Properties) {
             mongoDatabase = getProperty("mongo-database")
             resumeCheckChannelId = getProperty("resume-check-channel-id")
             featuredVideosChannelId = getProperty("featured-videos-channel-id")
+            flagPostGuideId = getProperty("flag-post-guide-id")
+            waterBallJournalPostId = getProperty("water-ball-journal-post-id")
+            waterBallLoseWeightPostId = getProperty("water-ball-lose-weight-post-id")
+            wsaGuideLineChannelId = getProperty("wsa-guideline-channel-id")
         }
     }
 }

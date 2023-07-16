@@ -18,7 +18,7 @@ fun User.claimMissionReward(mission: Mission) {
 
 fun PrivateChannel.publishReward(mission: Mission) {
     with(mission) {
-        sendMessage(quest.reward.respond)
+        sendMessage(quest.postMessage)
             .addActionRow(rewardButton)
             .complete()
     }
