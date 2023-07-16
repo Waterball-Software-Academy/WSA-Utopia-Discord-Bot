@@ -2,7 +2,6 @@ package tw.waterballsa.utopia.mongo.gateway
 
 import org.bson.Document
 
-
 class Criteria() : CriteriaDefinition {
 
     companion object {
@@ -43,6 +42,66 @@ class Criteria() : CriteriaDefinition {
 
     fun ne(value: Any?): Criteria {
         criteria["\$ne"] = value
+        return this
+    }
+
+    fun gt(value: Int): Criteria {
+        criteria["\$gt"] = value
+        return this
+    }
+
+    fun gte(value: Int): Criteria {
+        criteria["\$gte"] = value
+        return this
+    }
+
+    fun lt(value: Int): Criteria {
+        criteria["\$lt"] = value
+        return this
+    }
+
+    fun lte(value: Int): Criteria {
+        criteria["\$lte"] = value
+        return this
+    }
+
+    fun `in`(values: Collection<*>): Criteria {
+        criteria["\$in"] = values
+        return this
+    }
+
+    fun `in`(vararg values: Any): Criteria {
+        return `in`(values.asList())
+    }
+
+    fun nin(values: Collection<*>): Criteria {
+        criteria["\$nin"] = values
+        return this
+    }
+
+    fun nin(vararg values: Any): Criteria {
+        return nin(values.asList())
+    }
+
+    fun exists(value: Boolean): Criteria {
+        criteria["\$exists"] = value
+        return this
+    }
+
+    fun orOperator(vararg values: Criteria): Criteria {
+        return orOperator(values.asList())
+    }
+
+    fun orOperator(criteria: Collection<Criteria>): Criteria {
+        return registerCriteriaChainElement(Criteria("\$or").`is`(createCriteriaList(criteria)))
+    }
+
+    private fun createCriteriaList(criteriaList: Collection<Criteria>): List<Document> {
+        return criteriaList.map { it.getCriteriaObject() }
+    }
+
+    private fun registerCriteriaChainElement(criteria: Criteria): Criteria {
+        criteriaChain.add(criteria)
         return this
     }
 

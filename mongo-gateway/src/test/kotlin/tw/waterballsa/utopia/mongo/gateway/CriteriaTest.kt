@@ -1,8 +1,11 @@
 package tw.waterballsa.utopia.mongo.gateway
 
+import net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.Document
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 internal class CriteriaTest {
 
@@ -14,27 +17,51 @@ internal class CriteriaTest {
 
     @Test
     fun nameIsTom() {
-        assertThat(Criteria("name").`is`("tom").getCriteriaObject())
-                .isEqualTo(Document(mapOf("name" to "tom")))
+        val expectedValue =
+                """
+                { "name":"Tom" }
+                """
+        assertThatJson(Criteria("name").`is`("Tom").getCriteriaObject())
+                .isEqualTo(expectedValue)
     }
 
     @Test
     fun nameIsNull() {
-        assertThat(Criteria("name").isNull().getCriteriaObject())
-                .isEqualTo(Document(mapOf("name" to null)))
+        val expectedValue =
+                """
+                { "name":null }
+                """
+        assertThatJson(Criteria("name").isNull().getCriteriaObject())
+                .isEqualTo(expectedValue)
     }
 
     @Test
     fun nameNotEqualToTom() {
-        assertThat(Criteria("name").ne("tom").getCriteriaObject())
-                .isEqualTo(Document(mapOf("name" to Document(mapOf("\$ne" to "tom")))))
+        val expectedValue =
+                """
+                {
+                  "name": {
+                    "${'$'}ne": "Tom"
+                  }
+                }
+                """
+        assertThatJson(Criteria("name").ne("Tom").getCriteriaObject())
+                .isEqualTo(expectedValue)
     }
 
     @Test
     fun nameIsTomAndAgeNotEqualTo18() {
-        assertThat(Criteria("name").`is`("tom")
-                .and("age").ne(18)
-                .getCriteriaObject())
-                .isEqualTo(Document(mapOf("name" to "tom", "age" to Document(mapOf("\$ne" to 18)))))
+        val expectedValue =
+                """
+                {
+                  "name": "Tom",
+                  "age": {
+                    "${'$'}ne": 18
+                  }
+                }
+                """
+        assertThat(Criteria("name").`is`("Tom")
+                .and("age").ne(18).getCriteriaObject())
+                .isEqualTo(Document(mapOf("name" to "Tom", "age" to Document(mapOf("\$ne" to 18)))))
     }
 }
