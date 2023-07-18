@@ -18,13 +18,11 @@ class ButtonInteractionAction(
 }
 
 class ButtonInteractionCriteria(
-    private val buttonName: String,
-    goalCount: Int
-) : Action.Criteria(goalCount) {
+    private val buttonName: String
+) : Action.Criteria() {
 
-    override fun meetAction(action: Action): Boolean {
-        return (action as? ButtonInteractionAction)?.let { meetCriteria(it) } ?: false
-    }
+    override fun meet(action: Action): Boolean =
+        (action as? ButtonInteractionAction)?.let { meetCriteria(it) } ?: false
 
     //TODO 之後開始出現重複的程式碼，再重構
     private fun meetCriteria(action: ButtonInteractionAction): Boolean {
@@ -35,6 +33,7 @@ class ButtonInteractionCriteria(
         return false
     }
 
+    //TODO 之後要加入考試邏輯
     private fun handleQuizButton(action: ButtonInteractionAction): Boolean {
         return true
     }

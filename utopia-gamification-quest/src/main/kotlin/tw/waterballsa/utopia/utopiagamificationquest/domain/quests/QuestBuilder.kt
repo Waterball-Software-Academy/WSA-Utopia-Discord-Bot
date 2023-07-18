@@ -7,7 +7,10 @@ import tw.waterballsa.utopia.utopiagamificationquest.domain.Quest
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Reward
 
 @Component
-class Quests(val wsa: WsaDiscordProperties)
+class Quests(val wsa: WsaDiscordProperties) {
+    fun String.toLink(): String = "https://discord.com/channels/${wsa.guildId}/${this}"
+}
+
 
 class QuestBuilder {
     lateinit var title: String

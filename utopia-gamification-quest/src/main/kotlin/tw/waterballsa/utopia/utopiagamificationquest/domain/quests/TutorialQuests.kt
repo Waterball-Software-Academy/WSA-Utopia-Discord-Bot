@@ -12,13 +12,13 @@ val Quests.unlockAcademyQuest: Quest
         title = "任務：解鎖學院"
         description =
             """
-            ${wsa.unlockEntryChannelLink}
+            ${wsa.unlockEntryChannelId.toLink()} 
             到這裡點emoji解鎖哦
             """.trimIndent()
 
         reward = Reward(
-                "已解鎖學院，任務完成",
-                100u
+            "已解鎖學院，任務完成",
+            100u
         )
         criteria = MessageReactionCriteria(wsa.unlockEntryMessageId, unlockEmoji)
 
@@ -44,7 +44,7 @@ val Quests.selfIntroductionQuest: Quest
         title = "任務：自我介紹"
         description =
             """
-            ${wsa.selfIntroChannelLink}
+            ${wsa.selfIntroChannelId.toLink()}
             到自我介紹串發一篇自我介紹吧!請依照以下格式
             ```
             $content
@@ -56,46 +56,66 @@ val Quests.selfIntroductionQuest: Quest
             100u
         )
 
-        criteria = MessageSentCriteria(wsa.selfIntroChannelId, 1, regex = getSelfIntroductionRegex())
+        criteria = MessageSentCriteria(ChannelIdRule(wsa.selfIntroChannelId), regexRule = getSelfIntroductionRegex())
 
         nextQuest = firstMessageActionQuest
     }
 
-private fun getSelfIntroductionRegex(): Regex {
-    return """【(.|\n)*】(.|\n)*工作職位：?(:)?(.|\n)*((公司產業：?(:)?(.|\n)*))?專長：?(:)?(.|\n)*興趣：?(:)?(.|\n)*簡介：?(:)?(.|\n)*((三件關於我的事，猜猜哪一件是假的：?(:)?(.|\n)*))?""".toRegex()
-}
+private fun getSelfIntroductionRegex(): RegexRule =
+    RegexRule("""【(.|\n)*】(.|\n)*工作職位：?(:)?(.|\n)*((公司產業：?(:)?(.|\n)*))?專長：?(:)?(.|\n)*興趣：?(:)?(.|\n)*簡介：?(:)?(.|\n)*((三件關於我的事，猜猜哪一件是假的：?(:)?(.|\n)*))?""".toRegex())
+
 
 val Quests.firstMessageActionQuest: Quest
     get() = quest {
         title = "任務:新生報到"
         description =
-                """
-            ${wsa.discussionAreaChannelLink}
+            """
+            ${wsa.discussionAreaChannelId.toLink()}
             到話題閒聊區留言
             """.trimIndent()
 
         reward = Reward(
-                "已完成閒聊區第一次留言！",
-                100u,
+            "已完成閒聊區第一次留言！",
+            100u,
         )
 
-        criteria = MessageSentCriteria(wsa.discussionAreaChannelId, 1)
+        criteria = MessageSentCriteria(ChannelIdRule(wsa.discussionAreaChannelId))
+
+        nextQuest = watchVideoQuest
+
+    }
+
+val Quests.watchVideoQuest: Quest
+    get() = quest {
+        title = "任務：觀看學院影片"
+        description = """
+            ${wsa.featuredVideosChannelId.toLink()}
+            觀看任一部學院精華影片，並且在該貼文串底下回覆 1 則訊息
+        """.trimIndent()
+        reward = Reward(
+            "已完成觀看學院影片！",
+            100u
+        )
+
+        criteria = MessageSentCriteria(ChannelIdRule(wsa.featuredVideosChannelId))
 
         nextQuest = flagPostQuest
     }
+
+
 val Quests.flagPostQuest: Quest
     get() = quest {
         title = "全民插旗子"
         description =
             """
-            ${wsa.flagPostChannelLink}
+            ${wsa.flagPostChannelId.toLink()}
             在全民插旗子頻道發佈一則貼文
             """.trimIndent()
         reward = Reward(
             "已完成插旗子任務！",
             100u
         )
-        criteria = PostCriteria(wsa.flagPostChannelId, 1)
+        criteria = PostCriteria(wsa.flagPostChannelId)
 
         nextQuest = SendContainsImageMessageInEngineerLifeChannelQuest
     }
@@ -104,17 +124,17 @@ val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
     get() = quest {
         title = "任務:工程師生活"
         description =
-                """
-            ${wsa.engineerLifeChannelLink}
+            """
+            ${wsa.engineerLifeChannelId.toLink()}
             到工程師生活發布一張生活照片吧
             """.trimIndent()
 
         reward = Reward(
-                "已發布照片！",
-                100u,
+            "已發布照片！",
+            100u,
         )
 
-        criteria = MessageSentCriteria(wsa.engineerLifeChannelId, 1, hasImage = true)
+        criteria = MessageSentCriteria(ChannelIdRule(wsa.engineerLifeChannelId), hasImageRule = HasRule.TRUE)
 
         nextQuest = ReplyToAnyoneInCareerAdvancementTopicChannelQuest
     }
@@ -123,37 +143,55 @@ val Quests.ReplyToAnyoneInCareerAdvancementTopicChannelQuest: Quest
     get() = quest {
         title = "任務:職涯攻略話題"
         description =
-                """
-            ${wsa.careerAdvancementTopicChannelLink}
+            """
+            ${wsa.careerAdvancementTopicChannelId.toLink()}
             到職涯攻略區回覆其他人的訊息吧
             """.trimIndent()
 
         reward = Reward(
-                "已回覆訊息！",
-                100u,
+            "已回覆訊息！",
+            100u,
         )
 
-        criteria = MessageSentCriteria(wsa.careerAdvancementTopicChannelId, 1, hasReplied = true)
+        criteria =
+            MessageSentCriteria(ChannelIdRule(wsa.careerAdvancementTopicChannelId), hasRepliedRule = HasRule.TRUE)
+
+        nextQuest = resumeHealthCheckQuest
+    }
+
+val Quests.resumeHealthCheckQuest: Quest
+    get() = quest {
+        title = "任務：履歷健檢"
+
+        description = """
+            ${wsa.resumeCheckChannelId.toLink()}
+            在履歷健檢頻道的任一則貼文內回覆 1 則訊息
+        """.trimIndent()
+
+        reward = Reward(
+            "已回覆訊息！",
+            100u
+        )
+
+        criteria = MessageSentCriteria(ChannelIdRule(wsa.resumeCheckChannelId))
 
         nextQuest = SendMessageInVoiceChannelQuest
     }
-
-const val anyChannel = ""
 
 val Quests.SendMessageInVoiceChannelQuest: Quest
     get() = quest {
         title = "任務:吃瓜社團會議間"
         description =
-                """
+            """
             參與任一個當前人數大於兩人的語音頻道，並在 Chat 中發表 1 則訊息
             """.trimIndent()
 
         reward = Reward(
-                "已發表一則訊息！",
-                100u,
+            "已發表一則訊息！",
+            100u,
         )
 
-        criteria = MessageSentCriteria(anyChannel, 1, numberOfVoiceChannelMembers = 2)
+        criteria = MessageSentCriteria(ChannelIdRule.ANY_CHANNEL, numberOfVoiceChannelMembersRule = AtLeastRule(2))
 
         nextQuest = quizQuest
     }
@@ -171,6 +209,6 @@ val Quests.quizQuest: Quest
             100u,
         )
 
-        criteria = ButtonInteractionCriteria(QuizButton.NAME, 1)
+        criteria = ButtonInteractionCriteria(QuizButton.NAME)
 
     }

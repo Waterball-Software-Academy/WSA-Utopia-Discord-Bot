@@ -12,11 +12,10 @@ class PostAction(player: Player, val channelId: String) : Action(player) {
 }
 
 class PostCriteria(
-    private val channelId: String,
-    postTimes: Int = 1
-) : Action.Criteria(postTimes) {
+    private val channelId: String
+) : Action.Criteria() {
 
-    override fun meetAction(action: Action) = PostAction::class.safeCast(action)?.let { meetCriteria(it) } ?: false
+    override fun meet(action: Action) = (action as? PostAction)?.let { meetCriteria(it) } ?: false
 
     private fun meetCriteria(action: PostAction): Boolean = action.channelId == channelId
 }

@@ -1,7 +1,9 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain
 
+import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.*
+
 abstract class Action(
-        val player: Player
+    val player: Player
 ) {
 
     abstract fun match(criteria: Criteria): Boolean
@@ -12,10 +14,8 @@ abstract class Action(
         }
     }
 
-    abstract class Criteria(
-        private val goalCount: Int,
-        private var completedTimes: Int = 0
-    ) {
+
+    abstract class Criteria {
 
         var isCompleted: Boolean = false
             private set
@@ -24,14 +24,11 @@ abstract class Action(
             isCompleted = true
         }
 
-        fun meet(action: Action): Boolean {
-            return meetAction(action) && ++completedTimes == goalCount
-        }
-
-
-        protected abstract fun meetAction(action: Action): Boolean
+        abstract fun meet(action: Action): Boolean
     }
 }
+
+
 
 
 
