@@ -69,6 +69,7 @@ class UtopiaGamificationQuestListener(
                 description = quest.description
             })
 
+            //TODO quest 有 button 的概念，會偶合 button 的 id/label 還有 行為，設計成本大，先不要做。
             if (quest.title == quests.quizQuest.title) {
                 message.addActionRow(
                     quizButton
@@ -96,8 +97,6 @@ class UtopiaGamificationQuestListener(
                     }
                 }
             }
-
-
         }
     }
 

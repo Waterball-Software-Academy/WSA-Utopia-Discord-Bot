@@ -18,7 +18,8 @@ class PostListener(
     override fun onGuildAuditLogEntryCreate(event: GuildAuditLogEntryCreateEvent) {
         with(event) {
             val player = user ?: return
-
+            val action = action ?: return
+            
             playerFulfillMissionsService.execute(action) { completedMission ->
                 player.claimMissionReward(completedMission)
             }
@@ -28,6 +29,10 @@ class PostListener(
     private val GuildAuditLogEntryCreateEvent.user get() = entry.user ?: jda.retrieveUserById(entry.userId).complete()
 
     private val GuildAuditLogEntryCreateEvent.action
-        get() = PostAction(Player(user.id, user.name), properties.flagPostChannelId)
-
+        get() = guild.getThreadChannelById(entry.targetId)?.let {
+            PostAction(
+                Player(user.id, user.name),
+                it.parentChannel.id
+            )
+        }
 }

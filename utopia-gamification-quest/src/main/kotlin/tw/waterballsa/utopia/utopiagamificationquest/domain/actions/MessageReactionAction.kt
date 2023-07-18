@@ -16,12 +16,11 @@ class MessageReactionAction(
 
 class MessageReactionCriteria(
     private val messageId: String,
-    private val emoji: String,
-    goalCount: Int = 1
-) : Action.Criteria(goalCount) {
+    private val emoji: String
+) : Action.Criteria() {
 
-    override fun meetAction(action: Action) =
-        MessageReactionAction::class.safeCast(action)?.let { meetCriteria(it) } ?: false
+    override fun meet(action: Action) =
+        (action as? MessageReactionAction)?.let { meetCriteria(it) } ?: false
 
     private fun meetCriteria(action: MessageReactionAction): Boolean =
         action.messageId == messageId && action.emoji == emoji
