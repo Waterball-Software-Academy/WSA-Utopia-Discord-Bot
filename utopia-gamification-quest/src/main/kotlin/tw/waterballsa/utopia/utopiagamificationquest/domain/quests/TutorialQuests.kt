@@ -9,6 +9,7 @@ private const val unlockEmoji = "🔑"
 
 val Quests.unlockAcademyQuest: Quest
     get() = quest {
+        questId = 1
         title = "任務：解鎖學院"
         description =
             """
@@ -17,8 +18,8 @@ val Quests.unlockAcademyQuest: Quest
             """.trimIndent()
 
         reward = Reward(
-                "已解鎖學院，任務完成",
-                100u
+            "已解鎖學院，任務完成",
+            100u
         )
         criteria = MessageReactionCriteria(wsa.unlockEntryMessageId, unlockEmoji)
 
@@ -27,6 +28,7 @@ val Quests.unlockAcademyQuest: Quest
 
 val Quests.selfIntroductionQuest: Quest
     get() = quest {
+        questId = 2
         val content = """
         【 <您的暱稱> 】 
         **工作職位：** <您的工作職位>
@@ -67,16 +69,17 @@ private fun getSelfIntroductionRegex(): Regex {
 
 val Quests.firstMessageActionQuest: Quest
     get() = quest {
+        questId = 3
         title = "任務:新生報到"
         description =
-                """
+            """
             ${wsa.discussionAreaChannelLink}
             到話題閒聊區留言
             """.trimIndent()
 
         reward = Reward(
-                "已完成閒聊區第一次留言！",
-                100u,
+            "已完成閒聊區第一次留言！",
+            100u,
         )
 
         criteria = MessageSentCriteria(wsa.discussionAreaChannelId, 1)
@@ -85,6 +88,7 @@ val Quests.firstMessageActionQuest: Quest
     }
 val Quests.flagPostQuest: Quest
     get() = quest {
+        questId = 4
         title = "全民插旗子"
         description =
             """
@@ -102,16 +106,17 @@ val Quests.flagPostQuest: Quest
 
 val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
     get() = quest {
+        questId = 5
         title = "任務:工程師生活"
         description =
-                """
+            """
             ${wsa.engineerLifeChannelLink}
             到工程師生活發布一張生活照片吧
             """.trimIndent()
 
         reward = Reward(
-                "已發布照片！",
-                100u,
+            "已發布照片！",
+            100u,
         )
 
         criteria = MessageSentCriteria(wsa.engineerLifeChannelId, 1, hasImage = true)
@@ -121,16 +126,17 @@ val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
 
 val Quests.ReplyToAnyoneInCareerAdvancementTopicChannelQuest: Quest
     get() = quest {
+        questId = 6
         title = "任務:職涯攻略話題"
         description =
-                """
+            """
             ${wsa.careerAdvancementTopicChannelLink}
             到職涯攻略區回覆其他人的訊息吧
             """.trimIndent()
 
         reward = Reward(
-                "已回覆訊息！",
-                100u,
+            "已回覆訊息！",
+            100u,
         )
 
         criteria = MessageSentCriteria(wsa.careerAdvancementTopicChannelId, 1, hasReplied = true)
@@ -142,15 +148,16 @@ const val anyChannel = ""
 
 val Quests.SendMessageInVoiceChannelQuest: Quest
     get() = quest {
+        questId = 7
         title = "任務:吃瓜社團會議間"
         description =
-                """
+            """
             參與任一個當前人數大於兩人的語音頻道，並在 Chat 中發表 1 則訊息
             """.trimIndent()
 
         reward = Reward(
-                "已發表一則訊息！",
-                100u,
+            "已發表一則訊息！",
+            100u,
         )
 
         criteria = MessageSentCriteria(anyChannel, 1, numberOfVoiceChannelMembers = 2)
@@ -160,6 +167,7 @@ val Quests.SendMessageInVoiceChannelQuest: Quest
 
 val Quests.quizQuest: Quest
     get() = quest {
+        questId = 8
         title = "任務:考試"
         description =
             """

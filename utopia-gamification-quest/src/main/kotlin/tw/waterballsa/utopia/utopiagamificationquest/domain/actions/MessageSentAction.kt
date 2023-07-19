@@ -1,6 +1,7 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain.actions
 
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Action
+import tw.waterballsa.utopia.utopiagamificationquest.domain.Criteria
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import kotlin.reflect.safeCast
 
@@ -24,14 +25,16 @@ class MessageSentCriteria(
     private val hasImage: Boolean = false,
     private val numberOfVoiceChannelMembers: Int = 0,
     private val regex: Regex = ".*".toRegex(),
-) : Action.Criteria(goalCount) {
+) : Criteria(goalCount) {
 
     override fun meetAction(action: Action) =
-        MessageSentAction::class.safeCast(action)?.let { meetCriteria(it) } ?: false
+        (action as? MessageSentAction)?.let { meetCriteria(it) } ?: false
 
-    private fun meetCriteria(action: MessageSentAction): Boolean = action.channelId == channelId
-            && action.numberOfVoiceChannelMembers >= numberOfVoiceChannelMembers
-            && action.hasReplied == hasReplied
-            && action.hasImage == hasImage
-            && action.context matches regex
+    private fun meetCriteria(action: MessageSentAction): Boolean =
+        action.channelId == channelId
+                && action.numberOfVoiceChannelMembers >= numberOfVoiceChannelMembers
+                && action.hasReplied == hasReplied
+                && action.hasImage == hasImage
+                && action.context matches regex
 }
+

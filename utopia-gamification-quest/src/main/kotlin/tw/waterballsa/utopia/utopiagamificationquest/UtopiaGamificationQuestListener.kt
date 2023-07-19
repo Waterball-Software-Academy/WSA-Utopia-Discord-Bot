@@ -49,11 +49,18 @@ class UtopiaGamificationQuestListener(
 
             val request = PlayerAcceptQuestService.Request(user.toPlayer(), quests.unlockAcademyQuest)
 
-            playerAcceptQuestService.execute(request) { mission ->
-                mission.publishToUser(user).queue {
-                    reply("已經接取第一個任務，去私訊查看任務內容").setEphemeral(true).queue()
+            val presenter = object : PlayerAcceptQuestService.Presenter {
+                override fun presentPlayerHasAcquiredMission() {
+                    reply("已獲得新手任務，無法再次獲得。").setEphemeral(true).queue()
+                }
+
+                override fun presentPlayerAcquiresMission(mission: Mission) {
+                    mission.publishToUser(user).queue()
+                    reply("已經接取第一個任務，去私訊查看任務內容。").setEphemeral(true).queue()
                 }
             }
+
+            playerAcceptQuestService.execute(request, presenter)
         }
     }
 

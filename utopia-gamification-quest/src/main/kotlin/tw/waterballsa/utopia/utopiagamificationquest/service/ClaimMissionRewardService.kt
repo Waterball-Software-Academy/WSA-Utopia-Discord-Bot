@@ -15,7 +15,7 @@ class ClaimMissionRewardService(
         with(request) {
             val mission = missionRepository.findMission(Query(player.id, true, questTitle)) ?: return
             mission.rewardPlayer()
-            missionRepository.removeMission(mission)
+            missionRepository.saveMission(mission)
 
             mission.nextMission()?.let { nextMission ->
                 missionRepository.saveMission(nextMission)

@@ -1,5 +1,6 @@
 package tw.waterballsa.utopia.utopiagamificationquest.repositories
 
+import org.springframework.stereotype.Component
 import org.springframework.stereotype.Repository
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 
@@ -8,7 +9,7 @@ interface PlayerRepository {
     fun savePlayer(player: Player): Player
 }
 
-@Repository
+@Component
 class ImMemoryPlayerRepository : PlayerRepository {
 
     private val players = hashMapOf<String, Player>()
