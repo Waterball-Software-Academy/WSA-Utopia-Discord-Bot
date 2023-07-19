@@ -14,6 +14,7 @@ class Mission(
     var state: State,
     var completedTime: LocalDateTime?
 ) {
+
     constructor(player: Player, quest: Quest) : this(randomUUID(), player, quest, IN_PROGRESS, null)
 
     fun match(action: Action): Boolean = action.match(quest.criteria)

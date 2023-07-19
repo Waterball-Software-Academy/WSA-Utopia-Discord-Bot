@@ -19,6 +19,8 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.domains.EventPublisher
+import tw.waterballsa.utopia.jda.domains.QuizEndEvent
+import tw.waterballsa.utopia.jda.domains.QuizPreparationStartEvent
 import tw.waterballsa.utopia.jda.domains.UtopiaEvent
 import java.lang.reflect.Method
 

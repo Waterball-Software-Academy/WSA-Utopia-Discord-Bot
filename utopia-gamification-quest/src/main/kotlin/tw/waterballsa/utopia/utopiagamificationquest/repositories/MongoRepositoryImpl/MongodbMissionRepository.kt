@@ -24,7 +24,7 @@ class MongodbMissionRepository(
             .find { query.match(it) }
 
     //TODO 等 mongodb gateway 的 query 上線之後，把 findAll() 改成 query
-    override fun findIncompleteMissionsByPlayerId(playerId: String): List<Mission> =
+    override fun findInProgressMissionsByPlayerId(playerId: String): List<Mission> =
         repository.findAll()
             .filter { it.playerId == playerId && it.state == State.IN_PROGRESS }
             .map { it.toDomain() }
@@ -47,10 +47,11 @@ class MongodbMissionRepository(
         val quest = quests.findById(questId)
         return Mission(fromString(id), player, quest, state, completedTime)
     }
+
+    private fun Mission.toDocument(): MissionDocument =
+        MissionDocument(id.toString(), player.id, quest.id, completedTime, state)
 }
 
-fun Mission.toDocument(): MissionDocument =
-    MissionDocument(id.toString(), player.id, quest.id, completedTime, state)
 
 @Document("Mission")
 class MissionDocument(

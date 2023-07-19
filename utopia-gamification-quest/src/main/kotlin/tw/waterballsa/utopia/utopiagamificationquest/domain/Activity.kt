@@ -2,8 +2,6 @@ package tw.waterballsa.utopia.utopiagamificationquest.domain
 
 import mu.KotlinLogging
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.JoinActivityAction
-import tw.waterballsa.utopia.utopiagamificationquest.repositories.MongoRepositoryImpl.ActivityDocument
-import tw.waterballsa.utopia.utopiagamificationquest.repositories.MongoRepositoryImpl.AudienceDocument
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalDateTime.now
@@ -19,7 +17,7 @@ class DateTimeRange(
 
     fun inTimeRange(): Boolean = startTime == endTime && now().isAfter(startTime.minusMinutes(20))
 
-    fun setEndTimeAsCurrentTime() {
+    fun end() {
         endTime = now()
     }
 
@@ -29,12 +27,12 @@ class DateTimeRange(
 }
 
 class Activity(
-    private val eventId: String,
-    private val hostId: String,
-    private val eventName: String,
-    private val channelId: String,
-    private val dateTimeRange: DateTimeRange = DateTimeRange(),
-    private val audiences: MutableMap<String, Audience> = mutableMapOf()
+    val eventId: String,
+    val hostId: String,
+    val eventName: String,
+    val channelId: String,
+    val dateTimeRange: DateTimeRange = DateTimeRange(),
+    val audiences: MutableMap<String, Audience> = mutableMapOf()
 ) {
 
     fun join(player: Player) {
@@ -48,7 +46,6 @@ class Activity(
     }
 
     private fun Player.toAudience(): Audience = Audience(id)
-
 
     fun leave(player: Player): JoinActivityAction? {
         val audience = audiences[player.id] ?: return null
@@ -65,29 +62,16 @@ class Activity(
         )
     }
 
-    fun end() = dateTimeRange.setEndTimeAsCurrentTime()
-
-    fun toDocument(): ActivityDocument = ActivityDocument(
-        eventId,
-        hostId,
-        eventName,
-        channelId,
-        dateTimeRange.getStartTime(),
-        dateTimeRange.getEndTime(),
-        audiences.values.map { it.toDocument() }
-    )
+    fun end() = dateTimeRange.end()
 }
 
 class Audience(
     val id: String,
-    private val joinTime: DateTimeRange = DateTimeRange()
+    val joinTime: DateTimeRange = DateTimeRange()
 ) {
-    
+
     fun leave(): Duration {
-        joinTime.setEndTimeAsCurrentTime()
+        joinTime.end()
         return joinTime.getDuration()
     }
-
-    fun toDocument(): AudienceDocument =
-        AudienceDocument(id, joinTime.getStartTime(), joinTime.getEndTime())
 }

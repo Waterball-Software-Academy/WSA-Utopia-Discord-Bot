@@ -27,7 +27,7 @@ class PostListener(
                 channel.id
             )
 
-            playerFulfillMissionsService.execute(action, user.presenter)
+            playerFulfillMissionsService.execute(action, user.claimMissionRewardPresenter)
         }
     }
 

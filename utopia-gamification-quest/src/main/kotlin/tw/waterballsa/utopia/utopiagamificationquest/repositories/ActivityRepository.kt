@@ -10,6 +10,7 @@ import tw.waterballsa.utopia.utopiagamificationquest.domain.DateTimeRange
 import tw.waterballsa.utopia.utopiagamificationquest.extensions.toDate
 
 interface ActivityRepository {
+    
     fun findInProgressActivityByChannelId(id: String): Activity?
     fun findByActivityId(id: String): Activity?
     fun save(activity: Activity): Activity

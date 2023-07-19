@@ -1,6 +1,7 @@
 package tw.waterballsa.utopia.utopiagamificationquest.repositories.MongoRepositoryImpl
 
 import org.springframework.stereotype.Component
+import org.testcontainers.shaded.org.bouncycastle.asn1.x500.style.RFC4519Style.name
 import tw.waterballsa.utopia.mongo.gateway.Document
 import tw.waterballsa.utopia.mongo.gateway.Id
 import tw.waterballsa.utopia.mongo.gateway.MongoCollection
@@ -9,12 +10,23 @@ import tw.waterballsa.utopia.utopiagamificationquest.repositories.PlayerReposito
 import java.time.OffsetDateTime
 
 @Component
-class MongodbPlayerRepository(private val playerRepository: MongoCollection<PlayerDocument, String>) :
-    PlayerRepository {
+class MongodbPlayerRepository(
+    private val playerRepository: MongoCollection<PlayerDocument, String>
+) : PlayerRepository {
 
     override fun findPlayerById(id: String): Player? = playerRepository.findOne(id)?.toDomain()
 
     override fun savePlayer(player: Player): Player = playerRepository.save(player.toDocument()).toDomain()
+
+    private fun PlayerDocument.toDomain(): Player = Player(
+        id,
+        name,
+        exp.toULong(),
+        level.toUInt(),
+        joinDate,
+        latestActivateDate,
+        levelUpgradeDate
+    )
 
     private fun Player.toDocument(): PlayerDocument = PlayerDocument(
         id,
@@ -23,7 +35,7 @@ class MongodbPlayerRepository(private val playerRepository: MongoCollection<Play
         level.toInt(),
         joinDate,
         latestActivateDate,
-        levelUpgradeDate,
+        levelUpgradeDate
     )
 }
 
@@ -36,14 +48,4 @@ data class PlayerDocument(
     val joinDate: OffsetDateTime,
     val latestActivateDate: OffsetDateTime,
     val levelUpgradeDate: OffsetDateTime,
-) {
-    fun toDomain(): Player = Player(
-        id,
-        name,
-        exp.toULong(),
-        level.toUInt(),
-        joinDate,
-        latestActivateDate,
-        levelUpgradeDate
-    )
-}
+)

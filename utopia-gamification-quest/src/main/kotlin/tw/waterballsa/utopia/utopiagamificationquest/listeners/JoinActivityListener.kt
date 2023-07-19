@@ -38,7 +38,7 @@ class EventJoiningListener(
 
             channelLeft?.activity?.let {
                 val action = it.leave(player) ?: return
-                playerFulfillMissionsService.execute(action, user.presenter)
+                playerFulfillMissionsService.execute(action, user.claimMissionRewardPresenter)
                 activityRepository.save(it)
             }
         }

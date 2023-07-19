@@ -353,5 +353,6 @@ val Quests.quizQuest: Quest
             1.0f
         )
 
-        criteria = ButtonInteractionCriteria(QuizButton.NAME)
+        criteria = QuizCriteria("紳士考題", 60)
+
     }

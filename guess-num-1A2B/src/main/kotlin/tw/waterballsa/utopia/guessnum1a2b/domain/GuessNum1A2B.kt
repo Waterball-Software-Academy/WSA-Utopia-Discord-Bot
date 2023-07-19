@@ -8,9 +8,7 @@ class GuessNum1A2B(
 ) {
     data class Id(val playerId: String, private val roomId: String)
 
-    fun startGame(): List<Event> {
-        return listOf(GameStartedEvent(gameId))
-    }
+    fun startGame(): List<Event> = listOf(GameStartedEvent(gameId))
 
     fun guess(number: String): List<Event> {
         if (!isValidNumber(number)) {
@@ -34,11 +32,7 @@ class GuessNum1A2B(
         return events
     }
 
-    private fun isValidNumber(number: String): Boolean {
-        return number matches Regex("^(?!.*(.).*\\1)\\d{4}\$")
-    }
+    private fun isValidNumber(number: String): Boolean = number matches Regex("^(?!.*(.).*\\1)\\d{4}\$")
 }
 
-private fun generateAnswer(): String {
-    return (0..9).shuffled().take(4).joinToString("")
-}
+private fun generateAnswer(): String = (0..9).shuffled().take(4).joinToString("")

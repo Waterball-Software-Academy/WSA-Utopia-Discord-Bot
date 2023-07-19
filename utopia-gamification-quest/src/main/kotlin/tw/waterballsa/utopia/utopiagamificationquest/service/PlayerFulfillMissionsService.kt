@@ -12,7 +12,7 @@ class PlayerFulfillMissionsService(
 
     fun execute(action: Action, presenter: Presenter) {
         with(action) {
-            val missions = missionRepository.findIncompleteMissionsByPlayerId(player.id)
+            val missions = missionRepository.findInProgressMissionsByPlayerId(player.id)
 
             fulfillMissions(missions, presenter)
         }
@@ -22,8 +22,10 @@ class PlayerFulfillMissionsService(
         missions.filter { mission -> mission.match(this) }
             .onEach { mission -> mission.carryOut(this) }
             .filter { mission -> mission.isCompleted() }
-            .onEach { mission -> missionRepository.saveMission(mission) }
-            .forEach { mission -> presenter.presentClaimMissionReward(mission) }
+            .onEach { mission ->
+                missionRepository.saveMission(mission)
+                presenter.presentClaimMissionReward(mission)
+            }
     }
 
     interface Presenter {

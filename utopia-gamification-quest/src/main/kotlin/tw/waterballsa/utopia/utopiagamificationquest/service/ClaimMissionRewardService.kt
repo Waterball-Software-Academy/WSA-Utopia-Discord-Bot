@@ -6,11 +6,11 @@ import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.MissionRepository
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.MissionRepository.Query
 
-
 @Component
 class ClaimMissionRewardService(
     private val missionRepository: MissionRepository
 ) {
+
     fun execute(request: Request, presenter: Presenter) {
         with(request) {
             val mission = missionRepository.findMission(Query(player.id, true, questTitle)) ?: return
@@ -19,6 +19,7 @@ class ClaimMissionRewardService(
             }
 
             mission.rewardPlayer()
+
             missionRepository.saveMission(mission)
 
             presenter.presentMission(mission)
@@ -27,7 +28,6 @@ class ClaimMissionRewardService(
                 missionRepository.saveMission(nextMission)
                 presenter.presentNextMission(nextMission)
             }
-
         }
     }
 
@@ -41,4 +41,3 @@ class ClaimMissionRewardService(
         fun presentNextMission(mission: Mission)
     }
 }
-

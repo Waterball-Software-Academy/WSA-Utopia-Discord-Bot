@@ -83,7 +83,10 @@
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>russian-roulette</artifactId>
-            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>utopia-quiz</artifactId>
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
