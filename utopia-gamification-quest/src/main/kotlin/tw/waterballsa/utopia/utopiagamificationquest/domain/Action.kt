@@ -1,7 +1,5 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain
 
-import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.*
-
 abstract class Action(
     val player: Player
 ) {
@@ -17,12 +15,12 @@ abstract class Action(
 
     abstract class Criteria {
 
-        var isCompleted: Boolean = false
-            private set
+    var isCompleted: Boolean = false
+        private set
 
-        fun complete() {
-            isCompleted = true
-        }
+    fun complete() {
+        isCompleted = true
+    }
 
         abstract fun meet(action: Action): Boolean
     }

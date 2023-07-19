@@ -9,12 +9,9 @@ import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.RewardButton
 class ButtonInteractionAction(
     player: Player,
     val buttonName: String
-
 ) : Action(player) {
 
-    override fun match(criteria: Criteria): Boolean {
-        return criteria is ButtonInteractionCriteria
-    }
+    override fun match(criteria: Criteria): Boolean = criteria is ButtonInteractionCriteria
 }
 
 class ButtonInteractionCriteria(
