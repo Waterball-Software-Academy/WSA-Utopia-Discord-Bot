@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.MessageCherryPickListener.Companion.CHANNEL_NAME
+import tw.waterballsa.utopia.MessageCherryPickListener.Companion.END_TIME
 import tw.waterballsa.utopia.MessageCherryPickListener.Companion.MARK_EMOJI
 import tw.waterballsa.utopia.MessageCherryPickListener.Companion.START_TIME
 import tw.waterballsa.utopia.domain.CherryPick
@@ -114,7 +115,7 @@ class MessageCherryPickListener : UtopiaListener() {
 private val SlashCommandInteractionEvent.dateTimeRange: DateTimeRange?
     get() = run {
         val startDate = getValidateDateString(START_TIME) ?: return null
-        val endDate = getValidateDateString(MessageCherryPickListener.END_TIME)
+        val endDate = getValidateDateString(END_TIME)
         val startDateTime = startDate.toTaiwanTime()
         val endDateTime = endDate?.toTaiwanTime() ?: startDateTime.plusDays(1)
         return startDateTime.rangeTo(endDateTime)
