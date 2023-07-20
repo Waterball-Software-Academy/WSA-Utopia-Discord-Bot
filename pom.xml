@@ -57,6 +57,7 @@
         <jtokkit.version>0.4.0</jtokkit.version>
         <markdowngenerator.version>1.3.1.1</markdowngenerator.version>
         <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
+        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
     </properties>
 
     <repositories>
@@ -308,6 +309,11 @@
                 <configuration>
                     <jvmTarget>17</jvmTarget>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
