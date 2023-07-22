@@ -49,12 +49,12 @@ class ChannelIdRule(private val channelId: String) {
     fun meet(actionChannelId: String): Boolean = actionChannelId.contains(channelId)
 }
 
-enum class BooleanRule(private val hasObject: Boolean?) {
+enum class BooleanRule(private val value: Boolean?) {
     IGNORE(null),
     TRUE(true),
     FALSE(false);
 
-    fun meet(value: Boolean): Boolean = hasObject?.let { it == value } ?: true
+    fun meet(value: Boolean): Boolean = this.value?.let { it == value } ?: true
 }
 
 class RegexRule(private val regex: Regex) {
