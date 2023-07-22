@@ -9,6 +9,7 @@ private const val unlockEmoji = "🔑"
 
 val Quests.unlockAcademyQuest: Quest
     get() = quest {
+        questId = 1
         title = "任務：解鎖學院"
         description =
             """
@@ -27,6 +28,7 @@ val Quests.unlockAcademyQuest: Quest
 
 val Quests.selfIntroductionQuest: Quest
     get() = quest {
+        questId = 2
         val content = """
         【 <您的暱稱> 】 
         **工作職位：** <您的工作職位>
@@ -67,6 +69,7 @@ private fun getSelfIntroductionRegex(): RegexRule =
 
 val Quests.firstMessageActionQuest: Quest
     get() = quest {
+        questId = 3
         title = "任務:新生報到"
         description =
             """
@@ -105,6 +108,7 @@ val Quests.watchVideoQuest: Quest
 
 val Quests.flagPostQuest: Quest
     get() = quest {
+        questId = 4
         title = "全民插旗子"
         description =
             """
@@ -122,6 +126,7 @@ val Quests.flagPostQuest: Quest
 
 val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
     get() = quest {
+        questId = 5
         title = "任務:工程師生活"
         description =
             """
@@ -141,6 +146,7 @@ val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
 
 val Quests.ReplyToAnyoneInCareerAdvancementTopicChannelQuest: Quest
     get() = quest {
+        questId = 6
         title = "任務:職涯攻略話題"
         description =
             """
@@ -180,6 +186,7 @@ val Quests.resumeHealthCheckQuest: Quest
 
 val Quests.SendMessageInVoiceChannelQuest: Quest
     get() = quest {
+        questId = 7
         title = "任務:吃瓜社團會議間"
         description =
             """
@@ -198,6 +205,7 @@ val Quests.SendMessageInVoiceChannelQuest: Quest
 
 val Quests.quizQuest: Quest
     get() = quest {
+        questId = 8
         title = "任務:考試"
         description =
             """

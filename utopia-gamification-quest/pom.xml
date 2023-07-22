@@ -18,5 +18,13 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>discord-impl-jda</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>mongo-gateway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>mongo-gateway-impl</artifactId>
+        </dependency>
     </dependencies>
 </project>

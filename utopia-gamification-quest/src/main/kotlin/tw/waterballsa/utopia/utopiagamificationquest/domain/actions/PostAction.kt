@@ -1,11 +1,13 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain.actions
 
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Action
+import tw.waterballsa.utopia.utopiagamificationquest.domain.Criteria
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
-import kotlin.reflect.safeCast
 
-
-class PostAction(player: Player, val channelId: String) : Action(player) {
+class PostAction(
+    player: Player,
+    val channelId: String
+) : Action(player) {
 
     override fun match(criteria: Criteria): Boolean = criteria is PostCriteria
 

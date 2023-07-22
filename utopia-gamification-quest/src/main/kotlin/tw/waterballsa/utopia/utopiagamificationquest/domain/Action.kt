@@ -15,6 +15,8 @@ abstract class Action(
     }
 
 
+
+
     abstract class Criteria {
 
         var isCompleted: Boolean = false
@@ -25,10 +27,7 @@ abstract class Action(
         }
 
         abstract fun meet(action: Action): Boolean
-    }
 }
-
-
 
 
 
