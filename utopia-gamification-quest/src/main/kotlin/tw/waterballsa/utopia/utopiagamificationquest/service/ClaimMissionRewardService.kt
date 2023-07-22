@@ -17,11 +17,13 @@ class ClaimMissionRewardService(
             mission.rewardPlayer()
             missionRepository.removeMission(mission)
 
+            presenter.presentMission(mission)
+
             mission.nextMission()?.let { nextMission ->
                 missionRepository.saveMission(nextMission)
                 presenter.presentNextMission(nextMission)
             }
-            presenter.presentMission(mission)
+
         }
     }
 

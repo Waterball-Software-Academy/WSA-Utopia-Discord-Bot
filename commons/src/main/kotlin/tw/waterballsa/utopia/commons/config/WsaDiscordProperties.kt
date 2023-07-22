@@ -10,9 +10,7 @@ const val ENV_PROD = "prod"
 
 open class WsaDiscordProperties(properties: Properties) {
     val engineerLifeChannelId: String
-    val engineerLifeChannelLink: String
     val careerAdvancementTopicChannelId: String
-    val careerAdvancementTopicChannelLink: String
     val knowledgeKingChannelId: String
     val guildId: String
     val unlockEntryMessageId: String
@@ -26,12 +24,12 @@ open class WsaDiscordProperties(properties: Properties) {
     val wsaGaaSMemberRoleId: String
     val wsaAlphaRoleId: String
     val discussionAreaChannelId: String
-    val unlockEntryChannelLink: String
-    val selfIntroChannelLink: String
-    val discussionAreaChannelLink: String
+    val unlockEntryChannelId: String
     val flagPostChannelId: String
-    val flagPostChannelLink: String
     val mongoDatabase: String
+    val resumeCheckChannelId: String
+    val featuredVideosChannelId: String
+
 
     init {
         properties.run {
@@ -49,16 +47,13 @@ open class WsaDiscordProperties(properties: Properties) {
             wsaAlphaRoleId = getProperty("wsa-alpha-role-id")
             knowledgeKingChannelId = getProperty("knowledge-king-channel-id")
             discussionAreaChannelId = getProperty("wsa-discussion-area-channel-id")
-            unlockEntryChannelLink = getProperty("wsa-unlock-entry-channel-link")
-            selfIntroChannelLink = getProperty("wsa-self-intro-channel-link")
-            discussionAreaChannelLink = getProperty("wsa-discussion-area-channel-link")
+            unlockEntryChannelId = getProperty("unlock-entry-channel-id")
             flagPostChannelId = getProperty("wsa-flag-post-channel-id")
-            flagPostChannelLink = getProperty("wsa-flag-post-channel-link")
             careerAdvancementTopicChannelId = getProperty("career-advancement-topic-channel-id")
-            careerAdvancementTopicChannelLink = getProperty("career-advancement-topic-channel-link")
             engineerLifeChannelId = getProperty("engineer-life-channel-id")
-            engineerLifeChannelLink = getProperty("engineer-life-channel-link")
             mongoDatabase = getProperty("mongo-database")
+            resumeCheckChannelId = getProperty("resume-check-channel-id")
+            featuredVideosChannelId = getProperty("featured-videos-channel-id")
         }
     }
 }
