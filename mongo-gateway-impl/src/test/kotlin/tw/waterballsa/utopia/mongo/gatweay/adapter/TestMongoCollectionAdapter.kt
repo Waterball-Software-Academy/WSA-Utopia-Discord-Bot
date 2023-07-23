@@ -7,8 +7,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
+import tw.waterballsa.utopia.mongo.gateway.Criteria
+import tw.waterballsa.utopia.mongo.gateway.Query
 import tw.waterballsa.utopia.mongo.gatweay.config.TestMongoBase
 import tw.waterballsa.utopia.mongo.gatweay.config.TestMongoConfiguration
 
@@ -53,7 +53,9 @@ class TestMongoCollectionAdapter : TestMongoBase() {
         }
 
         private fun documentInDBShouldBe(id: String, age: Int, name: String) {
-            assertThat(mongoTemplate.findOne(Query(Criteria.where("_id").`is`(id)), Document::class.java, TEST_COLLECTION))
+            assertThat(mongoTemplate.findOne(org.springframework.data.mongodb.core.query.Query(
+                    org.springframework.data.mongodb.core.query.Criteria.where("_id").`is`(id)),
+                    Document::class.java, TEST_COLLECTION))
                     .isEqualTo(Document(mapOf(
                             Pair("_id", id),
                             Pair("age", age),
@@ -127,6 +129,20 @@ class TestMongoCollectionAdapter : TestMongoBase() {
 
         assertThat(mongoCollectionAdapter.removeAll(listOf(TestDocument(id = "123"), TestDocument(id = "456"))))
                 .isEqualTo(2L)
+    }
+
+    @Nested
+    inner class FindByQuery {
+
+        @Test
+        fun idIs123AndNameIsTom() {
+            createTestDocument(id = "123", name = "tom")
+            createTestDocument(id = "456", name = "tom")
+
+            assertThat(mongoCollectionAdapter.find(Query(Criteria("_id").`is`("123")
+                    .and("name").`is`("tom"))))
+                    .containsExactlyInAnyOrder(TestDocument(id = "123", name = "tom"))
+        }
     }
 
     private fun createTestDocument(id: String? = null, age: Int? = null, name: String? = null) {

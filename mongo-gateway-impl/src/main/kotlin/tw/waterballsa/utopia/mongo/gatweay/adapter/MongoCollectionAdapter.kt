@@ -37,6 +37,13 @@ class MongoCollectionAdapter<TDocument, ID>(
                 .toList()
     }
 
+    override fun find(query: tw.waterballsa.utopia.mongo.gateway.Query): List<TDocument> {
+        return mongoTemplate.getCollection(documentInformation.collectionName)
+                .find(query.getCriteria().getCriteriaObject(), org.bson.Document::class.java)
+                .map { it.toDomainDocument() }
+                .toList()
+    }
+
     override fun remove(document: TDocument): Boolean {
         return mongoTemplate.remove(document.toBsonDocument(), documentInformation.collectionName).deletedCount == 1L
     }
