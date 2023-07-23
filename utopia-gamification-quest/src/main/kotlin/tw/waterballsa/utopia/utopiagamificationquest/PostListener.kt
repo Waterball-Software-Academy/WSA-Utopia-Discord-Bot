@@ -1,9 +1,11 @@
 package tw.waterballsa.utopia.utopiagamificationquest
 
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.guild.GuildAuditLogEntryCreateEvent
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.jda.UtopiaListener
+import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.PostAction
 import tw.waterballsa.utopia.utopiagamificationquest.extensions.claimMissionReward
@@ -19,10 +21,8 @@ class PostListener(
         with(event) {
             val player = user ?: return
             val action = action ?: return
-            
-            playerFulfillMissionsService.execute(action) { completedMission ->
-                player.claimMissionReward(completedMission)
-            }
+
+            playerFulfillMissionsService.execute(action, player.presenter)
         }
     }
 
@@ -34,5 +34,12 @@ class PostListener(
                 Player(user.id, user.name),
                 it.parentChannel.id
             )
+        }
+
+    private val User.presenter
+        get() = object : PlayerFulfillMissionsService.Presenter {
+            override fun presentClaimMissionReward(mission: Mission) {
+                claimMissionReward(mission)
+            }
         }
 }
