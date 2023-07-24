@@ -23,10 +23,8 @@ class PlayerAcceptQuestService(
         }
     }
 
-    private fun Request.isMissionAcquired(): Boolean {
-        return missionRepository.findMission(MissionRepository.Query(player.id, questTitle = quest.title))?.let { true }
-            ?: false
-    }
+    private fun Request.isMissionAcquired(): Boolean =
+        missionRepository.findMission(MissionRepository.Query(player.id, questTitle = quest.title)) != null
 
     class Request(
         val player: Player,

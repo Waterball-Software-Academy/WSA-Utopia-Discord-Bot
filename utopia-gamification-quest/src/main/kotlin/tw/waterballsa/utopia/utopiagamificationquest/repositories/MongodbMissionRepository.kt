@@ -6,7 +6,7 @@ import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.Quests
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.document.MissionDocument
-import tw.waterballsa.utopia.utopiagamificationquest.repositories.document.State
+import tw.waterballsa.utopia.utopiagamificationquest.repositories.document.State.COMPLETED
 import java.util.UUID.fromString
 
 @Component
@@ -19,12 +19,12 @@ class MongodbMissionRepository(
     override fun findMission(query: MissionRepository.Query): Mission? =
         repository.findAll()
             .map { it.toDomain() }
-            .firstOrNull { query.match(it) }
+            .find { query.match(it) }
 
     //TODO 等 mongodb gateway 的 query 上線之後，把 findAll() 改成 query
     override fun findIncompleteMissionsByPlayerId(playerId: String): List<Mission> =
         repository.findAll()
-            .filter { it.playerId == playerId && it.state != State.COMPLETED }
+            .filter { it.playerId == playerId && it.state != COMPLETED }
             .map { it.toDomain() }
 
     override fun findAllByPlayerId(playerId: String): List<Mission> =
@@ -38,11 +38,13 @@ class MongodbMissionRepository(
         return mission
     }
 
-    // TODO 這邊嵌入式要改
+    // TODO 等到 @DBRef 功能上線後，將 playerId 改成 player，讓 MongoDB 協助 join
     private fun MissionDocument.toDomain(): Mission {
         val player = playerRepository.findPlayerById(playerId) ?: playerRepository.savePlayer(Player(playerId, "123"))
         val quest = quests.findById(questId)
-        return Mission(fromString(id), player, quest, state)
-//        return null
+        return Mission(fromString(id), player, quest, state, completedTime)
     }
 }
+
+fun Mission.toDocument(): MissionDocument =
+    MissionDocument(id.toString(), player.id, quest.id, completedTime, state)

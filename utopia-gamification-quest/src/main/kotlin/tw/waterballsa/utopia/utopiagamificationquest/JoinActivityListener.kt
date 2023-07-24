@@ -1,11 +1,9 @@
 package tw.waterballsa.utopia.utopiagamificationquest
 
 import mu.KotlinLogging
-import net.dv8tion.jda.api.entities.ScheduledEvent
-import net.dv8tion.jda.api.entities.ScheduledEvent.*
+import net.dv8tion.jda.api.entities.ScheduledEvent.Status
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion
-import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventCreateEvent
 import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventDeleteEvent
 import net.dv8tion.jda.api.events.guild.scheduledevent.update.ScheduledEventUpdateStatusEvent
@@ -16,7 +14,7 @@ import tw.waterballsa.utopia.utopiagamificationquest.domain.Activity
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Audience
 import tw.waterballsa.utopia.utopiagamificationquest.domain.DateTimeRange
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
-import tw.waterballsa.utopia.utopiagamificationquest.extensions.*
+import tw.waterballsa.utopia.utopiagamificationquest.extensions.claimMissionReward
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.ActivityRepository
 import tw.waterballsa.utopia.utopiagamificationquest.service.PlayerFulfillMissionsService
 import java.time.ZoneId

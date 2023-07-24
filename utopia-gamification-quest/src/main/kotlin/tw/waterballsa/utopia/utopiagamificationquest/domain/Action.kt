@@ -6,21 +6,21 @@ abstract class Action(
 
     abstract fun match(criteria: Criteria): Boolean
 
-    fun execute(criteria: Criteria) {
+    fun execute(criteria: Criteria) : Boolean {
         if (criteria.meet(this)) {
             criteria.complete()
         }
+        return criteria.isCompleted
     }
-
 
     abstract class Criteria {
 
-    var isCompleted: Boolean = false
-        private set
+        var isCompleted: Boolean = false
+            private set
 
-    fun complete() {
-        isCompleted = true
-    }
+        fun complete() {
+            isCompleted = true
+        }
 
         abstract fun meet(action: Action): Boolean
     }

@@ -1,12 +1,9 @@
 package tw.waterballsa.utopia.utopiagamificationquest
 
-import dev.minn.jda.ktx.messages.MessageCreateBuilder
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.interactions.commands.build.Commands.user
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission

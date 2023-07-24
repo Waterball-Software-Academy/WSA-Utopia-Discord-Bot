@@ -5,11 +5,11 @@ class Quest(
     val title: String,
     val description: String,
     val reward: Reward,
-    val criteria: Criteria,
+    val criteria: Action.Criteria,
     var nextQuest: Quest? = null
 )
 
 class Reward(
-        val respond: String,
-        val exp: ULong
+    val respond: String,
+    val exp: ULong
 )

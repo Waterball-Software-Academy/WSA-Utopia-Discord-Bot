@@ -10,6 +10,7 @@ import tw.waterballsa.utopia.utopiagamificationquest.domain.Reward
 class Quests(val wsa: WsaDiscordProperties) {
     private val quests = mutableListOf<Quest>()
 
+    //TODO 因為現在好測試功能正確性，之後會再全面重新做設計。包括 quest id 的設計。
     init {
         quests.addAll(
             listOf(
@@ -18,7 +19,6 @@ class Quests(val wsa: WsaDiscordProperties) {
                 SendContainsImageMessageInEngineerLifeChannelQuest,
                 firstMessageActionQuest,
                 flagPostQuest,
-                participateInDiscussionQuest,
                 ReplyToAnyoneInCareerAdvancementTopicChannelQuest,
                 quizQuest
             )

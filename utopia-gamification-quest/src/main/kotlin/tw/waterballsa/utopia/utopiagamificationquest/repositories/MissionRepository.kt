@@ -1,10 +1,6 @@
 package tw.waterballsa.utopia.utopiagamificationquest.repositories
 
-import org.springframework.stereotype.Repository
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
-import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
-import tw.waterballsa.utopia.utopiagamificationquest.domain.Quest
-import java.util.*
 
 interface MissionRepository {
     fun findMission(query: Query): Mission?

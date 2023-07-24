@@ -1,10 +1,8 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain.actions
 
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Action
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.QuizButton
-import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.RewardButton
 
 class ButtonInteractionAction(
     player: Player,

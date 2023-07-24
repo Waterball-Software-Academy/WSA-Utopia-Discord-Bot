@@ -5,6 +5,11 @@
 |:--------:| --------- | --------------------------- |
 |   1a2b   |           | Start a new guess num game. |
 
+## rock-paper-scissors
+|      Commands       | Arguments | Description                           |
+|:-------------------:| --------- | ------------------------------------- |
+| rock-paper-scissors |           | start a new rock paper scissors game! |
+
 ## gaas
 |        Commands        | Arguments                                                                                          | Description                                          |
 |:----------------------:| -------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
@@ -23,45 +28,38 @@
 |   ping   |           | sends pong  |
 
 ## mute
-
 |    Commands    | Arguments                                                             | Description    |
 |:--------------:| --------------------------------------------------------------------- | -------------- |
 | mute audiences | audience(USER): Allow who to voice<br>role(ROLE): Allow role to voice | Mute Audiences |
 |  mute revoked  |                                                                       | Unmute         |
 
 ## audience
-
 |     Commands     | Arguments                                            | Description                                    |
 |:----------------:| ---------------------------------------------------- | ---------------------------------------------- |
 | audience counter | time-length(INTEGER): Time is calculated in minutes. | count the resent voice channel audience amount |
 
 ## random
-
 |    Commands    | Arguments                                                                                                  | Description |
 |:--------------:| ---------------------------------------------------------------------------------------------------------- | ----------- |
 | random lottery | number(INTEGER): Number of choose members per room.<br>role(ROLE): Only select specific role in this round | Lottery     |
 
-## utopia
-
-| Commands | Arguments | Description    |
-|:--------:| --------- | -------------- |
-|  utopia  |           | utopia command |
-
 ## roulette
-
 | Commands | Arguments | Description     |
 |:--------:| --------- | --------------- |
 | roulette |           | Start the game. |
 
-## message
+## utopia
+| Commands | Arguments | Description    |
+|:--------:| --------- | -------------- |
+|  utopia  |           | utopia command |
 
+## message
 |        Commands        | Arguments                                                                                                               | Description                               |
 |:----------------------:| ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
 |  message cherry-pick   | start-time(STRING): the start time of the cherry-pick range.<br>end-time(STRING): the end time of the cherry-pick range | to cherry pick message                    |
 | message cherry-pick-to | channel-name(STRING): destination of channel name                                                                       | to cherry pick message to another channel |
 
 ## weekly-messages-volume
-
 |        Commands        | Arguments                                                            | Description                                    |
 |:----------------------:| -------------------------------------------------------------------- | ---------------------------------------------- |
 | weekly-messages-volume | channel-name(STRING): The channel to show the weekly messages volume | Show the weekly messages volume of the channel |
