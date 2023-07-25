@@ -1,6 +1,11 @@
 package tw.waterballsa.utopia.mongo.gatweay.config
 
 import ch.qos.logback.core.util.OptionHelper
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClients
@@ -32,18 +37,27 @@ import kotlin.reflect.full.findAnnotation
 @Configuration
 open class MongoDBConfiguration {
 
+    companion object {
+        internal val MAPPER = ObjectMapper()
+            .registerKotlinModule()
+            .registerModule(JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    }
+
     @Bean
     open fun mongoTemplate(context: ApplicationContext): MongoTemplate {
         val uri = OptionHelper.getEnv("MONGO_CONNECTION_URI")?.trim()
-                ?: "mongodb://localhost:28017"
+            ?: "mongodb://localhost:28017"
         val settings = MongoClientSettings.builder()
-                .applyConnectionString(ConnectionString(uri))
-                .applyToConnectionPoolSettings { builder ->
-                    builder.maxSize(10)
-                }
-                .build()
+            .applyConnectionString(ConnectionString(uri))
+            .applyToConnectionPoolSettings { builder ->
+                builder.maxSize(10)
+            }
+            .build()
         val wsaDiscordProperties = context.getBean(WsaDiscordProperties::class.java)
-        val factory = SimpleMongoClientDatabaseFactory(MongoClients.create(settings), wsaDiscordProperties.mongoDatabase)
+        val factory =
+            SimpleMongoClientDatabaseFactory(MongoClients.create(settings), wsaDiscordProperties.mongoDatabase)
 
         // remove _class field
         val converter = MappingMongoConverter(DefaultDbRefResolver(factory), MongoMappingContext())
@@ -68,9 +82,9 @@ open class MyBeanFactoryPostProcessor : BeanFactoryPostProcessor, ApplicationCon
 
         for (annotatedClass in annotatedClasses) {
             val idField = annotatedClass.declaredFields
-                    .first { it.annotations.first { annotation -> annotation is Id } != null }!!
+                .first { it.isAnnotationPresent(Id::class.java) }!!
             val resolvableType: ResolvableType =
-                    ResolvableType.forClassWithGenerics(MongoCollection::class.java, annotatedClass, idField.type)
+                ResolvableType.forClassWithGenerics(MongoCollection::class.java, annotatedClass, idField.type)
             val beanDefinition = RootBeanDefinition()
             beanDefinition.setTargetType(resolvableType)
             beanDefinition.autowireMode = AbstractBeanDefinition.AUTOWIRE_BY_TYPE
@@ -78,10 +92,12 @@ open class MyBeanFactoryPostProcessor : BeanFactoryPostProcessor, ApplicationCon
 
             val bf: DefaultListableBeanFactory = beanFactory as DefaultListableBeanFactory
             val collectionName = annotatedClass.kotlin.findAnnotation<Document>()?.collection
-                    ?.ifEmpty { annotatedClass.simpleName }!!
+                ?.ifEmpty { annotatedClass.simpleName }!!
 
-            val mongoCollection = MongoCollectionAdapter(mongoTemplate,
-                    MappingMongoDocumentInformation(collectionName, annotatedClass, idField.type, idField.name))
+            val mongoCollection = MongoCollectionAdapter(
+                mongoTemplate,
+                MappingMongoDocumentInformation(collectionName, annotatedClass, idField.type, idField.name)
+            )
 
             val beanName = "${annotatedClass.simpleName}MongoCollection"
             bf.registerBeanDefinition(beanName, beanDefinition)
