@@ -151,19 +151,6 @@ class TestMongoCollectionAdapter : TestMongoBase() {
 
             assertThat(mongoCollectionAdapter.removeAll(documents)).isEqualTo(documents.size.toLong())
         }
-
-    }
-
-    private fun createTestDocument(id: String? = null, age: Int? = null, name: String? = null) {
-        mongoTemplate.insert(
-            Document(
-                mapOf(
-                    Pair("_id", id),
-                    Pair("age", age),
-                    Pair("name", name)
-                )
-            ), TEST_COLLECTION
-        )
     }
 
     private fun TestDocument.saveTestDocument(): TestDocument =
