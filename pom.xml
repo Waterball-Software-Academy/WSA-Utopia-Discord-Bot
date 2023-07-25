@@ -33,6 +33,7 @@
         <module>russian-roulette</module>
         <module>mongo-gateway-impl</module>
         <module>mongo-gateway</module>
+        <module>message-cherry-pick</module>
     </modules>
 
     <properties>
@@ -129,6 +130,7 @@
             <artifactId>jda-ktx</artifactId>
             <version>${jda-ktx.version}</version>
         </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -256,6 +258,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>mongo-gateway</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>message-cherry-pick</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>
