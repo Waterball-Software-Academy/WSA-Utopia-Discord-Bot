@@ -114,12 +114,12 @@ class UtopiaGamificationQuestListener(
         }
     }
 
-    private fun ButtonInteractionEvent.splitButtonId(delimiters: String): Triple<String, String, Array<String>> {
-        val result = button.id?.split(delimiters) ?: return Triple("", "", arrayOf())
+    private fun ButtonInteractionEvent.splitButtonId(delimiters: String): Triple<String, String, List<String>> {
+        val result = button.id?.split(delimiters) ?: return Triple("", "", listOf())
 
         val tag = result.getOrElse(0) { "" }
         val buttonName = result.getOrElse(1) { "" }
-        val args = if (result.size > 2) result.drop(2).toTypedArray() else arrayOf()
+        val args = if (result.size > 2) result.drop(2) else listOf()
 
         return Triple(tag, buttonName, args)
     }
