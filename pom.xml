@@ -34,6 +34,7 @@
         <module>mongo-gateway-impl</module>
         <module>mongo-gateway</module>
         <module>message-cherry-pick</module>
+        <module>weekly-messages-volume</module>
     </modules>
 
     <properties>
@@ -263,6 +264,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>message-cherry-pick</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>weekly-messages-volume</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>

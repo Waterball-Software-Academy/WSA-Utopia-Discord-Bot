@@ -102,6 +102,10 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>mongo-gateway</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>weekly-messages-volume</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

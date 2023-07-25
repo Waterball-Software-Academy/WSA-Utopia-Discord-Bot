@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.commons.extensions.scheduleDelay
 import tw.waterballsa.utopia.jda.UtopiaListener
+import tw.waterballsa.utopia.jda.extensions.addRequiredOption
 import tw.waterballsa.utopia.jda.extensions.getOptionAsLongInRange
 import tw.waterballsa.utopia.jda.extensions.getOptionAsStringWithValidation
 import java.awt.Color
@@ -199,6 +200,3 @@ class PollingResult(private val voterIdToVotedOptionIndices: Map<String, Mutable
                     .joinToString(lineSeparator())
         }
 }
-
-private fun SlashCommandData.addRequiredOption(type: OptionType, name: String, description: String) =
-        addOption(type, name, description, true)
