@@ -2,6 +2,7 @@ package tw.waterballsa.utopia.utopiagamificationquest
 
 import dev.minn.jda.ktx.messages.Embed
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
@@ -14,9 +15,8 @@ import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
-import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.*
+import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.ButtonInteractionAction
 import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.BUTTON_QUEST_TAG
-import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.QuizButton
 import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.RewardButton
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.JoinActivityQuest
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.Quests
@@ -28,6 +28,7 @@ import tw.waterballsa.utopia.utopiagamificationquest.repositories.PlayerReposito
 import tw.waterballsa.utopia.utopiagamificationquest.service.ClaimMissionRewardService
 import tw.waterballsa.utopia.utopiagamificationquest.service.PlayerAcceptQuestService
 import tw.waterballsa.utopia.utopiagamificationquest.service.PlayerFulfillMissionsService
+import kotlin.ULong.Companion.MIN_VALUE
 
 const val UTOPIA_COMMAND_NAME = "utopia"
 private val log = KotlinLogging.logger {}
@@ -38,7 +39,7 @@ class UtopiaGamificationQuestListener(
     private val quests: Quests,
     private val playerAcceptQuestService: PlayerAcceptQuestService,
     private val claimMissionRewardService: ClaimMissionRewardService,
-    private val playerFulfillMissionsService: PlayerFulfillMissionsService
+    private val playerFulfillMissionsService: PlayerFulfillMissionsService,
 ) : UtopiaListener() {
 
     override fun commands(): List<CommandData> = listOf(slash(UTOPIA_COMMAND_NAME, "utopia command"))
@@ -48,8 +49,9 @@ class UtopiaGamificationQuestListener(
             if (fullCommandName != UTOPIA_COMMAND_NAME) {
                 return
             }
+            val player = member?.toPlayer() ?: return
 
-            val request = PlayerAcceptQuestService.Request(user.toPlayer(), quests.JoinActivityQuest)
+            val request = PlayerAcceptQuestService.Request(player, quests.unlockAcademyQuest)
 
             playerAcceptQuestService.execute(request) { mission ->
                 mission.publishToUser(user).queue {
@@ -59,7 +61,19 @@ class UtopiaGamificationQuestListener(
         }
     }
 
-    private fun User.toPlayer() = playerRepository.findPlayerById(id) ?: playerRepository.savePlayer(Player(id, name))
+    private fun Member.toPlayer(): Player =
+        playerRepository.findPlayerById(id) ?: playerRepository.savePlayer(
+            Player(
+                id,
+                user.effectiveName,
+                MIN_VALUE,
+                1u,
+                roles.map { it.id }.toMutableList(),
+                timeJoined
+            )
+        )
+
+    private fun User.toPlayer(): Player? = playerRepository.findPlayerById(id)
 
     private fun Mission.publishToUser(user: User): MessageCreateAction =
         user.openPrivateChannel().complete().publishMission(this)
@@ -89,7 +103,7 @@ class UtopiaGamificationQuestListener(
                 return
             }
 
-            val action = ButtonInteractionAction(Player(user.id, user.name), buttonName)
+            val action = ButtonInteractionAction(user.toPlayer()!!, buttonName)
 
             when (action.buttonName) {
                 RewardButton.NAME -> handleRewardButtonInteraction(action, args[0])

@@ -1,30 +1,57 @@
 package tw.waterballsa.utopia.utopiagamificationquest.repositories
 
-import org.springframework.stereotype.Repository
+import org.springframework.stereotype.Component
+import tw.waterballsa.utopia.mongo.gateway.Document
+import tw.waterballsa.utopia.mongo.gateway.Id
+import tw.waterballsa.utopia.mongo.gateway.MongoCollection
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
+
+import java.time.OffsetDateTime
 
 interface PlayerRepository {
     fun findPlayerById(id: String): Player?
     fun savePlayer(player: Player): Player
 }
 
-@Repository
-class ImMemoryPlayerRepository : PlayerRepository {
+@Component
+class MongoPlayerRepository(private val playerRepository: MongoCollection<PlayerDocument, String>) : PlayerRepository {
 
-    private val players = hashMapOf<String, Player>()
+    override fun findPlayerById(id: String): Player? = playerRepository.findOne(id)?.toDomain()
 
-    override fun findPlayerById(id: String): Player? = players[id]
+    override fun savePlayer(player: Player): Player = playerRepository.save(player.toDocument()).toDomain()
 
-    override fun savePlayer(player: Player): Player = players.computeIfAbsent(player.id) { player }
-
-    private fun Player.toData(): PlayerData = PlayerData(id, name, exp, level)
+    private fun Player.toDocument(): PlayerDocument = PlayerDocument(
+        id,
+        name,
+        exp.toInt(),
+        level.toInt(),
+        jdaRoles,
+        joinDate,
+        latestActivateDate,
+        levelUpgradeDate,
+    )
 }
 
-class PlayerData(
-        private val id: String,
-        private val name: String,
-        private val exp: ULong,
-        private val level: UInt
+@Document
+data class PlayerDocument(
+    @Id val id: String,
+    val name: String,
+    val exp: Int,
+    val level: Int,
+    //TODO 因為 jda 可以撈到 roles，所以 document 不用多存 jda roles
+    val roles: List<String>,
+    val joinDate: OffsetDateTime,
+    val latestActivateDate: OffsetDateTime,
+    val levelUpgradeDate: OffsetDateTime,
 ) {
-    fun toDomain(): Player = Player(id, name, exp, level)
+    fun toDomain(): Player = Player(
+        id,
+        name,
+        exp.toULong(),
+        level.toUInt(),
+        roles.toMutableList(),
+        joinDate,
+        latestActivateDate,
+        levelUpgradeDate
+    )
 }
