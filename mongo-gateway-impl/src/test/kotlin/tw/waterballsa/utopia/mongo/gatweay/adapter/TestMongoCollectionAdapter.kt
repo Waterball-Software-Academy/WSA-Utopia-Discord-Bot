@@ -9,8 +9,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.mongodb.core.MongoTemplate
 import tw.waterballsa.utopia.mongo.gateway.Criteria
 import tw.waterballsa.utopia.mongo.gateway.Query
+import org.springframework.data.mongodb.core.query.Criteria.where
+import org.springframework.data.mongodb.core.query.Query.query
 import tw.waterballsa.utopia.mongo.gatweay.config.TestMongoBase
 import tw.waterballsa.utopia.mongo.gatweay.config.TestMongoConfiguration
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
 
 private const val TEST_COLLECTION = "test_collection"
@@ -23,14 +27,19 @@ class TestMongoCollectionAdapter : TestMongoBase() {
     @BeforeEach
     internal fun setUp() {
         mongoTemplate = TestMongoConfiguration.mongoTemplate()
+        val documentInformation = MappingMongoDocumentInformation(
+            TEST_COLLECTION,
+            TestDocument::class.java,
+            String::class.java,
+            "id"
+        )
         mongoCollectionAdapter = MongoCollectionAdapter(
-                mongoTemplate,
-                MappingMongoDocumentInformation(TEST_COLLECTION,
-                        TestDocument::class.java,
-                        String::class.java,
-                        "id")
+            mongoTemplate,
+            documentInformation
         )
     }
+
+    override fun collectionName(): String = TEST_COLLECTION
 
     @Nested
     inner class Save {
@@ -39,28 +48,27 @@ class TestMongoCollectionAdapter : TestMongoBase() {
         @DisplayName("When the `@Id` field is null, the value should return the auto-generated ObjectId after insertion.")
         fun insertOne() {
             assertThat(mongoCollectionAdapter.save(TestDocument(age = 18, name = "test-user")))
-                    .extracting(TestDocument::id)
-                    .isNotNull
+                .extracting(TestDocument::id)
+                .isNotNull
         }
 
         @Test
         fun update() {
-            createTestDocument(id = "168", age = 25, name = "old-user")
+            val document = TestDocument(id = "168", age = 25, name = "old-user").saveTestDocument()
+            document.name = "new-user"
 
-            mongoCollectionAdapter.save(TestDocument(id = "168", age = 18, name = "new-user"))
+            val newDocument = mongoCollectionAdapter.save(document)
 
-            documentInDBShouldBe("168", 18, "new-user")
+            newDocument.shouldBeInTheDB()
         }
 
-        private fun documentInDBShouldBe(id: String, age: Int, name: String) {
-            assertThat(mongoTemplate.findOne(org.springframework.data.mongodb.core.query.Query(
-                    org.springframework.data.mongodb.core.query.Criteria.where("_id").`is`(id)),
-                    Document::class.java, TEST_COLLECTION))
-                    .isEqualTo(Document(mapOf(
-                            Pair("_id", id),
-                            Pair("age", age),
-                            Pair("name", name)
-                    )))
+        private fun TestDocument.shouldBeInTheDB() {
+            val expectedDocument =
+                mongoTemplate.findOne(query(where("_id").`is`(id)), TestDocument::class.java, TEST_COLLECTION)!!
+            assertThat(id).isEqualTo(expectedDocument.id)
+            assertThat(age).isEqualTo(expectedDocument.age)
+            assertThat(name).isEqualTo(expectedDocument.name)
+            assertThat(createdDate).isEqualTo(expectedDocument.createdDate)
         }
     }
 
@@ -69,17 +77,15 @@ class TestMongoCollectionAdapter : TestMongoBase() {
 
         @Test
         fun idMatch() {
-            createTestDocument(id = "168")
-
-            assertThat(mongoCollectionAdapter.findOne("168"))
-                    .extracting("id")
-                    .isEqualTo("168")
+            with(TestDocument(id = "168")) {
+                saveTestDocument()
+                assertThat(mongoCollectionAdapter.findOne(id!!)).isEqualTo(this)
+            }
         }
 
         @Test
         fun idMismatch() {
-            assertThat(mongoCollectionAdapter.findOne("168"))
-                    .isNull()
+            assertThat(mongoCollectionAdapter.findOne("168")).isNull()
         }
     }
 
@@ -88,18 +94,33 @@ class TestMongoCollectionAdapter : TestMongoBase() {
 
         @Test
         fun empty() {
-            assertThat(mongoCollectionAdapter.findAll())
-                    .isEmpty()
+            assertThat(mongoCollectionAdapter.findAll()).isEmpty()
         }
 
         @Test
         fun twoDocuments() {
-            createTestDocument(id = "123")
-            createTestDocument(id = "456")
+            val documents = listOf("123", "456")
+                .map { TestDocument(id = it).saveTestDocument() }
 
-            assertThat(mongoCollectionAdapter.findAll())
-                    .extracting("id")
-                    .containsExactlyInAnyOrder("123", "456")
+            assertThat(mongoCollectionAdapter.findAll()).isEqualTo(documents)
+        }
+    }
+
+    @Nested
+    inner class FindByQuery {
+
+        @Test
+        fun idIs123AndNameIsTom() {
+            with(TestDocument(id = "123", name = "tom")) {
+                saveTestDocument()
+                assertThat(
+                    mongoCollectionAdapter.find(
+                        Query(
+                            Criteria("_id").`is`("123").and("name").`is`("tom")
+                        )
+                    )
+                ).containsExactlyInAnyOrder(this)
+            }
         }
     }
 
@@ -108,53 +129,68 @@ class TestMongoCollectionAdapter : TestMongoBase() {
 
         @Test
         fun notExist() {
-            assertThat(mongoCollectionAdapter.remove(TestDocument(id = "123")))
-                    .isFalse
+            assertThat(mongoCollectionAdapter.remove(TestDocument(id = "123"))).isFalse
         }
 
         @Test
         fun exist() {
-            createTestDocument(id = "123")
-
-            assertThat(mongoCollectionAdapter.remove(TestDocument(id = "123")))
-                    .isTrue
+            with(TestDocument(id = "123")) {
+                saveTestDocument()
+                assertThat(mongoCollectionAdapter.remove(this)).isTrue
+            }
         }
-    }
-
-    @Test
-    fun removeAll() {
-        createTestDocument(id = "123")
-        createTestDocument(id = "456")
-        createTestDocument(id = "78")
-
-        assertThat(mongoCollectionAdapter.removeAll(listOf(TestDocument(id = "123"), TestDocument(id = "456"))))
-                .isEqualTo(2L)
     }
 
     @Nested
-    inner class FindByQuery {
+    inner class RemoveAll {
 
         @Test
-        fun idIs123AndNameIsTom() {
-            createTestDocument(id = "123", name = "tom")
-            createTestDocument(id = "456", name = "tom")
+        fun removeAll() {
+            val documents = listOf("123", "456", "78")
+                .map { TestDocument(id = it).saveTestDocument() }
 
-            assertThat(mongoCollectionAdapter.find(Query(Criteria("_id").`is`("123")
-                    .and("name").`is`("tom"))))
-                    .containsExactlyInAnyOrder(TestDocument(id = "123", name = "tom"))
+            assertThat(mongoCollectionAdapter.removeAll(documents)).isEqualTo(documents.size.toLong())
         }
+
     }
 
     private fun createTestDocument(id: String? = null, age: Int? = null, name: String? = null) {
-        mongoTemplate.insert(Document(mapOf(
-                Pair("_id", id),
-                Pair("age", age),
-                Pair("name", name)
-        )), TEST_COLLECTION)
+        mongoTemplate.insert(
+            Document(
+                mapOf(
+                    Pair("_id", id),
+                    Pair("age", age),
+                    Pair("name", name)
+                )
+            ), TEST_COLLECTION
+        )
     }
 
-    override fun collectionName(): String = TEST_COLLECTION
+    private fun TestDocument.saveTestDocument(): TestDocument =
+        mongoTemplate.save(toDocument(), TEST_COLLECTION).toDocument()
 }
 
+data class TestDocument(
+    val id: String? = null,
+    var age: Int? = null,
+    var name: String? = null,
+    val createdDate: LocalDateTime? = LocalDateTime.now()
+) {
 
-data class TestDocument(val id: String? = null, val age: Int? = null, val name: String? = null)
+    constructor(id: String?, age: Int?, name: String?, createdDate: String?) :
+            this(id, age, name, createdDate?.toLocalDateTime())
+
+    fun toDocument(): Document {
+        return Document()
+            .append("_id", id)
+            .append("age", age)
+            .append("name", name)
+            .append("createdDate", createdDate.toString())
+    }
+}
+
+private fun Document.toDocument(): TestDocument =
+    TestDocument(getString("_id"), getInteger("age"), getString("name"), getString("createdDate"))
+
+private fun String.toLocalDateTime(): LocalDateTime = LocalDateTime.parse(this, ISO_LOCAL_DATE_TIME)
+
