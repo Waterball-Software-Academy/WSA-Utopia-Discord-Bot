@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 
 fun GenericCommandInteractionEvent.getOptionAsZeroOrPositiveInt(name: String): Int? {
@@ -75,3 +76,6 @@ fun SubcommandData.addRequiredOption(type: OptionType, name: String, description
     addOption(type, name, description, true)
 
 fun IReplyCallback.replyEphemerally(message: String) = reply(message).setEphemeral(true).queue()
+
+fun SlashCommandData.addRequiredOption(type: OptionType, name: String, description: String) =
+    addOption(type, name, description, true)
