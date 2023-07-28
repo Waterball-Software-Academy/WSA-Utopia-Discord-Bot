@@ -36,12 +36,8 @@ class UtopiaListenerChain : EventListener, EventPublisher {
     private val bufferEvents: MutableList<UtopiaEvent> = mutableListOf()
 
     override fun onEvent(event: GenericEvent) {
-        for (listener in listeners) {
-            listener.onEvent(event)
-        }
-        for (listener in deprecatedListeners) {
-            listener.onEvent(event)
-        }
+        listeners.forEach { it.onEvent(event) }
+        deprecatedListeners.forEach { it.onEvent(event) }
 
         bufferEvents.firstOrNull()?.let { onUtopiaEvent(it) }
     }
