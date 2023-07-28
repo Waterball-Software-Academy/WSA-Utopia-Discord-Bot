@@ -13,7 +13,7 @@ import tw.waterballsa.utopia.jda.extensions.replyEphemerally
 import tw.waterballsa.utopia.weeklymessagesvolume.doamin.WeeklyRange
 
 @Component
-class WeeklyMessageVolumeListener : UtopiaListener() {
+class WeeklyMessagesVolumeListener : UtopiaListener() {
 
     companion object {
         private const val WEEKLY_MESSAGE_VOLUME = "weekly-messages-volume"
