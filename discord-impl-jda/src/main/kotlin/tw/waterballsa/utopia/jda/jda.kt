@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.requests.GatewayIntent.*
-import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners.*
 import org.springframework.beans.factory.annotation.Qualifier
@@ -18,24 +17,39 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import tw.waterballsa.utopia.jda.JdaInstance.compositeListener
+import org.springframework.stereotype.Component
+import tw.waterballsa.utopia.jda.domains.EventPublisher
+import tw.waterballsa.utopia.jda.domains.UtopiaEvent
 import java.lang.reflect.Method
 
 private val log = KotlinLogging.logger {}
 
-internal class CompositeListener : EventListener {
-    internal val listeners: MutableList<UtopiaListener> = mutableListOf()
+private const val UTOPIA_LISTENER_CHAIN_BEAN_NAME = "UtopiaListenerChain"
+
+@Component(UTOPIA_LISTENER_CHAIN_BEAN_NAME)
+class UtopiaListenerChain : EventListener, EventPublisher {
+    private val listeners: MutableList<UtopiaListener> = mutableListOf()
 
     // FIXME: after all deprecated listeners are upgraded to class-oriented listener, should remove all the coupling to DeprecatedUtopiaListener
-    internal val deprecatedListeners: MutableList<DeprecatedUtopiaListener> = mutableListOf()
+    val deprecatedListeners: MutableList<DeprecatedUtopiaListener> = mutableListOf()
+
+    private val bufferEvents: MutableList<UtopiaEvent> = mutableListOf()
 
     override fun onEvent(event: GenericEvent) {
-        for (listener in listeners) {
-            listener.onEvent(event)
-        }
-        for (listener in deprecatedListeners) {
-            listener.onEvent(event)
-        }
+        listeners.forEach { it.onEvent(event) }
+        deprecatedListeners.forEach { it.onEvent(event) }
+
+        bufferEvents.firstOrNull()?.let { onUtopiaEvent(it) }
+    }
+
+    private fun onUtopiaEvent(event: UtopiaEvent) {
+        bufferEvents.remove(event)
+        listeners.forEach { it.onUtopiaEvent(event) }
+        bufferEvents.firstOrNull()?.let { onUtopiaEvent(it) }
+    }
+
+    override fun broadcastEvent(utopiaEvent: UtopiaEvent) {
+        bufferEvents.add(utopiaEvent)
     }
 
     fun register(e: UtopiaListener) {
@@ -50,7 +64,6 @@ internal class CompositeListener : EventListener {
 }
 
 private object JdaInstance {
-    val compositeListener = CompositeListener()
     val instance: JDA by lazy {
         val env = getEnv("BOT_TOKEN").trim()
         val builder = JDABuilder.createDefault(env)
@@ -61,8 +74,6 @@ private object JdaInstance {
                         DIRECT_MESSAGE_REACTIONS,
                         SCHEDULED_EVENTS,
                 )
-                .enableCache(CacheFlag.SCHEDULED_EVENTS)
-                .addEventListeners(compositeListener)
         builder.build()
     }
 }
@@ -70,11 +81,12 @@ private object JdaInstance {
 @Configuration
 open class JdaConfig {
     @Bean
-    open fun jda(): JDA = JdaInstance.instance
+    open fun jda(utopiaListenerChain: UtopiaListenerChain): JDA = JdaInstance.instance.apply { addEventListener(utopiaListenerChain) }
 }
 
 abstract class UtopiaListener : ListenerAdapter() {
     open fun commands(): List<CommandData> = emptyList()
+    open fun onUtopiaEvent(event: UtopiaEvent) {}
 }
 
 @Deprecated("Please use 'UtopiaListener' instead")
@@ -143,15 +155,17 @@ fun runJda() {
 
 fun registerAllJdaListeners(context: AnnotationConfigApplicationContext) {
     val wsa = context.getBean(WSA_GUILD_BEAN_NAME, Guild::class.java)
+    val utopiaListenerChain = context.getBean(UTOPIA_LISTENER_CHAIN_BEAN_NAME, UtopiaListenerChain::class.java)
+
     val slashCommands = mutableListOf<CommandData>()
 
     val listenerFunctions = loadListenerFunctionsFromAllModules(context)
-    listenerFunctions.onEach { compositeListener.register(it) }
-        .flatMapTo(slashCommands) { it.commands }
+    listenerFunctions.onEach { utopiaListenerChain.register(it) }
+            .flatMapTo(slashCommands) { it.commands }
 
     val utopiaListeners = context.getBeansOfType(UtopiaListener::class.java).values
-    utopiaListeners.onEach { compositeListener.register(it) }
-        .flatMapTo(slashCommands) { it.commands() }
+    utopiaListeners.onEach { utopiaListenerChain.register(it) }
+            .flatMapTo(slashCommands) { it.commands() }
 
     wsa.updateCommands().addCommands(slashCommands).queue()
 }
