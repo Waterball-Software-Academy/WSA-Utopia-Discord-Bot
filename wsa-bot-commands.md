@@ -28,20 +28,25 @@
 | mute audiences | audience(USER): Allow who to voice<br>role(ROLE): Allow role to voice | Mute Audiences |
 |  mute revoked  |                                                                       | Unmute         |
 
-## audience
-|     Commands     | Arguments                                            | Description                                    |
-|:----------------:| ---------------------------------------------------- | ---------------------------------------------- |
-| audience counter | time-length(INTEGER): Time is calculated in minutes. | count the resent voice channel audience amount |
-
 ## random
 |    Commands    | Arguments                                                                                                  | Description |
 |:--------------:| ---------------------------------------------------------------------------------------------------------- | ----------- |
 | random lottery | number(INTEGER): Number of choose members per room.<br>role(ROLE): Only select specific role in this round | Lottery     |
 
+## rock-paper-scissors
+|      Commands       | Arguments | Description                           |
+|:-------------------:| --------- | ------------------------------------- |
+| rock-paper-scissors |           | start a new rock paper scissors game! |
+
 ## utopia
 | Commands | Arguments | Description    |
 |:--------:| --------- | -------------- |
 |  utopia  |           | utopia command |
+
+## audience
+|     Commands     | Arguments                                            | Description                                    |
+|:----------------:| ---------------------------------------------------- | ---------------------------------------------- |
+| audience counter | time-length(INTEGER): Time is calculated in minutes. | count the resent voice channel audience amount |
 
 ## roulette
 | Commands | Arguments | Description     |
