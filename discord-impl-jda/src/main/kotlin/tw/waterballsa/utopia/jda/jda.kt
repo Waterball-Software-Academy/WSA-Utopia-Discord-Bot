@@ -27,7 +27,8 @@ private val log = KotlinLogging.logger {}
 private const val UTOPIA_LISTENER_CHAIN_BEAN_NAME = "UtopiaListenerChain"
 
 @Component(UTOPIA_LISTENER_CHAIN_BEAN_NAME)
-class UtopiaListenerChain : EventListener, EventPublisher {
+internal class UtopiaListenerChain : EventListener, EventPublisher {
+
     private val listeners: MutableList<UtopiaListener> = mutableListOf()
 
     // FIXME: after all deprecated listeners are upgraded to class-oriented listener, should remove all the coupling to DeprecatedUtopiaListener
@@ -81,7 +82,7 @@ private object JdaInstance {
 @Configuration
 open class JdaConfig {
     @Bean
-    open fun jda(utopiaListenerChain: UtopiaListenerChain): JDA = JdaInstance.instance.apply { addEventListener(utopiaListenerChain) }
+    open fun jda(eventPublisher: EventPublisher): JDA = JdaInstance.instance.apply { addEventListener(eventPublisher) }
 }
 
 abstract class UtopiaListener : ListenerAdapter() {
