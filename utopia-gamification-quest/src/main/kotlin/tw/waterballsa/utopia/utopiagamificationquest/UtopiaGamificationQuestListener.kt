@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.messages.Embed
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
@@ -17,6 +18,7 @@ import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.*
 import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.BUTTON_QUEST_TAG
 import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.QuizButton
 import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.RewardButton
+import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.JoinActivityQuest
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.Quests
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.quizQuest
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.unlockAcademyQuest
@@ -47,7 +49,7 @@ class UtopiaGamificationQuestListener(
                 return
             }
 
-            val request = PlayerAcceptQuestService.Request(user.toPlayer(), quests.unlockAcademyQuest)
+            val request = PlayerAcceptQuestService.Request(user.toPlayer(), quests.JoinActivityQuest)
 
             playerAcceptQuestService.execute(request) { mission ->
                 mission.publishToUser(user).queue {
@@ -79,7 +81,7 @@ class UtopiaGamificationQuestListener(
             return message
         }
 
-    override fun onButtonInteraction(event: ButtonInteractionEvent) {
+    override fun onButtonInteraction(event: ButtonInteractionEvent): Unit {
         with(event) {
             val (buttonTag, buttonName, args) = splitButtonId("-")
 
@@ -92,9 +94,7 @@ class UtopiaGamificationQuestListener(
             when (action.buttonName) {
                 RewardButton.NAME -> handleRewardButtonInteraction(action, args[0])
                 else -> {
-                    playerFulfillMissionsService.execute(action) {
-                        user.claimMissionReward(it)
-                    }
+                    playerFulfillMissionsService.execute(action, user.presenter)
                 }
             }
         }
@@ -139,5 +139,11 @@ class UtopiaGamificationQuestListener(
             ).complete()
         }
 
+    val User.presenter
+        get() = object : PlayerFulfillMissionsService.Presenter {
+            override fun presentClaimMissionReward(mission: Mission) {
+                claimMissionReward(mission)
+            }
+        }
 }
 

@@ -193,6 +193,23 @@ val Quests.SendMessageInVoiceChannelQuest: Quest
 
         criteria = MessageSentCriteria(ChannelIdRule.ANY_CHANNEL, numberOfVoiceChannelMembersRule = AtLeastRule(2))
 
+        nextQuest = JoinActivityQuest
+    }
+
+val Quests.JoinActivityQuest: Quest
+    get() = quest {
+        title = "任務:參加一場活動"
+        description =
+            """
+            參與名稱為 test 的活動，並停留 10 秒
+            """.trimIndent()
+
+        reward = Reward(
+            "已完成！",
+            100u,
+        )
+
+        criteria = JoinActivityCriteria("test", 1, 10)
         nextQuest = quizQuest
     }
 
