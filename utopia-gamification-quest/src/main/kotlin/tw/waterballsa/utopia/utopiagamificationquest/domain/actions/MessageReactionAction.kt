@@ -10,7 +10,6 @@ class MessageReactionAction(
 ) : Action(player) {
 
     override fun match(criteria: Criteria): Boolean = criteria is MessageReactionCriteria
-
 }
 
 class MessageReactionCriteria(

@@ -16,20 +16,23 @@ class Quests(val wsa: WsaDiscordProperties) {
             listOf(
                 unlockAcademyQuest,
                 selfIntroductionQuest,
-                SendContainsImageMessageInEngineerLifeChannelQuest,
                 firstMessageActionQuest,
+                SendContainsImageMessageInEngineerLifeChannelQuest,
+                watchVideoQuest,
                 flagPostQuest,
                 ReplyToAnyoneInCareerAdvancementTopicChannelQuest,
+                SendMessageInVoiceChannelQuest,
+                JoinActivityQuest,
                 quizQuest
             )
         )
     }
 
     fun findById(questId: Int): Quest = quests.first { it.id == questId }
+
     fun String.toLink(): String = "https://discord.com/channels/${wsa.guildId}/${this}"
 
 }
-
 
 class QuestBuilder {
     var questId: Int = 0

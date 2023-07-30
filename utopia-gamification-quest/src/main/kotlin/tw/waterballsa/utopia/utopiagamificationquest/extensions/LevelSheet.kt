@@ -1,6 +1,6 @@
-package tw.waterballsa.utopia.utopiagamificationquest
+package tw.waterballsa.utopia.utopiagamificationquest.extensions
 
-import tw.waterballsa.utopia.utopiagamificationquest.LevelSheet.LevelRange.Companion.LEVEL_ONE
+import tw.waterballsa.utopia.utopiagamificationquest.extensions.LevelSheet.LevelRange.Companion.LEVEL_ONE
 import kotlin.ULong.Companion.MIN_VALUE
 
 class LevelSheet private constructor() {

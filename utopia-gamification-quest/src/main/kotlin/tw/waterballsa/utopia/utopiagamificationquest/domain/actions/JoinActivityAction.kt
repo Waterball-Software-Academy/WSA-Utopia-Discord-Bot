@@ -3,7 +3,6 @@ package tw.waterballsa.utopia.utopiagamificationquest.domain.actions
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Action
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 
-
 class JoinActivityAction(
     player: Player,
     val eventName: String,

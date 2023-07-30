@@ -1,12 +1,14 @@
-package tw.waterballsa.utopia.utopiagamificationquest.repositories
+package tw.waterballsa.utopia.utopiagamificationquest.repositories.MongoRepositoryImpl
 
 import org.springframework.stereotype.Component
+import tw.waterballsa.utopia.mongo.gateway.Document
+import tw.waterballsa.utopia.mongo.gateway.Id
 import tw.waterballsa.utopia.mongo.gateway.MongoCollection
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
-import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.Quests
-import tw.waterballsa.utopia.utopiagamificationquest.repositories.document.MissionDocument
-import tw.waterballsa.utopia.utopiagamificationquest.repositories.document.State.COMPLETED
+import tw.waterballsa.utopia.utopiagamificationquest.repositories.MissionRepository
+import tw.waterballsa.utopia.utopiagamificationquest.repositories.PlayerRepository
+import java.time.LocalDateTime
 import java.util.UUID.fromString
 
 @Component
@@ -24,7 +26,7 @@ class MongodbMissionRepository(
     //TODO 等 mongodb gateway 的 query 上線之後，把 findAll() 改成 query
     override fun findIncompleteMissionsByPlayerId(playerId: String): List<Mission> =
         repository.findAll()
-            .filter { it.playerId == playerId && it.state != COMPLETED }
+            .filter { it.playerId == playerId && it.state == State.IN_PROGRESS }
             .map { it.toDomain() }
 
     override fun findAllByPlayerId(playerId: String): List<Mission> =
@@ -34,13 +36,14 @@ class MongodbMissionRepository(
 
 
     override fun saveMission(mission: Mission): Mission {
+        playerRepository.savePlayer(mission.player)
         repository.save(mission.toDocument())
         return mission
     }
 
     // TODO 等到 @DBRef 功能上線後，將 playerId 改成 player，讓 MongoDB 協助 join
     private fun MissionDocument.toDomain(): Mission {
-        val player = playerRepository.findPlayerById(playerId) ?: playerRepository.savePlayer(Player(playerId, "123"))
+        val player = playerRepository.findPlayerById(playerId) ?: throw RuntimeException("not find player")
         val quest = quests.findById(questId)
         return Mission(fromString(id), player, quest, state, completedTime)
     }
@@ -48,3 +51,19 @@ class MongodbMissionRepository(
 
 fun Mission.toDocument(): MissionDocument =
     MissionDocument(id.toString(), player.id, quest.id, completedTime, state)
+
+@Document("Mission")
+class MissionDocument(
+    @Id val id: String,
+    // TODO 等到 @DBRef 功能上線後，將 playerId 改成 player，讓 MongoDB 協助 join
+    val playerId: String,
+    val questId: Int,
+    val completedTime: LocalDateTime?,
+    val state: State
+)
+
+enum class State {
+    IN_PROGRESS,
+    COMPLETED,
+    CLAIMED
+}
