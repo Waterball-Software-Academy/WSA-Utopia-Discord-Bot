@@ -2,8 +2,8 @@ package tw.waterballsa.utopia.utopiagamificationquest.domain
 
 import mu.KotlinLogging
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.JoinActivityAction
-import tw.waterballsa.utopia.utopiagamificationquest.repositories.ActivityDocument
-import tw.waterballsa.utopia.utopiagamificationquest.repositories.AudienceDocument
+import tw.waterballsa.utopia.utopiagamificationquest.repositories.MongoRepositoryImpl.ActivityDocument
+import tw.waterballsa.utopia.utopiagamificationquest.repositories.MongoRepositoryImpl.AudienceDocument
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalDateTime.now
@@ -37,24 +37,27 @@ class Activity(
     private val audiences: MutableMap<String, Audience> = mutableMapOf()
 ) {
 
-    fun join(audience: Audience) {
+    fun join(player: Player) {
         if (!dateTimeRange.inTimeRange()) {
             return
         }
 
-        audiences[audience.id] = audience
+        audiences[player.id] = player.toAudience()
 
-        log.info(""" [join activity] { "userId" = "${audience.id}", "activityName" = "$eventName"} """)
+        log.info(""" [join activity] { "userId" = "${player.id}", "activityName" = "$eventName"} """)
     }
 
-    fun leave(audienceId: String): JoinActivityAction? {
-        val audience = audiences[audienceId] ?: return null
+    private fun Player.toAudience(): Audience = Audience(id)
+
+
+    fun leave(player: Player): JoinActivityAction? {
+        val audience = audiences[player.id] ?: return null
         val stayDuration = audience.leave()
 
-        log.info(""" [leave activity] { "userId" = "$audienceId", "activityName" = $eventName, "stayDuration" = "$stayDuration"} """)
+        log.info(""" [leave activity] { "userId" = "${player.id}", "activityName" = $eventName, "stayDuration" = "$stayDuration"} """)
 
         return JoinActivityAction(
-            audience.toPlayer(),
+            player,
             eventName,
             audiences.size,
             //TODO 因為方便測試，時間單位為秒，上線前要改成分鐘
@@ -77,7 +80,6 @@ class Activity(
 
 class Audience(
     val id: String,
-    private val audienceName: String,
     private val joinTime: DateTimeRange = DateTimeRange()
 ) {
     fun leave(): Duration {
@@ -85,8 +87,6 @@ class Audience(
         return joinTime.getDuration()
     }
 
-    fun toPlayer(): Player = Player(id, audienceName)
-
     fun toDocument(): AudienceDocument =
-        AudienceDocument(id, audienceName, joinTime.getStartTime(), joinTime.getEndTime())
+        AudienceDocument(id, joinTime.getStartTime(), joinTime.getEndTime())
 }

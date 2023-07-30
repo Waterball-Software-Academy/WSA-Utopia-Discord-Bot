@@ -1,6 +1,6 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain
 
-import tw.waterballsa.utopia.utopiagamificationquest.LevelSheet.Companion.calculateLevel
+import tw.waterballsa.utopia.utopiagamificationquest.extensions.LevelSheet.Companion.calculateLevel
 import java.time.OffsetDateTime
 import java.time.OffsetDateTime.now
 import kotlin.ULong.Companion.MIN_VALUE
@@ -10,10 +10,10 @@ class Player(
     var name: String,
     var exp: ULong = MIN_VALUE,
     var level: UInt = 1u,
-    val jdaRoles: MutableList<String> = mutableListOf(),
     val joinDate: OffsetDateTime = now(),
     var latestActivateDate: OffsetDateTime = now(),
-    var levelUpgradeDate: OffsetDateTime = now()
+    var levelUpgradeDate: OffsetDateTime = now(),
+    val jdaRoles: MutableList<String> = mutableListOf(),
 ) {
     init {
         calculateLevel()
@@ -26,6 +26,16 @@ class Player(
     }
 
     private fun calculateLevel() {
+        var explimit = getLevelExpLimit(level)
+        while (exp >= explimit) {
+            exp -= explimit
+            level++
+            explimit = getLevelExpLimit(level)
+            levelUpgradeDate = now()
+        }
+    }
+
+    private fun calculateLevel1() {
         val newLevel = calculateLevel(exp)
         if (newLevel > level) {
             level = newLevel

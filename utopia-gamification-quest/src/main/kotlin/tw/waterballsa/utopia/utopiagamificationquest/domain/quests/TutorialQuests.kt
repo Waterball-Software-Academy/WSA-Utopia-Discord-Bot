@@ -90,6 +90,7 @@ val Quests.firstMessageActionQuest: Quest
 
 val Quests.watchVideoQuest: Quest
     get() = quest {
+        questId = 4
         title = "任務：觀看學院影片"
         description = """
             ${wsa.featuredVideosChannelId.toLink()}
@@ -107,7 +108,7 @@ val Quests.watchVideoQuest: Quest
 
 val Quests.flagPostQuest: Quest
     get() = quest {
-        questId = 4
+        questId = 5
         title = "全民插旗子"
         description =
             """
@@ -125,7 +126,7 @@ val Quests.flagPostQuest: Quest
 
 val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
     get() = quest {
-        questId = 5
+        questId = 6
         title = "任務:工程師生活"
         description =
             """
@@ -145,7 +146,7 @@ val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
 
 val Quests.ReplyToAnyoneInCareerAdvancementTopicChannelQuest: Quest
     get() = quest {
-        questId = 6
+        questId = 7
         title = "任務:職涯攻略話題"
         description =
             """
@@ -161,31 +162,12 @@ val Quests.ReplyToAnyoneInCareerAdvancementTopicChannelQuest: Quest
         criteria =
             MessageSentCriteria(ChannelIdRule(wsa.careerAdvancementTopicChannelId), hasRepliedRule = BooleanRule.TRUE)
 
-        nextQuest = resumeHealthCheckQuest
-    }
-
-val Quests.resumeHealthCheckQuest: Quest
-    get() = quest {
-        title = "任務：履歷健檢"
-
-        description = """
-            ${wsa.resumeCheckChannelId.toLink()}
-            在履歷健檢頻道的任一則貼文內回覆 1 則訊息
-        """.trimIndent()
-
-        reward = Reward(
-            "已回覆訊息！",
-            100u
-        )
-
-        criteria = MessageSentCriteria(ChannelIdRule(wsa.resumeCheckChannelId))
-
         nextQuest = SendMessageInVoiceChannelQuest
     }
 
 val Quests.SendMessageInVoiceChannelQuest: Quest
     get() = quest {
-        questId = 7
+        questId = 8
         title = "任務:吃瓜社團會議間"
         description =
             """
@@ -197,13 +179,15 @@ val Quests.SendMessageInVoiceChannelQuest: Quest
             100u,
         )
 
-        criteria = MessageSentCriteria(ChannelIdRule.ANY_CHANNEL, numberOfVoiceChannelMembersRule = AtLeastRule(2))
+        //TODO 方便測試，先把需求人數改成 1 個人
+        criteria = MessageSentCriteria(ChannelIdRule.ANY_CHANNEL, numberOfVoiceChannelMembersRule = AtLeastRule(1))
 
         nextQuest = JoinActivityQuest
     }
 
 val Quests.JoinActivityQuest: Quest
     get() = quest {
+        questId = 9
         title = "任務:參加一場活動"
         description =
             """
@@ -221,7 +205,7 @@ val Quests.JoinActivityQuest: Quest
 
 val Quests.quizQuest: Quest
     get() = quest {
-        questId = 8
+        questId = 10
         title = "任務:考試"
         description =
             """
@@ -233,6 +217,6 @@ val Quests.quizQuest: Quest
             100u,
         )
 
-        criteria = ButtonInteractionCriteria(QuizButton.NAME)
+        criteria = ButtonInteractionCriteria("123")
 
     }
