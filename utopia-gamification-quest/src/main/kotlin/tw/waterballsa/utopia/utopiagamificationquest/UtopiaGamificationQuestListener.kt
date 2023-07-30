@@ -47,7 +47,8 @@ class UtopiaGamificationQuestListener(
     override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
         with(event) {
 
-            val request = PlayerAcceptQuestService.Request(user.toPlayer(), quests.unlockAcademyQuest)
+            val player = user.toPlayer() ?: return
+            val request = PlayerAcceptQuestService.Request(player, quests.unlockAcademyQuest)
 
             val presenter = object : PlayerAcceptQuestService.Presenter {
                 override fun presentPlayerHasAcquiredMission() {
@@ -69,9 +70,7 @@ class UtopiaGamificationQuestListener(
                 return
             }
 
-            val request = PlayerAcceptQuestService.Request(user.toPlayer(), quests.unlockAcademyQuest)
             val player = member?.toPlayer() ?: return
-
             val request = PlayerAcceptQuestService.Request(player, quests.unlockAcademyQuest)
 
             val presenter = object : PlayerAcceptQuestService.Presenter {
@@ -103,7 +102,7 @@ class UtopiaGamificationQuestListener(
 
     private fun User.toPlayer(): Player? = playerRepository.findPlayerById(id)
 
-    private fun GuildMemberJoinEvent.sendMessageToUserPrivateChannel(message : String) =
+    private fun GuildMemberJoinEvent.sendMessageToUserPrivateChannel(message: String) =
         user.openPrivateChannel().queue { it.sendMessage(message).queue() }
 
     private fun Mission.publishToUser(user: User): MessageCreateAction =
