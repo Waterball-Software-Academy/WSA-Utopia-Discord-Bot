@@ -12,7 +12,6 @@ import tw.waterballsa.utopia.utopiagamificationquest.extensions.claimMissionRewa
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.PlayerRepository
 import tw.waterballsa.utopia.utopiagamificationquest.service.PlayerFulfillMissionsService
 
-
 @Component
 class MessageReactionListener(
     private val playerFulfillMissionsService: PlayerFulfillMissionsService,
@@ -43,6 +42,7 @@ class MessageReactionListener(
                 claimMissionReward(mission)
             }
         }
+
     private fun Member.toPlayer(): Player =
         playerRepository.findPlayerById(id) ?: playerRepository.savePlayer(
             Player(

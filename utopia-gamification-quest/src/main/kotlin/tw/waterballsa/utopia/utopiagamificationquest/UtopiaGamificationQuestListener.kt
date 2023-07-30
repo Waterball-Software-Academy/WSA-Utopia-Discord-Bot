@@ -5,7 +5,6 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
@@ -18,7 +17,6 @@ import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.ButtonInteractionAction
 import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.BUTTON_QUEST_TAG
 import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.RewardButton
-import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.JoinActivityQuest
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.Quests
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.quizQuest
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.unlockAcademyQuest
@@ -49,6 +47,7 @@ class UtopiaGamificationQuestListener(
             if (fullCommandName != UTOPIA_COMMAND_NAME) {
                 return
             }
+
             val player = member?.toPlayer() ?: return
 
             val request = PlayerAcceptQuestService.Request(player, quests.unlockAcademyQuest)
@@ -160,4 +159,3 @@ class UtopiaGamificationQuestListener(
             }
         }
 }
-
