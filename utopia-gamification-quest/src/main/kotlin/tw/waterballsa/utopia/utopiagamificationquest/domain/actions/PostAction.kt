@@ -9,7 +9,6 @@ class PostAction(
 ) : Action(player) {
 
     override fun match(criteria: Criteria): Boolean = criteria is PostCriteria
-
 }
 
 class PostCriteria(

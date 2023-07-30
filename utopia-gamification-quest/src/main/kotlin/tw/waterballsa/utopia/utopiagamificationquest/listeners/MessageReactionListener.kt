@@ -1,16 +1,9 @@
 package tw.waterballsa.utopia.utopiagamificationquest.listeners
 
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import org.springframework.stereotype.Component
-import tw.waterballsa.utopia.jda.UtopiaListener
-import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
-import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.MessageReactionAction
-import tw.waterballsa.utopia.utopiagamificationquest.extensions.claimMissionReward
-import tw.waterballsa.utopia.utopiagamificationquest.listeners.UtopiaGamificationListener
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.PlayerRepository
 import tw.waterballsa.utopia.utopiagamificationquest.service.PlayerFulfillMissionsService
 

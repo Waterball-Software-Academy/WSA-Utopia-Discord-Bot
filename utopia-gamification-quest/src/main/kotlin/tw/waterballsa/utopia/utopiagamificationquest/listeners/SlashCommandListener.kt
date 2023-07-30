@@ -1,14 +1,9 @@
 package tw.waterballsa.utopia.utopiagamificationquest.listeners
 
-import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
-import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
-import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.extensions.replyEphemerally
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission

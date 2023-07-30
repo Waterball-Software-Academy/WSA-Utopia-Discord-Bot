@@ -34,7 +34,6 @@ class Quests(val wsa: WsaDiscordProperties) {
 
 }
 
-
 class QuestBuilder {
     var questId: Int = 0
     lateinit var title: String

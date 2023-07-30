@@ -14,7 +14,6 @@ class MessageSentAction(
 ) : Action(player) {
 
     override fun match(criteria: Criteria): Boolean = criteria is MessageSentCriteria
-
 }
 
 class MessageSentCriteria(
