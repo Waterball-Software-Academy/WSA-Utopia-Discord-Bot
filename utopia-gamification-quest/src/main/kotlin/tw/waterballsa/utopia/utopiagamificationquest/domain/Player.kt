@@ -1,5 +1,6 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain
 
+import tw.waterballsa.utopia.utopiagamificationquest.LevelSheet.Companion.calculateLevel
 import java.time.OffsetDateTime
 import java.time.OffsetDateTime.now
 import kotlin.ULong.Companion.MIN_VALUE
