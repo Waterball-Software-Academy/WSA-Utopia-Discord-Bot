@@ -5,6 +5,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
@@ -12,6 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands.slash
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.UtopiaListener
+import tw.waterballsa.utopia.jda.extensions.replyEphemerally
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.ButtonInteractionAction
@@ -42,6 +44,26 @@ class UtopiaGamificationQuestListener(
 
     override fun commands(): List<CommandData> = listOf(slash(UTOPIA_COMMAND_NAME, "utopia command"))
 
+    override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
+        with(event) {
+
+            val player = user.toPlayer() ?: return
+            val request = PlayerAcceptQuestService.Request(player, quests.unlockAcademyQuest)
+
+            val presenter = object : PlayerAcceptQuestService.Presenter {
+                override fun presentPlayerHasAcquiredMission() {
+                    sendMessageToUserPrivateChannel("已獲得新手任務，無法再次獲得！")
+                }
+
+                override fun presentPlayerAcquiresMission(mission: Mission) {
+                    mission.publishToUser(user).queue()
+                }
+            }
+
+            playerAcceptQuestService.execute(request, presenter)
+        }
+    }
+
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         with(event) {
             if (fullCommandName != UTOPIA_COMMAND_NAME) {
@@ -49,14 +71,20 @@ class UtopiaGamificationQuestListener(
             }
 
             val player = member?.toPlayer() ?: return
-
             val request = PlayerAcceptQuestService.Request(player, quests.unlockAcademyQuest)
 
-            playerAcceptQuestService.execute(request) { mission ->
-                mission.publishToUser(user).queue {
-                    reply("已經接取第一個任務，去私訊查看任務內容").setEphemeral(true).queue()
+            val presenter = object : PlayerAcceptQuestService.Presenter {
+                override fun presentPlayerHasAcquiredMission() {
+                    replyEphemerally("已獲得新手任務，無法再次獲得。")
+                }
+
+                override fun presentPlayerAcquiresMission(mission: Mission) {
+                    mission.publishToUser(user).queue()
+                    replyEphemerally("已經接取第一個任務，去私訊查看任務內容。")
                 }
             }
+
+            playerAcceptQuestService.execute(request, presenter)
         }
     }
 
@@ -73,6 +101,9 @@ class UtopiaGamificationQuestListener(
         )
 
     private fun User.toPlayer(): Player? = playerRepository.findPlayerById(id)
+
+    private fun GuildMemberJoinEvent.sendMessageToUserPrivateChannel(message: String) =
+        user.openPrivateChannel().queue { it.sendMessage(message).queue() }
 
     private fun Mission.publishToUser(user: User): MessageCreateAction =
         user.openPrivateChannel().complete().publishMission(this)
@@ -94,7 +125,7 @@ class UtopiaGamificationQuestListener(
             return message
         }
 
-    override fun onButtonInteraction(event: ButtonInteractionEvent): Unit {
+    override fun onButtonInteraction(event: ButtonInteractionEvent) {
         with(event) {
             val (buttonTag, buttonName, args) = splitButtonId("-")
 
@@ -152,7 +183,7 @@ class UtopiaGamificationQuestListener(
             ).complete()
         }
 
-    val User.presenter
+    private val User.presenter
         get() = object : PlayerFulfillMissionsService.Presenter {
             override fun presentClaimMissionReward(mission: Mission) {
                 claimMissionReward(mission)

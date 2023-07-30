@@ -10,7 +10,7 @@ class JoinActivityAction(
     val maxMemberCount: Int,
     val stayDuration: Int,
 ) : Action(player) {
-    
+
     override fun match(criteria: Criteria): Boolean = criteria is JoinActivityCriteria
 }
 
@@ -19,7 +19,7 @@ class JoinActivityCriteria(
     private val maxMemberCount: Int,
     private val eventDuration: Int
 ) : Action.Criteria() {
-    
+
     override fun meet(action: Action): Boolean = (action as? JoinActivityAction)?.let { meetCriteria(action) } ?: false
 
     private fun meetCriteria(action: JoinActivityAction): Boolean {

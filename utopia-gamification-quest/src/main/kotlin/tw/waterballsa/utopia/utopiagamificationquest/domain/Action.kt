@@ -1,19 +1,17 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain
 
-import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.*
-
 abstract class Action(
     val player: Player
 ) {
 
     abstract fun match(criteria: Criteria): Boolean
 
-    fun execute(criteria: Criteria) {
+    fun execute(criteria: Criteria) : Boolean {
         if (criteria.meet(this)) {
             criteria.complete()
         }
+        return criteria.isCompleted
     }
-
 
     abstract class Criteria {
 

@@ -12,15 +12,27 @@ class PlayerAcceptQuestService(
     private val missionRepository: MissionRepository
 ) {
 
-    fun execute(request: Request, presenter: (mission: Mission) -> Unit) {
+    fun execute(request: Request, presenter: Presenter) {
         with(request) {
+            if (isMissionAcquired()) {
+                presenter.presentPlayerHasAcquiredMission()
+                return
+            }
             val mission = missionRepository.saveMission(Mission(player, quest))
-            presenter(mission)
+            presenter.presentPlayerAcquiresMission(mission)
         }
     }
+
+    private fun Request.isMissionAcquired(): Boolean =
+        missionRepository.findMission(MissionRepository.Query(player.id, questTitle = quest.title)) != null
 
     class Request(
         val player: Player,
         val quest: Quest
     )
+
+    interface Presenter {
+        fun presentPlayerHasAcquiredMission()
+        fun presentPlayerAcquiresMission(mission: Mission)
+    }
 }
