@@ -40,6 +40,4 @@ class MemberJoinListener(
 
     private fun GuildMemberJoinEvent.sendMessageToUserPrivateChannel(message: String) =
         user.openPrivateChannel().queue { it.sendMessage(message).queue() }
-
-
 }

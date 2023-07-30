@@ -55,7 +55,6 @@ class UtopiaGamificationQuestListener(
         action: ButtonInteractionAction,
         questTitle: String
     ) {
-
         val request = ClaimMissionRewardService.Request(action.player, questTitle)
         val presenter = object : ClaimMissionRewardService.Presenter {
             override fun presentMission(mission: Mission) {

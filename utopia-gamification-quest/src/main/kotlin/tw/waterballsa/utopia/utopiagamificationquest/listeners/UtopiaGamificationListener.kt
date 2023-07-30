@@ -44,5 +44,4 @@ open class UtopiaGamificationListener(
                 claimMissionReward(mission)
             }
         }
-
 }

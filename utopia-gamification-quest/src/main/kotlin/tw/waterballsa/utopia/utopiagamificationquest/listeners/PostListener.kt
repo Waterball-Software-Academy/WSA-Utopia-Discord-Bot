@@ -38,5 +38,4 @@ class PostListener(
     }
 
     private val GuildAuditLogEntryCreateEvent.user get() = entry.user ?: jda.retrieveUserById(entry.userId).complete()
-
 }
