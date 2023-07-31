@@ -18,9 +18,7 @@ jobs:
       - run: |
           flyctl deploy --config fly-beta.toml --remote-only -e \
           BOT_TOKEN=${{ secrets.BOT_TOKEN }},\
-          MONGO_USERNAME=${{ secrets.MONGO_USERNAME }},\
-          MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }},\
-          MONGO_HOST=${{ secrets.MONGO_HOST }},\
+          MONGO_CONNECTION_URI=${{ secrets.MONGO_CONNECTION_URI }},\
           CHATGPT_TOKEN=${{ secrets.CHATGPT_TOKEN }},\
           DEPLOYMENT_ENV=beta
         env:

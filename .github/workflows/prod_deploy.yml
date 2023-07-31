@@ -18,6 +18,7 @@ jobs:
       - run: |
           flyctl deploy --config fly-prod.toml --remote-only -e \
           BOT_TOKEN=${{ secrets.BOT_TOKEN }},\
+          MONGO_CONNECTION_URI=${{ secrets.MONGO_CONNECTION_URI }},\
           CHATGPT_TOKEN=${{ secrets.CHATGPT_TOKEN }},\
           DEPLOYMENT_ENV=prod
         env:
