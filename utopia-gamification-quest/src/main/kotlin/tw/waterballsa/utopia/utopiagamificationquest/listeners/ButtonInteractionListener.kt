@@ -2,6 +2,7 @@ package tw.waterballsa.utopia.utopiagamificationquest.listeners
 
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.requests.RestAction
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.ButtonInteractionAction
@@ -35,7 +36,7 @@ class UtopiaGamificationQuestListener(
             when (action.buttonName) {
                 RewardButton.NAME -> handleRewardButtonInteraction(action, args[0])
                 else -> {
-                    playerFulfillMissionsService.execute(action, user.presenter)
+                    playerFulfillMissionsService.execute(action, user.claimMissionRewardPresenter)
                 }
             }
         }
@@ -77,7 +78,7 @@ class UtopiaGamificationQuestListener(
                     目前經驗值：${player.exp}
                     """.trimIndent()
             ).complete()
+
+            editButton(mission.rewardButton.asDisabled()).complete()
         }
 }
-
-

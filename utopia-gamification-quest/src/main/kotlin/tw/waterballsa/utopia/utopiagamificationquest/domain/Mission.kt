@@ -1,7 +1,7 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain
 
-import tw.waterballsa.utopia.utopiagamificationquest.repositories.MongoRepositoryImpl.State
-import tw.waterballsa.utopia.utopiagamificationquest.repositories.MongoRepositoryImpl.State.*
+import tw.waterballsa.utopia.utopiagamificationquest.repositories.mongodb.repositoryimpl.State
+import tw.waterballsa.utopia.utopiagamificationquest.repositories.mongodb.repositoryimpl.State.*
 import java.time.LocalDateTime
 import java.time.LocalDateTime.now
 import java.util.*
@@ -14,6 +14,7 @@ class Mission(
     var state: State,
     var completedTime: LocalDateTime?
 ) {
+
     constructor(player: Player, quest: Quest) : this(randomUUID(), player, quest, IN_PROGRESS, null)
 
     fun match(action: Action): Boolean = action.match(quest.criteria)

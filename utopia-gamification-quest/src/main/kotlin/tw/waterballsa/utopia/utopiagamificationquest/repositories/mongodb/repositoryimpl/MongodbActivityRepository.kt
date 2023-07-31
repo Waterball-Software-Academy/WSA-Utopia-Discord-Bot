@@ -1,4 +1,4 @@
-package tw.waterballsa.utopia.utopiagamificationquest.repositories.MongoRepositoryImpl
+package tw.waterballsa.utopia.utopiagamificationquest.repositories.mongodb.repositoryimpl
 
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.mongo.gateway.Document
@@ -22,10 +22,37 @@ class MongodbActivityRepository(
 
     override fun findByActivityId(id: String): Activity? = repository.findOne(id)?.toDomain()
 
-    override fun save(activity: Activity): Activity {
-        repository.save(activity.toDocument())
-        return activity
-    }
+    override fun save(activity: Activity): Activity = repository.save(activity.toDocument()).toDomain()
+
+    private fun ActivityDocument.inProgress(): Boolean =
+        DateTimeRange(startTime.toDate(), endTime.toDate()).inTimeRange()
+
+    private fun ActivityDocument.toDomain(): Activity = Activity(
+        id,
+        hostId,
+        eventName,
+        channelId,
+        DateTimeRange(startTime.toDate(), endTime.toDate()),
+        audiences.associate { it.toDomain() }.toMutableMap()
+    )
+
+    private fun AudienceDocument.toDomain(): Pair<String, Audience> = id to Audience(
+        id,
+        DateTimeRange(startTime.toDate(), endTime.toDate())
+    )
+
+    private fun Activity.toDocument(): ActivityDocument = ActivityDocument(
+        eventId,
+        hostId,
+        eventName,
+        channelId,
+        dateTimeRange.getStartTime(),
+        dateTimeRange.getEndTime(),
+        audiences.values.map { it.toDocument() }
+    )
+
+    private fun Audience.toDocument(): AudienceDocument =
+        AudienceDocument(id, joinTime.getStartTime(), joinTime.getEndTime())
 }
 
 @Document
@@ -37,28 +64,10 @@ class ActivityDocument(
     val startTime: String,
     val endTime: String,
     val audiences: List<AudienceDocument>
-) {
-
-    fun toDomain(): Activity = Activity(
-        id,
-        hostId,
-        eventName,
-        channelId,
-        DateTimeRange(startTime.toDate(), endTime.toDate()),
-        audiences.associate { it.toDomain() }.toMutableMap()
-    )
-
-    fun inProgress(): Boolean = DateTimeRange(startTime.toDate(), endTime.toDate()).inTimeRange()
-}
+)
 
 class AudienceDocument(
     val id: String,
     val startTime: String,
     val endTime: String,
-) {
-
-    fun toDomain(): Pair<String, Audience> = id to Audience(
-        id,
-        DateTimeRange(startTime.toDate(), endTime.toDate())
-    )
-}
+)

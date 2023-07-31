@@ -58,3 +58,8 @@
 |        Commands        | Arguments                                                            | Description                                    |
 |:----------------------:| -------------------------------------------------------------------- | ---------------------------------------------- |
 | weekly-messages-volume | channel-name(STRING): The channel to show the weekly messages volume | Show the weekly messages volume of the channel |
+
+## quiz
+| Commands | Arguments                                 | Description          |
+|:--------:| ----------------------------------------- | -------------------- |
+|   quiz   | name(STRING): The quiz you want to start. | The quiz for utopia. |

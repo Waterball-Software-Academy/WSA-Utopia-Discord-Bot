@@ -25,7 +25,7 @@ class MessageReactionListener(
                 emoji.name
             )
 
-            playerFulfillMissionsService.execute(action, user.presenter)
+            playerFulfillMissionsService.execute(action, user.claimMissionRewardPresenter)
         }
     }
 }

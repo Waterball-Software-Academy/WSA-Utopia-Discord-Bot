@@ -339,6 +339,9 @@ val Quests.quizQuest: Quest
             
             考試並不難，理解水球軟體學院的願景和文化，也會讓你更能聽得懂社群中的一些「內梗」和幽默喔！
             趕緊試試看吧！
+            
+            到學院指令區輸入以下指令吧！
+            [ /quiz 紳士考題 ]
             """.trimIndent()
 
         preCondition = QuestIdPreCondition(8)
@@ -353,5 +356,6 @@ val Quests.quizQuest: Quest
             1.0f
         )
 
-        criteria = ButtonInteractionCriteria(QuizButton.NAME)
+        criteria = QuizCriteria("紳士考題", 60)
+
     }

@@ -9,6 +9,7 @@ import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import java.time.OffsetDateTime
 
 interface PlayerRepository {
+    
     fun findPlayerById(id: String): Player?
     fun savePlayer(player: Player): Player
 }

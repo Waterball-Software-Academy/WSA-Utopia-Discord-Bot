@@ -34,7 +34,7 @@ class MessageSentListener(
                 (channel as? VoiceChannel)?.members?.size ?: 0
             )
 
-            playerFulfillMissionsService.execute(action, user.presenter)
+            playerFulfillMissionsService.execute(action, user.claimMissionRewardPresenter)
         }
     }
 }

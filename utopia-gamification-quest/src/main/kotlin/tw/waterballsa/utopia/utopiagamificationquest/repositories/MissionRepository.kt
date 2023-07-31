@@ -3,8 +3,9 @@ package tw.waterballsa.utopia.utopiagamificationquest.repositories
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
 
 interface MissionRepository {
+    
     fun findMission(query: Query): Mission?
-    fun findIncompleteMissionsByPlayerId(playerId: String): List<Mission>
+    fun findInProgressMissionsByPlayerId(playerId: String): List<Mission>
     fun findAllByPlayerId(playerId: String): List<Mission>
     fun saveMission(mission: Mission): Mission
 
