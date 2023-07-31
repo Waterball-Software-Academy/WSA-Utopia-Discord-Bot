@@ -26,7 +26,6 @@ const val QUIZ_TAG = "utopiaQuiz"
 
 @Component
 class UtopiaQuizListener(
-    private val wsa: WsaDiscordProperties,
     private val quizRepository: QuizRepository,
     private val questionSet: QuestionSet,
     private val eventPublisher: EventPublisher,

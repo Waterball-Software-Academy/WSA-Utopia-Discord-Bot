@@ -1,21 +1,19 @@
 package tw.waterballsa.utopia.utopiaquiz.domain
 
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Repository
-import tw.waterballsa.utopia.utopiaquiz.repositories.QuizRepository
 
 @Component
-class QuestionSet() {
+class QuestionSet {
 
     private val questions: List<Question> = listOf(
-                Question(
-                    1,
-                    "以下關於水球軟體學院的願景何者正確？",
-                    listOf(
-                        "學院是「全民成長型社群」，旨在讓所有剛加入的夥伴立刻感受到成長的動力，並善用社團等設施帶動所有紳士能教學相長、一起成長。",
-                        "水球希望召集眾人之力一同建立一個非常友善、充實又充滿熱忱的軟體創作之地，發展各式各樣的活動，來一起架空軟體業的負面氛圍，鼓勵彼此一起做個心裡富足的工程師",
-                        "「技術為王」，為了能召集更多優秀的工程師夥伴，學院主張「技術力」是加入學院的基礎成員必須擁有良好技術力，在交流上才不好有太多落差。",
-                        "學院中有各式各樣的學習聚會，鼓勵學院全民一起追求在軟實力（職涯、組織、表達力、演講）和硬實力（軟體造詣）的長期發展和說走就走的行動力。"
+        Question(
+            1,
+            "以下關於水球軟體學院的願景何者正確？",
+            listOf(
+                "學院是「全民成長型社群」，旨在讓所有剛加入的夥伴立刻感受到成長的動力，並善用社團等設施帶動所有紳士能教學相長、一起成長。",
+                "水球希望召集眾人之力一同建立一個非常友善、充實又充滿熱忱的軟體創作之地，發展各式各樣的活動，來一起架空軟體業的負面氛圍，鼓勵彼此一起做個心裡富足的工程師",
+                "「技術為王」，為了能召集更多優秀的工程師夥伴，學院主張「技術力」是加入學院的基礎成員必須擁有良好技術力，在交流上才不好有太多落差。",
+                "學院中有各式各樣的學習聚會，鼓勵學院全民一起追求在軟實力（職涯、組織、表達力、演講）和硬實力（軟體造詣）的長期發展和說走就走的行動力。"
                     ), 2),
                 Question(
                     2,

@@ -1,7 +1,6 @@
 package tw.waterballsa.utopia.utopiagamificationquest.repositories.MongoRepositoryImpl
 
 import org.springframework.stereotype.Component
-import org.testcontainers.shaded.org.bouncycastle.asn1.x500.style.RFC4519Style.name
 import tw.waterballsa.utopia.mongo.gateway.Document
 import tw.waterballsa.utopia.mongo.gateway.Id
 import tw.waterballsa.utopia.mongo.gateway.MongoCollection
