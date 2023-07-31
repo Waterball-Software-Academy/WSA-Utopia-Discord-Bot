@@ -2,9 +2,7 @@ package tw.waterballsa.utopia.utopiagamificationquest.domain.quests
 
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
-import tw.waterballsa.utopia.utopiagamificationquest.domain.Action
-import tw.waterballsa.utopia.utopiagamificationquest.domain.Quest
-import tw.waterballsa.utopia.utopiagamificationquest.domain.Reward
+import tw.waterballsa.utopia.utopiagamificationquest.domain.*
 
 @Component
 class Quests(val wsa: WsaDiscordProperties) {
@@ -34,15 +32,22 @@ class Quests(val wsa: WsaDiscordProperties) {
 
 }
 
+private const val completeMessage = "任務完成！"
+
 class QuestBuilder {
-    var questId: Int = 0
+    
+    var id: Int = 0
     lateinit var title: String
     lateinit var description: String
     lateinit var reward: Reward
+    var roleType: RoleType = RoleType.EVERYONE
+    var periodType: PeriodType = PeriodType.NONE
     lateinit var criteria: Action.Criteria
+    var preCondition: PreCondition = EmptyPreCondition()
     var nextQuest: Quest? = null
-
-    fun build() = Quest(questId, title, description, reward, criteria, nextQuest)
+    var postMessage: String = completeMessage
+    fun build() =
+        Quest(id, title, description, preCondition, roleType, periodType, criteria, reward, nextQuest, postMessage)
 }
 
 internal fun quest(block: QuestBuilder.() -> Unit): Quest = QuestBuilder().apply(block).build()

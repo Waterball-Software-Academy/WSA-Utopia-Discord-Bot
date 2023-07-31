@@ -82,6 +82,7 @@ class Audience(
     val id: String,
     private val joinTime: DateTimeRange = DateTimeRange()
 ) {
+    
     fun leave(): Duration {
         joinTime.setEndTimeAsCurrentTime()
         return joinTime.getDuration()

@@ -14,7 +14,7 @@ class Mission(
     var state: State,
     var completedTime: LocalDateTime?
 ) {
-    constructor(player: Player, quest: Quest) : this(randomUUID(), player, quest, State.IN_PROGRESS, null)
+    constructor(player: Player, quest: Quest) : this(randomUUID(), player, quest, IN_PROGRESS, null)
 
     fun match(action: Action): Boolean = action.match(quest.criteria)
 
@@ -29,11 +29,11 @@ class Mission(
 
     fun rewardPlayer() {
         player.gainExp(quest.reward.exp)
-        state = State.CLAIMED
+        state = CLAIMED
     }
 
     fun nextMission(): Mission? {
-        if (state == State.IN_PROGRESS) {
+        if (state == IN_PROGRESS) {
             return null
         }
         return quest.nextQuest?.let { Mission(player, it) }

@@ -15,6 +15,7 @@ class Player(
     var levelUpgradeDate: OffsetDateTime = now(),
     val jdaRoles: MutableList<String> = mutableListOf(),
 ) {
+    
     init {
         calculateLevel()
     }
