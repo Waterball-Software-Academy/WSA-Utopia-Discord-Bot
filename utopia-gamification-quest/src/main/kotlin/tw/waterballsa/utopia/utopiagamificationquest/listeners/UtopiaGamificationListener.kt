@@ -53,7 +53,7 @@ open class UtopiaGamificationListener(
         }
 
     private val Mission.postMessage
-        get() = quest.reward.respond
+        get() = quest.postMessage
 
     val Mission.rewardButton: Button
         get() = button(

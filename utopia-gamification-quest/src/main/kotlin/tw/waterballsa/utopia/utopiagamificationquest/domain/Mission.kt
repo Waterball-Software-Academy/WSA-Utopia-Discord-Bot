@@ -1,7 +1,7 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain
 
-import tw.waterballsa.utopia.utopiagamificationquest.repositories.MongoRepositoryImpl.State
-import tw.waterballsa.utopia.utopiagamificationquest.repositories.MongoRepositoryImpl.State.*
+import tw.waterballsa.utopia.utopiagamificationquest.repositories.mongodb.repositoryimpl.State
+import tw.waterballsa.utopia.utopiagamificationquest.repositories.mongodb.repositoryimpl.State.*
 import java.time.LocalDateTime
 import java.time.LocalDateTime.now
 import java.util.*

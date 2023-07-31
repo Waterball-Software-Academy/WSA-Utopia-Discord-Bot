@@ -9,7 +9,6 @@ import tw.waterballsa.utopia.jda.domains.UtopiaEvent
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.QuizAction
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.Quests
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.quizQuest
-import tw.waterballsa.utopia.utopiagamificationquest.extensions.log
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.MissionRepository
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.PlayerRepository
 import tw.waterballsa.utopia.utopiagamificationquest.service.PlayerFulfillMissionsService

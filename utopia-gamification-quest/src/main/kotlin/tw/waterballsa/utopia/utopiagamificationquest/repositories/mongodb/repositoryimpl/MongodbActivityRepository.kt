@@ -1,4 +1,4 @@
-package tw.waterballsa.utopia.utopiagamificationquest.repositories.MongoRepositoryImpl
+package tw.waterballsa.utopia.utopiagamificationquest.repositories.mongodb.repositoryimpl
 
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.mongo.gateway.Document
