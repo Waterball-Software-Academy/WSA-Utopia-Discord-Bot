@@ -20,5 +20,5 @@ class QuizCriteria(
     override fun meet(action: Action) = (action as? QuizAction)?.let { meetCriteria(it) } ?: false
 
     private fun meetCriteria(action: QuizAction): Boolean =
-        action.quizName == quizName && action.score == score
+        action.quizName == quizName && action.score >= score
 }

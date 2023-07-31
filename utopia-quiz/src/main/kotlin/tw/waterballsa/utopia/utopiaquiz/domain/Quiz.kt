@@ -51,7 +51,7 @@ class Quiz(
 
     fun isOver(): Boolean {
         val isLastQuestion = answerCount >= quizDefinition.totalQuestions
-        val isTimeOver = quizTimeRange.contains(now())
+        val isTimeOver = quizTimeRange.contains(now()).not()
         return isLastQuestion || isTimeOver
     }
 }
