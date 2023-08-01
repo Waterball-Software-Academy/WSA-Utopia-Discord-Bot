@@ -26,4 +26,6 @@ class JoinActivityCriteria(
                 && action.stayDuration >= eventDuration
                 && action.eventName == eventName
     }
+
+    override fun toString(): String = "參與 $eventName 活動，至少待滿 $eventDuration 分鐘後離開活動。"
 }

@@ -57,8 +57,7 @@ class Activity(
             player,
             eventName,
             audiences.size,
-            //TODO 因為方便測試，時間單位為秒，上線前要改成分鐘
-            stayDuration.seconds.toInt()
+            stayDuration.toMinutes().toInt()
         )
     }
 

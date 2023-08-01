@@ -6,23 +6,13 @@ abstract class Action(
 
     abstract fun match(criteria: Criteria): Boolean
 
-    fun execute(criteria: Criteria) : Boolean {
-        if (criteria.meet(this)) {
-            criteria.complete()
-        }
-        return criteria.isCompleted
-    }
+    fun execute(criteria: Criteria): Boolean = criteria.meet(this)
 
     abstract class Criteria {
 
-        var isCompleted: Boolean = false
-            private set
-
-        fun complete() {
-            isCompleted = true
-        }
-
         abstract fun meet(action: Action): Boolean
+
+        open val link : String = ""
     }
 }
 

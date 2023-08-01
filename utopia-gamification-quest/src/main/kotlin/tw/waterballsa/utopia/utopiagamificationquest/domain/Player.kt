@@ -15,10 +15,13 @@ class Player(
     var levelUpgradeDate: OffsetDateTime = now(),
     val jdaRoles: MutableList<String> = mutableListOf(),
 ) {
-    
+
     init {
         calculateLevel()
     }
+
+    val currentLevelExpLimit
+        get() = getLevelExpLimit(level)
 
     fun gainExp(rewardExp: ULong) {
         exp += rewardExp

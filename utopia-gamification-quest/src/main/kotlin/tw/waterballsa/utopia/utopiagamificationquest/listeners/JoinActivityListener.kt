@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.entities.ScheduledEvent.Status
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion
 import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventCreateEvent
 import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventDeleteEvent
+import net.dv8tion.jda.api.events.guild.scheduledevent.update.GenericScheduledEventUpdateEvent
+import net.dv8tion.jda.api.events.guild.scheduledevent.update.ScheduledEventUpdateStartTimeEvent
 import net.dv8tion.jda.api.events.guild.scheduledevent.update.ScheduledEventUpdateStatusEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
 import org.springframework.stereotype.Component
@@ -71,6 +73,21 @@ class EventJoiningListener(
                 activityRepository.save(activity)
                 log.info("""[activity end] "activityId" = "$id", "activityName" = "$name"} """)
             }
+        }
+    }
+
+    override fun onGenericScheduledEventUpdate(event: GenericScheduledEventUpdateEvent<*>) {
+        with(event.scheduledEvent) {
+            activityRepository.save(
+                Activity(
+                    id,
+                    creatorIdLong.toString(),
+                    name,
+                    location,
+                    DateTimeRange(startTime.atZoneSameInstant(ZoneId.of("Asia/Taipei")).toLocalDateTime())
+                )
+            )
+            log.info("""[activity update] "activityId" = "$id", "activityName" = "$name"} """)
         }
     }
 
