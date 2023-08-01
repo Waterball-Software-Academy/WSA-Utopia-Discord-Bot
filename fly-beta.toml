@@ -6,6 +6,7 @@ kill_timeout = 5
 processes = []
 
 [env]
+DEPLOYMENT_ENV= "beta"
 
 [experimental]
 allowed_public_ports = []
