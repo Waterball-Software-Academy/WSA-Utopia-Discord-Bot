@@ -2,6 +2,7 @@
 
 app = "wsa-alpha-bot"
 kill_signal = "SIGINT"
+primary_region = "hkg"
 kill_timeout = 5
 processes = []
 
