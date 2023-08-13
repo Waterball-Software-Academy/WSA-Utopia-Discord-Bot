@@ -2,8 +2,11 @@ package tw.waterballsa.utopia.jda.extensions
 
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
+import net.dv8tion.jda.api.interactions.commands.Command
+import net.dv8tion.jda.api.interactions.commands.Command.*
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
+import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 
@@ -66,16 +69,22 @@ fun <T> GenericCommandInteractionEvent.getOptionWithValidation(name: String,
             return option
         } else {
             reply("The argument '$name' must be $optionTypeName.")
-                    .setEphemeral(true).queue()
+                .setEphemeral(true).queue()
         }
     }
     return null
 }
 
-fun SubcommandData.addRequiredOption(type: OptionType, name: String, description: String) =
-    addOption(type, name, description, true)
+fun SlashCommandData.addRequiredOption(type: OptionType, name: String, description: String, vararg choices: Choice) =
+    addOptions(
+        OptionData(type, name, description, true)
+            .addChoices(*choices)
+    )
+
+fun SubcommandData.addRequiredOption(type: OptionType, name: String, description: String, vararg choices: Choice) =
+    addOptions(
+        OptionData(type, name, description, true)
+            .addChoices(*choices)
+    )
 
 fun IReplyCallback.replyEphemerally(message: String) = reply(message).setEphemeral(true).queue()
-
-fun SlashCommandData.addRequiredOption(type: OptionType, name: String, description: String) =
-    addOption(type, name, description, true)

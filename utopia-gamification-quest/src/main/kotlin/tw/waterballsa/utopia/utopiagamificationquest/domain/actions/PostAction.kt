@@ -12,10 +12,15 @@ class PostAction(
 }
 
 class PostCriteria(
-    private val channelId: String
+    private val channelIdRule: ChannelIdRule
 ) : Action.Criteria() {
 
     override fun meet(action: Action) = (action as? PostAction)?.let { meetCriteria(it) } ?: false
 
-    private fun meetCriteria(action: PostAction): Boolean = action.channelId == channelId
+    private fun meetCriteria(action: PostAction): Boolean = channelIdRule.meet(action.channelId)
+
+    override fun toString(): String = "發一則貼文"
+
+    override val link: String
+        get() = channelIdRule.toString()
 }

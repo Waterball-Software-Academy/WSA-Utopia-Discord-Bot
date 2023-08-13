@@ -5,6 +5,7 @@ import tw.waterballsa.utopia.mongo.gateway.Document
 import tw.waterballsa.utopia.mongo.gateway.Id
 import tw.waterballsa.utopia.mongo.gateway.MongoCollection
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
+import tw.waterballsa.utopia.utopiagamificationquest.domain.State
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.Quests
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.MissionRepository
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.PlayerRepository
@@ -62,9 +63,3 @@ class MissionDocument(
     val completedTime: LocalDateTime?,
     val state: State
 )
-
-enum class State {
-    IN_PROGRESS,
-    COMPLETED,
-    CLAIMED
-}

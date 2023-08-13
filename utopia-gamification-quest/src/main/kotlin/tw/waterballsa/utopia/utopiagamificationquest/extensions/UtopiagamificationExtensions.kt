@@ -11,8 +11,22 @@ fun String.toDate(): LocalDateTime = LocalDateTime.parse(this)
 fun Mission.publishToUser(user: User): MessageCreateAction {
     val channel = user.openPrivateChannel().complete()
 
-    return channel.sendMessageEmbeds(Embed {
-        title = quest.title
-        description = quest.description
-    })
+    return channel.sendMessageEmbeds(
+        Embed {
+            title = quest.title
+            description = quest.description
+            color = 706146
+
+            field {
+                name = "任務條件"
+                //轉成 string 並去除多餘的換行
+                value = "${quest.criteria}".replace(Regex("\\n{2,}"), "\n")
+            }
+
+            field {
+                name = "任務位置"
+                value = quest.criteria.link
+                inline = true
+            }
+        })
 }

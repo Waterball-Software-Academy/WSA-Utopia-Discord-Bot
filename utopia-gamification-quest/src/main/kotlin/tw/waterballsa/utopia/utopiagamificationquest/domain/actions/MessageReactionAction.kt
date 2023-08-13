@@ -13,8 +13,9 @@ class MessageReactionAction(
 }
 
 class MessageReactionCriteria(
+    private val channelIdRule: ChannelIdRule,
     private val messageId: String,
-    private val emoji: String
+    private val emoji: String,
 ) : Action.Criteria() {
 
     override fun meet(action: Action) =
@@ -22,4 +23,9 @@ class MessageReactionCriteria(
 
     private fun meetCriteria(action: MessageReactionAction): Boolean =
         action.messageId == messageId && action.emoji == emoji
+
+    override fun toString(): String = "點選 $emoji 表情。"
+
+    override val link: String
+        get() = channelIdRule.toString()
 }

@@ -2,12 +2,9 @@ package tw.waterballsa.utopia.utopiagamificationquest.domain.quests
 
 import tw.waterballsa.utopia.utopiagamificationquest.domain.*
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.*
-import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.QuizButton
 
 private const val unlockEmoji = "🔑"
-private const val missionMessage = ">（要是你怕自己的訊息太突兀，只要在訊息的開頭加上 `#任務`，保證自在。）"
-
-fun String.toRegexRule(): RegexRule = RegexRule(this.toRegex())
+private const val missionTips = "> （要是你怕自己的訊息太突兀，只要在訊息的開頭加上 `#任務`，保證自在。）"
 
 val Quests.unlockAcademyQuest: Quest
     get() = quest {
@@ -15,15 +12,14 @@ val Quests.unlockAcademyQuest: Quest
         title = "解鎖學院"
         description =
             """
-            歡迎你加入水球軟體學院，這裡是最充實又歡樂的軟體社群！
+            **歡迎你加入水球軟體學院<:WaterBall:999330661171204177> ，這裡是最充實又歡樂的軟體社群！**
                   
-            這裡每週都有學習社團或聚會，你一定能夠在這裡找到更多屬於你的職涯意義，
-            你將會學到更多軟體技術知識乾貨，並且認識更多新朋友。
-
-            來吧，為了能夠參加學院中各式各樣的線上聚會，你需要先解鎖學院，只要點個表情符號幾秒內就能解鎖學院囉！
-            解鎖後你會獲得基礎的「學院公民」身份。
+            > 這裡每週都有學習社團或聚會，你一定能夠在這裡找到更多屬於你的職涯意義，
+            > 你將會學到更多軟體技術知識乾貨，並且認識更多新朋友。
+            > 
+            > 來吧，為了能夠參加學院中各式各樣的線上聚會，你需要先解鎖學院，只要點個表情符號幾秒內就能解鎖學院囉！
             
-            ${wsa.unlockEntryChannelId.toLink()}
+            **解鎖後你會獲得基礎的「學院公民」身份。**
             """.trimIndent()
 
         preCondition = EmptyPreCondition()
@@ -32,7 +28,11 @@ val Quests.unlockAcademyQuest: Quest
 
         periodType = PeriodType.MAIN_QUEST
 
-        criteria = MessageReactionCriteria(wsa.unlockEntryMessageId, unlockEmoji)
+        criteria = MessageReactionCriteria(
+            ChannelIdRule(wsa.unlockEntryChannelId),
+            wsa.unlockEntryMessageId,
+            unlockEmoji
+        )
 
         reward = Reward(
             100u,
@@ -50,26 +50,23 @@ val Quests.selfIntroductionQuest: Quest
         title = "自我介紹"
         description =
             """
-           來認識新朋友吧！為了讓你在學院中過得更自在一些，我會幫助你融入大家，
-           不用擔心，因此這裡設計了一些簡單的新手破冰任務！
-           
-           大家都會很友善地幫助你完成新手任務的～ 來多認識點朋友吧 ^^
-           
-           來吧！為了成為學院中的紳士，這裡要開始給你新手任務啦！
-           你的首要任務呢，是到 ${wsa.selfIntroChannelId.toLink()} 頻道中和大家簡單地自我介紹！
-           
-           在學院中，紳士們不分優劣高低更不比較經歷，因此你可以大方地介紹自己～
-           對大家而言，每當有人熱情的介紹自己時，大家反而會感到特別開心，因為終於能認識有新朋友了呢！          
-           並且呀，這個自我介紹是很有用處的，未來你隨時都能用這份自我介紹訊息來參與各種活動喔！
-           
-           請複製下方文字範本，到自我介紹頻道和大家介紹自己吧！
+            **來認識新朋友吧！為了讓你在學院中過得更自在一些，我會幫助你融入大家！**
+            > **來吧！為了成為學院中的紳士，這裡要開始給你新手任務啦！**
+            你的首要任務呢，是到 ${wsa.selfIntroChannelId.toLink()} 頻道中和大家簡單地自我介紹！
+            
+            > 不用擔心，因此這裡設計了一些簡單的新手破冰任務！
+            > 大家都會很**友善**地幫助你完成新手任務的～ 來多認識點朋友吧 ^^
+            > 在學院中，紳士們不分優劣高低更不比較經歷，因此你可以大方地介紹自己～
+            > 對大家而言，每當有人熱情的介紹自己時，大家反而會感到特別開心，因為終於能認識有新朋友了呢！          
+            > 並且呀，這個自我介紹是很有用處的，未來你隨時都能用這份自我介紹訊息來參與各種活動喔！
+            
             ```【 <你的暱稱> 】 
             **工作職位：** <工作職位>
             **公司產業：** <工作所在公司的產業類型>
             **專長：** <專長>
             **興趣：** <興趣>
-            **簡介**： <簡介，至少需填寫 50 個字>
-
+            **簡介**： <介紹一下你自己吧！>
+            
             **三件關於我的事，猜猜哪一件是假的**：
             1.
             2.
@@ -88,13 +85,18 @@ val Quests.selfIntroductionQuest: Quest
             1.0f
         )
 
-        criteria = MessageSentCriteria(ChannelIdRule(wsa.selfIntroChannelId), regexRule = getSelfIntroductionRegex())
+        criteria = MessageSentCriteria(
+            ChannelIdRule(wsa.selfIntroChannelId),
+            regexRule = getSelfIntroductionRegex()
+        )
 
         nextQuest = firstMessageActionQuest
     }
 
+fun String.toRegexRule(): RegexRule = RegexRule(this.toRegex())
+
 private fun getSelfIntroductionRegex(): RegexRule =
-    """【(.|\n)*】(.|\n)*工作職位：?(.|\n)*((公司產業：?(:)?(.|\n)*))?專長：?(.|\n)*興趣：?(.|\n)*簡介：?.{50,}(.|\n)*((三件關於我的事，猜猜哪一件是假的：?(:)?(.|\n)*))?""".toRegexRule()
+    """【(.|\n)*】(.|\n)*工作職位：?(.|\n)*((公司產業：?(:)?(.|\n)*))?專長：?(.|\n)*興趣：?(.|\n)*簡介：?.(.|\n)*((三件關於我的事，猜猜哪一件是假的：?(:)?(.|\n)*))?""".toRegexRule()
 
 val Quests.firstMessageActionQuest: Quest
     get() = quest {
@@ -107,15 +109,11 @@ val Quests.firstMessageActionQuest: Quest
             首先，${wsa.discussionAreaChannelId.toLink()} 是學院中最「閒」的頻道，紳士們在這個頻道中大聊軟體時事、八卦和各式各樣的科技話題。
             你可以在這裡分享任何你有興趣的議題，不用擔心自己是否話太多，或是怕自己想法不夠深，其他紳士夥伴很樂意與你談天說地的！
             
-            來試試看吧！到話題閒聊區中留言：「`大家好，我是剛降落的 <暱稱>，請大家多多指教！`」
-            大家都會和你打招呼的喲～
+            來試試看~到話題閒聊區中留下訊息吧!
+            範例：「`大家好，我是剛降落的 <暱稱>，請大家多多指教！`」
+            大家都會熱情地和你打招呼的喲～
             
-            $missionMessage
-            
-            請複製下方文字範本，到話題閒聊區和大家交流吧！
-            ```
-            大家好，我是剛降落的<暱稱>，請大家多多指教！
-            ```  
+            $missionTips
             """.trimIndent()
 
         preCondition = QuestIdPreCondition(2)
@@ -130,14 +128,13 @@ val Quests.firstMessageActionQuest: Quest
             1.0f
         )
 
-        criteria = MessageSentCriteria(ChannelIdRule(wsa.discussionAreaChannelId))
+        criteria = MessageSentCriteria(
+            ChannelIdRule(wsa.discussionAreaChannelId)
+        )
 
         nextQuest = SendContainsImageMessageInEngineerLifeChannelQuest
 
     }
-
-private fun getNewbieConversationRegex(): RegexRule =
-    """(大家好，我是剛降落的)(.+)(，請大家多多指教！)""".toRegexRule()
 
 val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
     get() = quest {
@@ -152,9 +149,9 @@ val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
             
             上班辛苦了，在生活層面上，我們也要好好享受才行。
             
-            $missionMessage
-            """.trimIndent()
+            $missionTips
 
+            """.trimIndent()
         preCondition = QuestIdPreCondition(3)
 
         roleType = RoleType.WSA_MEMBER
@@ -167,7 +164,10 @@ val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
             1.0f
         )
 
-        criteria = MessageSentCriteria(ChannelIdRule(wsa.engineerLifeChannelId), hasImageRule = BooleanRule.TRUE)
+        criteria = MessageSentCriteria(
+            ChannelIdRule(wsa.engineerLifeChannelId),
+            hasImageRule = BooleanRule.TRUE
+        )
 
         nextQuest = ReplyToAnyoneInCareerAdvancementTopicChannelQuest
     }
@@ -186,7 +186,8 @@ val Quests.ReplyToAnyoneInCareerAdvancementTopicChannelQuest: Quest
         所以來試試看吧！試著和大家分享一下自己眼下遇到的「職涯煩惱」。
         如果你沒有煩惱的話，也能夠簡單地在頻道中回覆某則訊息，給予他人建議、或是最簡單的給予他人稱讚或認可。
         
-        $missionMessage
+        $missionTips
+
             """.trimIndent()
 
         preCondition = QuestIdPreCondition(4)
@@ -202,7 +203,10 @@ val Quests.ReplyToAnyoneInCareerAdvancementTopicChannelQuest: Quest
         )
 
         criteria =
-            MessageSentCriteria(ChannelIdRule(wsa.careerAdvancementTopicChannelId), hasRepliedRule = BooleanRule.TRUE)
+            MessageSentCriteria(
+                ChannelIdRule(wsa.careerAdvancementTopicChannelId),
+                hasRepliedRule = BooleanRule.TRUE
+            )
 
         nextQuest = watchVideoQuest
     }
@@ -218,7 +222,8 @@ val Quests.watchVideoQuest: Quest
             
             水球軟體學院也是以這個為願景去打造的，院長非常認真地帶領社群幹部打造了各種線上聚會和節目，所以如果你在加入學院之後，感覺「自己突然變得好充實啊！！」是一件非常正常的事情，千萬不要客氣 ^^
             
-            這個任務非常簡單，請你在 ${wsa.featuredVideosChannelId.toLink()} 論壇中，找一部精華影片來看，並在留言區留下你的觀影心得，或是任何一種支持或想法都可以喔！       
+            這個任務非常簡單，請你在 ${wsa.featuredVideosChannelId.toLink()} 論壇中，找一部精華影片來看，並在留言區留下你的觀影心得，或是任何一種支持或想法都可以喔！
+   
         """.trimIndent()
 
         reward = Reward(
@@ -233,7 +238,9 @@ val Quests.watchVideoQuest: Quest
 
         periodType = PeriodType.MAIN_QUEST
 
-        criteria = MessageSentCriteria(ChannelIdRule(wsa.featuredVideosChannelId))
+        criteria = MessageSentCriteria(
+            ChannelIdRule(wsa.featuredVideosChannelId)
+        )
 
         nextQuest = flagPostQuest
     }
@@ -253,8 +260,9 @@ val Quests.flagPostQuest: Quest
             
             如果你也有自己的創作想分享，也能夠和純函式的 Vincent 一樣 ${wsa.flagPostGuideId.toLink()} ，開一個串來固定分享自己的產品開發日誌，即便是業配也沒關係的，勇於分享軟體創作是一件好事！
             
-            所以請你練習看看，先開一個屬於你的「個人串」吧，並且貼文的名稱要打上 `<你的暱稱>`。
-            """.trimIndent() //TODO: 尚未將暱稱條件加入 criteria
+            所以請你練習看看，先開一個屬於你的「個人串」吧。
+
+            """.trimIndent() //TODO: 尚未將暱稱條件加入 criteria ，並且貼文的名稱要打上 `<你的暱稱>`
 
         preCondition = QuestIdPreCondition(6)
 
@@ -267,7 +275,9 @@ val Quests.flagPostQuest: Quest
             100u,
             1.0f
         )
-        criteria = PostCriteria(wsa.flagPostChannelId)
+        criteria = PostCriteria(
+            ChannelIdRule(wsa.flagPostChannelId)
+        )
 
         nextQuest = SendMessageInVoiceChannelQuest
     }
@@ -286,7 +296,8 @@ val Quests.SendMessageInVoiceChannelQuest: Quest
             完全不要害羞，直接進去「吃瓜」吧！
             想吃瓜就吃瓜，完全不用經過該語音頻道「與會者」的同意的，「被吃瓜」是大家早就能預期的事了 XD
             
-            很好玩吧！給你一個挑戰，加入「超過 2 人」的任意社團會議間語音頻道中，並在該語音頻道的訊息區發表 1 則訊息（可以和大家打招呼，或是問問大家在幹什麼）。            
+            很好玩吧！給你一個挑戰，加入「超過 1 人」的任意語音頻道中，並在該語音頻道的訊息區發表 1 則訊息（可以和大家打招呼，或是問問大家在幹什麼）。 
+                       
             """.trimIndent()
 
         reward = Reward(
@@ -301,8 +312,11 @@ val Quests.SendMessageInVoiceChannelQuest: Quest
 
         periodType = PeriodType.MAIN_QUEST
 
-        //TODO 方便測試，先把需求人數改成 1 個人
-        criteria = MessageSentCriteria(ChannelIdRule.ANY_CHANNEL, numberOfVoiceChannelMembersRule = AtLeastRule(1))
+        criteria = MessageSentCriteria(
+            ChannelIdRule.ANY_CHANNEL,
+            //TODO
+            numberOfVoiceChannelMembersRule = AtLeastRule(1)
+        )
 
         nextQuest = JoinActivityQuest
     }
@@ -310,10 +324,13 @@ val Quests.SendMessageInVoiceChannelQuest: Quest
 val Quests.JoinActivityQuest: Quest
     get() = quest {
         id = 9
-        title = "任務:參加一場活動"
+        title = "參與院長主持的學院節目"
         description =
             """
-            參與名稱為 test 的活動，並停留 10 秒
+            在水球軟體學院中，每週都會有 3~5 個線上聚會，之前在全盛時期甚至一週有 7~10 個活動呢！（軟體英文派對、Amazon 共學會、遊戲微服務計畫（軟體工程讀書會）、純函式話題聚會、人工智慧共學會、Spring Boot 培訓班、水球遊戲微服務計畫實況、Leetcode 刷題屠龍會⋯⋯）
+            我想邀請你參與學院中最穩定長跑的節目，也就是週六院長主持的「遊戲微服務計畫：水球實況」。在過去的 40 場節目中就平均有 90 幾位觀眾參與，是非常熱血和高含金量的節目，主要在討論「軟體工程各大方法論的實務運用，並且以線上遊戲作為示範」。
+            想一睹學院各種節目主持的風采嗎？先參加一次「遊戲微服務計畫：水球實況」並和大家一起線上嗨吧！學習就是要和大家一起吃瓜的啦～！ 
+            
             """.trimIndent()
 
         reward = Reward(
@@ -322,7 +339,8 @@ val Quests.JoinActivityQuest: Quest
             1.0f
         )
 
-        criteria = JoinActivityCriteria("test", 1, 10)
+//        criteria = JoinActivityCriteria("遊戲微服務計畫：水球實況", 60, 40)
+        criteria = JoinActivityCriteria("test", 1, 1)
         nextQuest = quizQuest
     }
 
@@ -340,8 +358,8 @@ val Quests.quizQuest: Quest
             考試並不難，理解水球軟體學院的願景和文化，也會讓你更能聽得懂社群中的一些「內梗」和幽默喔！
             趕緊試試看吧！
             
-            到學院指令區輸入以下指令吧！
-            [ /quiz 紳士考題 ]
+            考試時間為 10 分鐘，到學院指令區輸入以下指令吧！ 
+            [ /quiz name: 紳士考題 ] 
             """.trimIndent()
 
         preCondition = QuestIdPreCondition(8)
@@ -356,6 +374,5 @@ val Quests.quizQuest: Quest
             1.0f
         )
 
-        criteria = QuizCriteria("紳士考題", 60)
-
+        criteria = QuizCriteria("紳士考題", 4, 5)
     }

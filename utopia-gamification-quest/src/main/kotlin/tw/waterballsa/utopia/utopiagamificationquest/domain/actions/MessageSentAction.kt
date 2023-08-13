@@ -27,7 +27,6 @@ class MessageSentCriteria(
     private val regexRule: RegexRule = RegexRule.IGNORE,
     private val numberOfVoiceChannelMembersRule: AtLeastRule = AtLeastRule.IGNORE,
 ) : Action.Criteria() {
-    private val rules = listOf(channelIdRule, hasRepliedRule, hasImageRule, regexRule, numberOfVoiceChannelMembersRule)
 
     override fun meet(action: Action) =
         (action as? MessageSentAction)?.let { meetCriteria(it) } ?: false
@@ -38,6 +37,17 @@ class MessageSentCriteria(
                 && hasImageRule.meet(action.hasImage)
                 && regexRule.meet(action.context)
                 && numberOfVoiceChannelMembersRule.meet(action.numberOfVoiceChannelMembers)
+
+    override fun toString(): String = """
+        發送一則訊息。
+        ${hasRepliedRule.toString("一定要回覆訊息", "不能回覆訊息")}
+        ${hasImageRule.toString("一定要包含一張圖片", "不能包含任意圖片")}
+        $regexRule
+        ${numberOfVoiceChannelMembersRule.toString("人")}
+        """.trimIndent()
+
+    override val link: String
+        get() = channelIdRule.toString()
 }
 
 class ChannelIdRule(private val channelId: String) {
@@ -46,6 +56,8 @@ class ChannelIdRule(private val channelId: String) {
     }
 
     fun meet(actionChannelId: String): Boolean = actionChannelId.contains(channelId)
+
+    override fun toString(): String = if (channelId == "") "" else "<#$channelId>"
 }
 
 enum class BooleanRule(private val value: Boolean?) {
@@ -54,6 +66,9 @@ enum class BooleanRule(private val value: Boolean?) {
     FALSE(false);
 
     fun meet(value: Boolean): Boolean = this.value?.let { it == value } ?: true
+
+    fun toString(trueMessage: String, falseMessage: String): String =
+        value?.let { if (it) trueMessage else falseMessage } ?: ""
 }
 
 class RegexRule(private val regex: Regex) {
@@ -62,6 +77,8 @@ class RegexRule(private val regex: Regex) {
     }
 
     fun meet(context: String): Boolean = context matches regex
+
+    override fun toString(): String = if(regex.pattern != ".*") "有指定格式" else ""
 }
 
 class AtLeastRule(
@@ -72,4 +89,6 @@ class AtLeastRule(
     }
 
     fun meet(count: Int): Boolean = count >= number
+
+    fun toString(unitMessage : String): String = if(number != 0) "至少 $number $unitMessage" else ""
 }

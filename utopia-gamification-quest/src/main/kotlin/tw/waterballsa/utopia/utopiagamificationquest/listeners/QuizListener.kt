@@ -1,17 +1,23 @@
 package tw.waterballsa.utopia.utopiagamificationquest.listeners
 
+import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.domains.QuizEndEvent
 import tw.waterballsa.utopia.jda.domains.QuizPreparationStartEvent
 import tw.waterballsa.utopia.jda.domains.UtopiaEvent
+import tw.waterballsa.utopia.utopiagamificationquest.domain.Quest
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.QuizAction
+import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.QuizCriteria
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.Quests
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.quizQuest
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.MissionRepository
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.PlayerRepository
 import tw.waterballsa.utopia.utopiagamificationquest.service.PlayerFulfillMissionsService
+import kotlin.properties.Delegates
+
+private val log = KotlinLogging.logger {}
 
 @Component
 class QuizListener(
@@ -46,15 +52,19 @@ class QuizListener(
             .any { it.quest.title == quests.quizQuest.title }
 
     private fun onQuizEnd(event: QuizEndEvent) {
-        val user = jda.retrieveUserById(event.quizTakerId).complete() ?: return
-        val player = user.toPlayer() ?: return
+        with(event) {
+            val user = jda.retrieveUserById(quizTakerId).complete() ?: return
+            val player = user.toPlayer() ?: return
 
-        val action = QuizAction(
-            player,
-            event.quizName,
-            event.score
-        )
+            val action = QuizAction(
+                player,
+                quizName,
+                correctCount
+            )
 
-        playerFulfillMissionsService.execute(action, user.claimMissionRewardPresenter)
+            log.info { """[quiz end] { quizTakerId : "$quizTakerId", quizName : "$quizName", correctCount : "$correctCount" } """ }
+
+            playerFulfillMissionsService.execute(action, user.claimMissionRewardPresenter)
+        }
     }
 }

@@ -1,24 +1,16 @@
 package tw.waterballsa.utopia.jda.domains
 
-class QuizPreparationStartEvent(
+abstract class QuizPreparationStartEvent(
     val quizTakerId: String,
-    private val quizCallback: QuizCallback,
 ) : UtopiaEvent {
 
-    fun startQuiz() = quizCallback.startQuiz()
-    
-    fun reply(message: String) = quizCallback.reply(message)
+    abstract fun startQuiz()
+
+    abstract fun reply(message: String)
 }
-
-interface QuizCallback {
-
-    fun startQuiz()
-    fun reply(message: String)
-}
-
 
 class QuizEndEvent(
     val quizTakerId: String,
     val quizName: String,
-    val score: Int
+    val correctCount: Int
 ) : UtopiaEvent

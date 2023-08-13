@@ -31,18 +31,20 @@ class SlashCommandListener(
                 return
             }
 
+            deferReply().setEphemeral(true).queue()
+
             val player = user.toPlayer() ?: return
 
             val request = PlayerAcceptQuestService.Request(player, quests.unlockAcademyQuest)
 
             val presenter = object : PlayerAcceptQuestService.Presenter {
                 override fun presentPlayerHasAcquiredMission() {
-                    replyEphemerally("已獲得新手任務，無法再次獲得。")
+                    hook.editOriginal("已獲得新手任務，無法再次獲得。").queue()
                 }
 
                 override fun presentPlayerAcquiresMission(mission: Mission) {
                     mission.publishToUser(user).queue()
-                    replyEphemerally("已經接取第一個任務，去私訊查看任務內容。")
+                    hook.editOriginal("已經接取第一個任務，去私訊查看任務內容。").queue()
                 }
             }
 
