@@ -5,6 +5,11 @@
 |:--------:| --------- | --------------------------- |
 |   1a2b   |           | Start a new guess num game. |
 
+## rock-paper-scissors
+|      Commands       | Arguments | Description                           |
+|:-------------------:| --------- | ------------------------------------- |
+| rock-paper-scissors |           | start a new rock paper scissors game! |
+
 ## gaas
 |        Commands        | Arguments                                                                                          | Description                                          |
 |:----------------------:| -------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
@@ -38,15 +43,15 @@
 |:--------------:| ---------------------------------------------------------------------------------------------------------- | ----------- |
 | random lottery | number(INTEGER): Number of choose members per room.<br>role(ROLE): Only select specific role in this round | Lottery     |
 
-## utopia
-| Commands | Arguments | Description    |
-|:--------:| --------- | -------------- |
-|  utopia  |           | utopia command |
-
 ## roulette
 | Commands | Arguments | Description     |
 |:--------:| --------- | --------------- |
 | roulette |           | Start the game. |
+
+## utopia
+| Commands | Arguments | Description    |
+|:--------:| --------- | -------------- |
+|  utopia  |           | utopia command |
 
 ## message
 |        Commands        | Arguments                                                                                                               | Description                               |
