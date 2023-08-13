@@ -296,7 +296,7 @@ val Quests.SendMessageInVoiceChannelQuest: Quest
             完全不要害羞，直接進去「吃瓜」吧！
             想吃瓜就吃瓜，完全不用經過該語音頻道「與會者」的同意的，「被吃瓜」是大家早就能預期的事了 XD
             
-            很好玩吧！給你一個挑戰，加入「超過 1 人」的任意語音頻道中，並在該語音頻道的訊息區發表 1 則訊息（可以和大家打招呼，或是問問大家在幹什麼）。 
+            很好玩吧！給你一個挑戰，加入「超過 2 人」的任意語音頻道中，並在該語音頻道的訊息區發表 1 則訊息（可以和大家打招呼，或是問問大家在幹什麼）。 
                        
             """.trimIndent()
 
@@ -314,8 +314,7 @@ val Quests.SendMessageInVoiceChannelQuest: Quest
 
         criteria = MessageSentCriteria(
             ChannelIdRule.ANY_CHANNEL,
-            //TODO
-            numberOfVoiceChannelMembersRule = AtLeastRule(1)
+            numberOfVoiceChannelMembersRule = AtLeastRule(2)
         )
 
         nextQuest = JoinActivityQuest
@@ -339,8 +338,7 @@ val Quests.JoinActivityQuest: Quest
             1.0f
         )
 
-//        criteria = JoinActivityCriteria("遊戲微服務計畫：水球實況", 60, 40)
-        criteria = JoinActivityCriteria("test", 1, 1)
+        criteria = JoinActivityCriteria("遊戲微服務計畫：水球實況", 60, 40)
         nextQuest = quizQuest
     }
 
