@@ -36,6 +36,7 @@
         <module>utopia-quiz</module>
         <module>message-cherry-pick</module>
         <module>weekly-messages-volume</module>
+        <module>contact-center</module>
     </modules>
 
     <properties>
@@ -280,6 +281,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>weekly-messages-volume</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>contact-center</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>

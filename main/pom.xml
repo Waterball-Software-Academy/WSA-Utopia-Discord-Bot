@@ -109,6 +109,10 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>weekly-messages-volume</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>contact-center</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

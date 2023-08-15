@@ -22,31 +22,36 @@
 |:--------:| --------- | ----------- |
 |   ping   |           | sends pong  |
 
+## utopia
+| Commands | Arguments | Description    |
+|:--------:| --------- | -------------- |
+|  utopia  |           | utopia command |
+
 ## mute
 |    Commands    | Arguments                                                             | Description    |
 |:--------------:| --------------------------------------------------------------------- | -------------- |
 | mute audiences | audience(USER): Allow who to voice<br>role(ROLE): Allow role to voice | Mute Audiences |
 |  mute revoked  |                                                                       | Unmute         |
 
-## audience
-|     Commands     | Arguments                                            | Description                                    |
-|:----------------:| ---------------------------------------------------- | ---------------------------------------------- |
-| audience counter | time-length(INTEGER): Time is calculated in minutes. | count the resent voice channel audience amount |
-
 ## random
 |    Commands    | Arguments                                                                                                  | Description |
 |:--------------:| ---------------------------------------------------------------------------------------------------------- | ----------- |
 | random lottery | number(INTEGER): Number of choose members per room.<br>role(ROLE): Only select specific role in this round | Lottery     |
 
-## utopia
-| Commands | Arguments | Description    |
-|:--------:| --------- | -------------- |
-|  utopia  |           | utopia command |
+## rock-paper-scissors
+|      Commands       | Arguments | Description                           |
+|:-------------------:| --------- | ------------------------------------- |
+| rock-paper-scissors |           | start a new rock paper scissors game! |
 
 ## roulette
 | Commands | Arguments | Description     |
 |:--------:| --------- | --------------- |
 | roulette |           | Start the game. |
+
+## quiz
+| Commands | Arguments                                 | Description          |
+|:--------:| ----------------------------------------- | -------------------- |
+|   quiz   | name(STRING): The quiz you want to start. | The quiz for utopia. |
 
 ## message
 |        Commands        | Arguments                                                                                                               | Description                               |
@@ -59,7 +64,7 @@
 |:----------------------:| -------------------------------------------------------------------- | ---------------------------------------------- |
 | weekly-messages-volume | channel-name(STRING): The channel to show the weekly messages volume | Show the weekly messages volume of the channel |
 
-## quiz
-| Commands | Arguments                                 | Description          |
-|:--------:| ----------------------------------------- | -------------------- |
-|   quiz   | name(STRING): The quiz you want to start. | The quiz for utopia. |
+## audience
+|     Commands     | Arguments                                            | Description                                    |
+|:----------------:| ---------------------------------------------------- | ---------------------------------------------- |
+| audience counter | time-length(INTEGER): Time is calculated in minutes. | count the resent voice channel audience amount |
