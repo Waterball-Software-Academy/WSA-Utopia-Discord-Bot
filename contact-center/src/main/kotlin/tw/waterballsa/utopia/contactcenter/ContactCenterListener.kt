@@ -42,8 +42,8 @@ class ContactCenterListener(
                     .sendMessage(jda.getRoleById(alphaBufferRoleId)!!.asMention)
                     .addEmbeds(
                         Embed {
-                            title = "收到檢舉！"
-                            description = "喵球目前收到了一件客服唷！火速支援！".trimIndent()
+                            title = "休但幾咧"
+                            description = "有人不喜歡這則留言！火速支援！"
                             color = redDecimal
                             field {
                                 name = "訊息連結🔗"
