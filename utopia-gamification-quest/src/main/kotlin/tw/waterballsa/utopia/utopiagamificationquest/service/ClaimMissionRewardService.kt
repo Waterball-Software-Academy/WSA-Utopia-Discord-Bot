@@ -12,7 +12,7 @@ class ClaimMissionRewardService(
 
     fun execute(request: Request, presenter: Presenter) {
         with(request) {
-            val mission = missionRepository.findMissionByQuestId(player.id, questId.toInt()) ?: return
+            val mission = missionRepository.findPlayerMissionByQuestId(player.id, questId.toInt()) ?: return
 
             if (!mission.isCompleted()) {
                 return

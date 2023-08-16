@@ -55,11 +55,20 @@
 | message cherry-pick-to | channel-name(STRING): destination of channel name                                                                       | to cherry pick message to another channel |
 
 ## weekly-messages-volume
+
 |        Commands        | Arguments                                                            | Description                                    |
 |:----------------------:| -------------------------------------------------------------------- | ---------------------------------------------- |
 | weekly-messages-volume | channel-name(STRING): The channel to show the weekly messages volume | Show the weekly messages volume of the channel |
 
 ## quiz
+
 | Commands | Arguments                                 | Description          |
 |:--------:| ----------------------------------------- | -------------------- |
 |   quiz   | name(STRING): The quiz you want to start. | The quiz for utopia. |
+
+## hotfix
+
+|      Commands      | Arguments                  | Description              |
+|:------------------:| -------------------------- | ------------------------ |
+| hotfix mission-log | player(USER): quest player | find repository state    |
+|    hotfix check    |                            | check mission state fail |

@@ -3,6 +3,7 @@ package tw.waterballsa.utopia.utopiagamificationquest.repositories.mongodb.repos
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.mongo.gateway.*
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
+import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import tw.waterballsa.utopia.utopiagamificationquest.domain.State
 import tw.waterballsa.utopia.utopiagamificationquest.domain.State.*
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.Quests
@@ -18,7 +19,7 @@ class MongodbMissionRepository(
     private val quests: Quests
 ) : MissionRepository {
 
-    override fun findMissionByQuestId(playerId: String, questId: Int): Mission? = repository.find(
+    override fun findPlayerMissionByQuestId(playerId: String, questId: Int): Mission? = repository.find(
         Query(
             Criteria("playerId").`is`(playerId).and("questId").`is`(questId)
         )
@@ -36,6 +37,14 @@ class MongodbMissionRepository(
         )
     ).map { it.toDomain() }
 
+    override fun findAllByQuestId(questId: Int): List<Mission> {
+        return repository.find(
+            Query(
+                Criteria("questId").`is`(questId)
+            )
+        ).map { it.toDomain() }
+    }
+
     override fun saveMission(mission: Mission): Mission {
         playerRepository.savePlayer(mission.player)
         repository.save(mission.toDocument())
@@ -44,7 +53,8 @@ class MongodbMissionRepository(
 
     // TODO 等到 @DBRef 功能上線後，將 playerId 改成 player，讓 MongoDB 協助 join
     private fun MissionDocument.toDomain(): Mission {
-        val player = playerRepository.findPlayerById(playerId) ?: throw RuntimeException("not find player")
+//        val player = playerRepository.findPlayerById(playerId) ?: throw RuntimeException("not find player")
+        val player = playerRepository.findPlayerById(playerId) ?: playerRepository.savePlayer(Player(playerId, "null"))
         val quest = quests.findById(questId)
         return Mission(fromString(id), player, quest, state, completedTime)
     }
