@@ -5,7 +5,6 @@ import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Quest
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.MissionRepository
-import tw.waterballsa.utopia.utopiagamificationquest.repositories.MissionRepository.*
 
 
 @Component
@@ -25,7 +24,7 @@ class PlayerAcceptQuestService(
     }
 
     private fun Request.isMissionAcquired(): Boolean =
-        missionRepository.findMission(Query(player.id, questTitle = quest.title)) != null
+        missionRepository.findMissionByQuestId(player.id, quest.id) != null
 
     class Request(
         val player: Player,

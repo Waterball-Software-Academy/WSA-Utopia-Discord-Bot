@@ -4,11 +4,20 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
-import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.BUTTON_QUEST_TAG
-import tw.waterballsa.utopia.utopiagamificationquest.domain.buttons.RewardButton
 import tw.waterballsa.utopia.utopiagamificationquest.extensions.publishToUser
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.PlayerRepository
 import tw.waterballsa.utopia.utopiagamificationquest.service.ClaimMissionRewardService
+
+const val BUTTON_QUEST_TAG = "quest"
+
+class RewardButton {
+    companion object {
+        const val NAME = "rewardButton"
+        const val LABEL: String = "領取獎勵"
+
+        fun id(questId: Int): String = "$BUTTON_QUEST_TAG-$NAME-$questId"
+    }
+}
 
 @Component
 class UtopiaGamificationQuestListener(
@@ -19,7 +28,7 @@ class UtopiaGamificationQuestListener(
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         with(event) {
-            val (buttonTag, buttonName, questTitle) = splitButtonId("-").ifEmpty { return }
+            val (buttonTag, buttonName, questId) = splitButtonId("-").ifEmpty { return }
 
             if (buttonTag != BUTTON_QUEST_TAG && buttonName != RewardButton.NAME) {
                 return
@@ -29,7 +38,7 @@ class UtopiaGamificationQuestListener(
 
             val player = user.toPlayer() ?: return
 
-            val request = ClaimMissionRewardService.Request(player, questTitle)
+            val request = ClaimMissionRewardService.Request(player, questId)
             val presenter = object : ClaimMissionRewardService.Presenter {
                 override fun presentMission(mission: Mission) {
                     publishPlayerExpNotification(mission)

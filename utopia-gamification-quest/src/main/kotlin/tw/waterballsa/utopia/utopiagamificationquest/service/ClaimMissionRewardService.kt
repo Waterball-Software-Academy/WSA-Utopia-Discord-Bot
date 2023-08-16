@@ -4,16 +4,16 @@ import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Player
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.MissionRepository
-import tw.waterballsa.utopia.utopiagamificationquest.repositories.MissionRepository.Query
 
 @Component
 class ClaimMissionRewardService(
-    private val missionRepository: MissionRepository
+    private val missionRepository: MissionRepository,
 ) {
 
     fun execute(request: Request, presenter: Presenter) {
         with(request) {
-            val mission = missionRepository.findMission(Query(player.id, true, questTitle)) ?: return
+            val mission = missionRepository.findMissionByQuestId(player.id, questId.toInt()) ?: return
+
             if (!mission.isCompleted()) {
                 return
             }
@@ -25,6 +25,7 @@ class ClaimMissionRewardService(
             presenter.presentMission(mission)
 
             mission.nextMission()?.let { nextMission ->
+
                 missionRepository.saveMission(nextMission)
                 presenter.presentNextMission(nextMission)
             }
@@ -33,7 +34,7 @@ class ClaimMissionRewardService(
 
     class Request(
         val player: Player,
-        val questTitle: String
+        val questId: String
     )
 
     interface Presenter {
