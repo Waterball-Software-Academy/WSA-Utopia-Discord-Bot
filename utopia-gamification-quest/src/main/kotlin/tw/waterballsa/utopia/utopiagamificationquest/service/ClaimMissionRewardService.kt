@@ -15,6 +15,7 @@ class ClaimMissionRewardService(
             val mission = missionRepository.findPlayerMissionByQuestId(player.id, questId.toInt()) ?: return
 
             if (!mission.isCompleted()) {
+                presenter.presentRewardsNotAllowed(mission)
                 return
             }
 
@@ -22,7 +23,7 @@ class ClaimMissionRewardService(
 
             missionRepository.saveMission(mission)
 
-            presenter.presentMission(mission)
+            presenter.presentPlayerExpNotification(mission)
 
             mission.nextMission()?.let { nextMission ->
 
@@ -38,7 +39,8 @@ class ClaimMissionRewardService(
     )
 
     interface Presenter {
-        fun presentMission(mission: Mission)
+        fun presentPlayerExpNotification(mission: Mission)
         fun presentNextMission(mission: Mission)
+        fun presentRewardsNotAllowed(mission: Mission)
     }
 }

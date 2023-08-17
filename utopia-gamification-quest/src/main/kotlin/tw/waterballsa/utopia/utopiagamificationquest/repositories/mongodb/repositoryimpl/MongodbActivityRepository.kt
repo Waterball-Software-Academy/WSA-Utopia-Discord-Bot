@@ -3,7 +3,7 @@ package tw.waterballsa.utopia.utopiagamificationquest.repositories.mongodb.repos
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.mongo.gateway.*
 import tw.waterballsa.utopia.utopiagamificationquest.domain.*
-import tw.waterballsa.utopia.utopiagamificationquest.domain.AudienceState.*
+import tw.waterballsa.utopia.utopiagamificationquest.domain.Activity.ActivityState.*
 import tw.waterballsa.utopia.utopiagamificationquest.extensions.toDate
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.ActivityRepository
 
@@ -13,23 +13,19 @@ class MongodbActivityRepository(
     private val repository: MongoCollection<ActivityDocument, String>
 ) : ActivityRepository {
 
-    override fun findInProgressActivitiesByChannelId(id: String): Activity? {
-        return repository.find(
-            Query(
-                Criteria("channelId").`is`(id).and("state").`is`(ActivityState.ACTIVE)
-            )
-        ).firstOrNull()?.toDomain()
-    }
+    override fun findInProgressActivityByChannelId(id: String): Activity? = repository.find(
+        Query(
+            Criteria("channelId").`is`(id).and("state").`is`(ACTIVE)
+        )
+    ).firstOrNull()?.toDomain()
 
-    override fun findAudienceStayedActivity(channelId: String, audienceId: String): Activity? {
-        return repository.find(
-            Query(
-                Criteria("channelId").`is`(channelId)
-                    .and("audiences.id").`is`(audienceId)
-                    .and("audiences.state").`is`(STAY)
-            )
-        ).firstOrNull()?.toDomain()
-    }
+    override fun findAudienceStayActivity(channelId: String, audienceId: String): Activity? = repository.find(
+        Query(
+            Criteria("channelId").`is`(channelId)
+                .and("audiences.id").`is`(audienceId)
+                .and("audiences.state").`is`(Audience.AudienceState.STAY)
+        )
+    ).firstOrNull()?.toDomain()
 
     override fun findByActivityId(id: String): Activity? = repository.findOne(id)?.toDomain()
 
@@ -72,7 +68,7 @@ class ActivityDocument(
     val hostId: String,
     val eventName: String,
     val channelId: String,
-    val state: ActivityState,
+    val state: Activity.ActivityState,
     val startTime: String,
     val endTime: String,
     val audiences: List<AudienceDocument>
@@ -80,7 +76,7 @@ class ActivityDocument(
 
 class AudienceDocument(
     val id: String,
-    val state: AudienceState,
+    val state: Audience.AudienceState,
     val startTime: String,
     val endTime: String,
 )

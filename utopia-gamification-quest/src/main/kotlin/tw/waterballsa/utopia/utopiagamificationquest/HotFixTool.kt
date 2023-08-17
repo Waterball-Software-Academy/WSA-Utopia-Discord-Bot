@@ -17,26 +17,27 @@ const val FIND_COMMAND_NAME = "mission-log"
 const val FIND_OPTION_NAME = "player"
 const val CHECK_COMMAND_NAME = "check"
 
-@Component
+//只能使用在 local 端。
+//@Component
 class HotFixTool(
     guild: Guild,
     playerRepository: PlayerRepository,
     private val missionRepository: MissionRepository
 ) : UtopiaGamificationListener(guild, playerRepository) {
-    override fun commands(): List<CommandData> {
-        return listOf(
-            Commands.slash(COMMAND_NAME, "it is tools of fix quest system error")
-                .addSubcommands(
-                    SubcommandData(FIND_COMMAND_NAME, "find repository state")
-                        .addOption(OptionType.USER, FIND_OPTION_NAME, "quest player", true),
-                    SubcommandData(CHECK_COMMAND_NAME, "check mission state fail"),
-                )
-        )
-    }
+
+    override fun commands(): List<CommandData> = listOf(
+        Commands.slash(COMMAND_NAME, "it is tools of fix quest system error")
+            .addSubcommands(
+                SubcommandData(FIND_COMMAND_NAME, "find repository state")
+                    .addOption(OptionType.USER, FIND_OPTION_NAME, "quest player", true),
+                SubcommandData(CHECK_COMMAND_NAME, "check mission state fail"),
+            )
+    )
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         with(event) {
             val commandInfo = fullCommandName.split(" ")
+
             if (commandInfo.first() != COMMAND_NAME) {
                 return
             }
@@ -65,7 +66,7 @@ class HotFixTool(
         }
 
         missions.forEach {
-            result += "${it.quest.title}(${it.quest.id}) : state -> ${it.state}\n"
+            result += "${it.quest.title}(${it.quest.id}) : state -> ${it.state}, date -> ${it.completedTime}\n"
         }
 
         result += "--------------------------------------------\n"
@@ -79,16 +80,27 @@ class HotFixTool(
         val isOk = mutableListOf<String>()
         val notOK = mutableListOf<String>()
         val workerRound = mutableListOf<String>()
+        val questProgressRate = mutableMapOf<Int, MutableList<String>>()
+
+        (10 downTo 1).forEach {
+            questProgressRate[it] = mutableListOf()
+        }
 
         missionRepository.findAllByQuestId(10).forEach {
             isOk.add(it.player.id)
             workerRound.add(it.player.id)
+            if (it.state == State.COMPLETED) {
+                questProgressRate.getOrDefault(10, mutableListOf()).add(it.player.id)
+            }
         }
 
         (9 downTo 1).forEach {
             val missions = missionRepository.findAllByQuestId(it)
 
             missions.forEach { mission ->
+                if (mission.state == State.COMPLETED) {
+                    questProgressRate.getOrDefault(it, mutableListOf()).add(mission.player.id)
+                }
                 if (isOk.contains(mission.player.id).not() && notOK.contains(mission.player.id).not()) {
                     if (mission.state == State.IN_PROGRESS || mission.state == State.COMPLETED) {
                         isOk.add(mission.player.id)
@@ -99,11 +111,20 @@ class HotFixTool(
             }
         }
 
-        val notOkUsers = notOK.map { jda.retrieveUserById(it).complete() }
-        val users = workerRound.map { jda.retrieveUserById(it).complete() }
+        val rank = questProgressRate.map {
+            it.key to it.value.map { id ->
+                playerRepository.findPlayerById(id)?.name ?: id
+            }
+        }
 
-        hook.editOriginal("total count: ${notOK.size + isOk.size}\n" + notOkUsers.joinToString { it.effectiveName + '\n' } + "----------------\n" + users.joinToString { it.effectiveName + '\n' })
-            .queue()
-
+        hook.editOriginal(
+            """
+            not ok count: ${notOK.size}
+            is ok count: ${isOk.size}
+            --------------------------------------------------
+            $rank
+            --------------------------------------------------
+            """.trimIndent()
+        ).queue()
     }
 }

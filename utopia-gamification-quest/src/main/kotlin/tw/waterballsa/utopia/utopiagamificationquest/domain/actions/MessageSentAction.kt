@@ -78,7 +78,7 @@ class RegexRule(private val regex: Regex) {
 
     fun meet(context: String): Boolean = context matches regex
 
-    override fun toString(): String = if (regex.pattern != "[\\s\\S]*") "有指定格式" else ""
+    override fun toString(): String = if (this != IGNORE) "有指定格式" else ""
 }
 
 class AtLeastRule(

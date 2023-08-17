@@ -41,12 +41,10 @@ open class UtopiaGamificationListener(
     protected val User.claimMissionRewardPresenter
         get() = object : PlayerFulfillMissionsService.Presenter {
             override fun presentClaimMissionReward(mission: Mission) {
-                with(mission) {
-                    openPrivateChannel().queue {
-                        it.sendMessage(postMessage)
-                            .addActionRow(rewardButton)
-                            .queue()
-                    }
+                openPrivateChannel().queue {
+                    it.sendMessage(mission.postMessage)
+                        .addActionRow(mission.rewardButton)
+                        .queue()
                 }
             }
         }

@@ -12,7 +12,6 @@ import tw.waterballsa.utopia.utopiagamificationquest.service.PlayerFulfillMissio
 class PostListener(
     guild: Guild,
     playerRepository: PlayerRepository,
-    private val properties: WsaDiscordProperties,
     private val playerFulfillMissionsService: PlayerFulfillMissionsService
 ) : UtopiaGamificationListener(guild, playerRepository) {
 
