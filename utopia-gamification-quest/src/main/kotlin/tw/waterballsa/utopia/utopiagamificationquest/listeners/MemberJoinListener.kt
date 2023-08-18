@@ -30,7 +30,7 @@ class MemberJoinListener(
                 }
 
                 override fun presentPlayerAcquiresMission(mission: Mission) {
-                    mission.publishToUser(user).queue()
+                    mission.publishToUser(user)
                 }
             }
 

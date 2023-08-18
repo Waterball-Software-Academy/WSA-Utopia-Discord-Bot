@@ -38,11 +38,6 @@
 |:--------------:| ---------------------------------------------------------------------------------------------------------- | ----------- |
 | random lottery | number(INTEGER): Number of choose members per room.<br>role(ROLE): Only select specific role in this round | Lottery     |
 
-## utopia
-| Commands | Arguments | Description    |
-|:--------:| --------- | -------------- |
-|  utopia  |           | utopia command |
-
 ## roulette
 | Commands | Arguments | Description     |
 |:--------:| --------- | --------------- |
@@ -63,3 +58,9 @@
 | Commands | Arguments                                 | Description          |
 |:--------:| ----------------------------------------- | -------------------- |
 |   quiz   | name(STRING): The quiz you want to start. | The quiz for utopia. |
+
+## utopia
+|      Commands      | Arguments | Description                           |
+|:------------------:| --------- | ------------------------------------- |
+| utopia first-quest |           | get first quest                       |
+|  utopia re-render  |           | re-render in_progress/completed quest |

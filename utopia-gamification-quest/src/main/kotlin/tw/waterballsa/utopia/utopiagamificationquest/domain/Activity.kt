@@ -1,6 +1,7 @@
 package tw.waterballsa.utopia.utopiagamificationquest.domain
 
 import mu.KotlinLogging
+import tw.waterballsa.utopia.utopiagamificationquest.domain.Audience.State.*
 import tw.waterballsa.utopia.utopiagamificationquest.domain.actions.JoinActivityAction
 import java.time.Duration
 import java.time.LocalDateTime
@@ -14,8 +15,6 @@ class DateTimeRange(
 ) {
 
     fun getDuration(): Duration = Duration.between(startTime, endTime)
-
-    fun inTimeRange(): Boolean = startTime == endTime && now().isAfter(startTime.minusMinutes(20))
 
     fun end() {
         endTime = now()
@@ -31,12 +30,16 @@ class Activity(
     val hostId: String,
     val eventName: String,
     val channelId: String,
+    state: State,
     val dateTimeRange: DateTimeRange = DateTimeRange(),
     val audiences: MutableMap<String, Audience> = mutableMapOf()
 ) {
 
+    var state = state
+        private set
+
     fun join(player: Player) {
-        if (!dateTimeRange.inTimeRange()) {
+        if (state != State.ACTIVE) {
             return
         }
 
@@ -61,16 +64,40 @@ class Activity(
         )
     }
 
-    fun end() = dateTimeRange.end()
+    fun cancel() {
+        state = State.CANCELED
+        dateTimeRange.end()
+    }
+
+    enum class State {
+        SCHEDULED,
+        ACTIVE,
+        COMPLETED,
+        CANCELED
+    }
 }
+
+
 
 class Audience(
     val id: String,
+    state: State = STAY,
     val joinTime: DateTimeRange = DateTimeRange()
 ) {
 
+    var state = state
+        private set
+
     fun leave(): Duration {
         joinTime.end()
+        state = LEAVE
         return joinTime.getDuration()
     }
+
+    enum class State {
+        STAY,
+        LEAVE
+    }
 }
+
+
