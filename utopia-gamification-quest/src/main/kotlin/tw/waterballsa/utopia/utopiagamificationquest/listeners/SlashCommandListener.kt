@@ -20,7 +20,7 @@ import tw.waterballsa.utopia.utopiagamificationquest.service.PlayerAcceptQuestSe
 
 const val UTOPIA_COMMAND_NAME = "utopia"
 const val FIRST_QUEST_COMMAND_NAME = "first-quest"
-const val REVIEW_COMMAND_NAME = "review"
+const val REVIEW_COMMAND_NAME = "re-render"
 
 @Component
 class SlashCommandListener(
@@ -35,7 +35,7 @@ class SlashCommandListener(
         Commands.slash(UTOPIA_COMMAND_NAME, "utopia command")
             .addSubcommands(
                 SubcommandData(FIRST_QUEST_COMMAND_NAME, "get first quest"),
-                SubcommandData(REVIEW_COMMAND_NAME, "re-render quest")
+                SubcommandData(REVIEW_COMMAND_NAME, "re-render in_progress/completed quest")
             )
     )
 
