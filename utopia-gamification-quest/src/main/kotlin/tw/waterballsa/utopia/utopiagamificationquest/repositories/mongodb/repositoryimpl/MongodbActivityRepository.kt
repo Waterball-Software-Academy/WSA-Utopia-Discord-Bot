@@ -3,7 +3,7 @@ package tw.waterballsa.utopia.utopiagamificationquest.repositories.mongodb.repos
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.mongo.gateway.*
 import tw.waterballsa.utopia.utopiagamificationquest.domain.*
-import tw.waterballsa.utopia.utopiagamificationquest.domain.Activity.ActivityState.*
+import tw.waterballsa.utopia.utopiagamificationquest.domain.Activity.State.*
 import tw.waterballsa.utopia.utopiagamificationquest.extensions.toDate
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.ActivityRepository
 
@@ -23,7 +23,7 @@ class MongodbActivityRepository(
         Query(
             Criteria("channelId").`is`(channelId)
                 .and("audiences.id").`is`(audienceId)
-                .and("audiences.state").`is`(Audience.AudienceState.STAY)
+                .and("audiences.state").`is`(Audience.State.STAY)
         )
     ).firstOrNull()?.toDomain()
 
@@ -68,7 +68,7 @@ class ActivityDocument(
     val hostId: String,
     val eventName: String,
     val channelId: String,
-    val state: Activity.ActivityState,
+    val state: Activity.State,
     val startTime: String,
     val endTime: String,
     val audiences: List<AudienceDocument>
@@ -76,7 +76,7 @@ class ActivityDocument(
 
 class AudienceDocument(
     val id: String,
-    val state: Audience.AudienceState,
+    val state: Audience.State,
     val startTime: String,
     val endTime: String,
 )
