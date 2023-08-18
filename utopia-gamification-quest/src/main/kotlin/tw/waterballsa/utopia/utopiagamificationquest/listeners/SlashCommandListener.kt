@@ -3,13 +3,16 @@ package tw.waterballsa.utopia.utopiagamificationquest.listeners
 import kotlinx.coroutines.handleCoroutineException
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.Command.SubcommandGroup
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.extensions.replyEphemerally
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
 import tw.waterballsa.utopia.utopiagamificationquest.domain.State
+import tw.waterballsa.utopia.utopiagamificationquest.domain.State.*
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.Quests
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.quizQuest
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.unlockAcademyQuest
@@ -36,7 +39,7 @@ class SlashCommandListener(
         Commands.slash(UTOPIA_COMMAND_NAME, "utopia command")
             .addSubcommands(
                 SubcommandData(FIRST_QUEST_COMMAND_NAME, "get first quest"),
-                SubcommandData(REVIEW_COMMAND_NAME, "re-render in_progress/completed quest")
+                SubcommandData(REVIEW_COMMAND_NAME, "re-render in_progress/completed quest"),
             )
     )
 
@@ -79,26 +82,28 @@ class SlashCommandListener(
         var result = "執行結束"
         val mission = missionRepository.findAllByPlayerId(user.id).last()
 
-        if (mission.state == State.COMPLETED) {
-            user.claimMissionRewardPresenter.presentClaimMissionReward(mission)
-        }
+        with(mission) {
+            if (state == COMPLETED) {
+                user.claimMissionRewardPresenter.presentClaimMissionReward(mission)
+            }
 
-        if (mission.state == State.IN_PROGRESS) {
-            result = "執行結束，已獲得上個任務的獎勵"
-            mission.publishToUser(user)
-        }
+            if (state == IN_PROGRESS) {
+                result = "執行結束，已獲得上個任務的獎勵"
+                publishToUser(user)
+            }
 
-        if (mission.state == State.CLAIMED) {
-            result = if (mission.quest.id == quests.quizQuest.id) {
-                "你已完成全部的新手任務！"
-            } else {
-                jda.retrieveUserById("620215716993433612").queue {
-                    it.openPrivateChannel().queue { channel ->
-                        channel.sendMessage("${user.effectiveName} (${user.id}) : message -> mission 發生資料異常")
-                            .queue()
+            if (state == CLAIMED) {
+                result = if (quest.id == quests.quizQuest.id) {
+                    "你已完成全部的新手任務！"
+                } else {
+                    jda.retrieveUserById("620215716993433612").queue {
+                        it.openPrivateChannel().queue { channel ->
+                            channel.sendMessage("${user.effectiveName} (${user.id}) : message -> mission 發生資料異常")
+                                .queue()
+                        }
                     }
+                    "資料異常，已通知 tech 進行維修"
                 }
-                "資料異常，已通知 tech 進行維修"
             }
         }
 
