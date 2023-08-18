@@ -11,6 +11,7 @@ import tw.waterballsa.utopia.jda.extensions.replyEphemerally
 import tw.waterballsa.utopia.utopiagamificationquest.domain.Mission
 import tw.waterballsa.utopia.utopiagamificationquest.domain.State
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.Quests
+import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.quizQuest
 import tw.waterballsa.utopia.utopiagamificationquest.domain.quests.unlockAcademyQuest
 import tw.waterballsa.utopia.utopiagamificationquest.extensions.publishToUser
 import tw.waterballsa.utopia.utopiagamificationquest.repositories.MissionRepository
@@ -83,12 +84,12 @@ class SlashCommandListener(
         }
 
         if (mission.state == State.IN_PROGRESS) {
-            result += "，已獲得上個任務的獎勵"
+            result = "執行結束，已獲得上個任務的獎勵"
             mission.publishToUser(user)
         }
 
         if (mission.state == State.CLAIMED) {
-            result = if (mission.quest.id == 10) {
+            result = if (mission.quest.id == quests.quizQuest.id) {
                 "你已完成全部的新手任務！"
             } else {
                 jda.retrieveUserById("620215716993433612").queue {
