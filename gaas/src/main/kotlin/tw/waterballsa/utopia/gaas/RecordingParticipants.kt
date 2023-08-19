@@ -40,6 +40,7 @@ private val log = KotlinLogging.logger {}
 
 @Component
 class RecordingParticipants(private val properties: WsaDiscordProperties) : UtopiaListener() {
+    private var recordingTask: TimerTask? = null
     override fun onScheduledEventCreate(event: ScheduledEventCreateEvent) {
         with(event) {
             val partyChannelId = properties.wsaPartyChannelId
@@ -58,11 +59,12 @@ class RecordingParticipants(private val properties: WsaDiscordProperties) : Utop
                 !scheduledEvent.isGaaSEvent() -> return
                 scheduledEvent.status == ScheduledEvent.Status.ACTIVE -> {
                     log.info { "[RecordTaskStarted] {\"message\":\"Start recording task, event id: ${scheduledEvent.id}\"}" }
-                    scheduledEvent.recordEventParticipationStats()
+                    recordingTask = scheduledEvent.recordEventParticipationStats()
                 }
                 scheduledEvent.isCanceledOrCompleted() -> {
                     log.info { "[RemoveCancelOrCompletedGaaSEvent] {\"message\":\"Remove cancel or completed event, event id: ${scheduledEvent.id}\"}" }
                     gaasEventIds.remove(scheduledEvent.id)
+                    recordingTask?.cancel()
                 }
                 else -> return
             }
@@ -79,18 +81,19 @@ private fun ScheduledEvent.isCanceledOrCompleted() =
 * When the event starts, it is checked whether it is a GaaS study group, and if so,
 * a task is started to periodically check the list of participants and record their attendance.
 * */
-private fun ScheduledEvent.recordEventParticipationStats() {
+private fun ScheduledEvent.recordEventParticipationStats(): TimerTask {
     val filePath = createParticipantsStatsFile()
     val today = LocalDate.now()
     val startTime = today.atTime(21, 0, 0).toDate()
     val endTime = today.atTime(22, 0, 0).toDate()
     val participantCount = hashSetOf<Int>()
     val period = 3.minutes.inWholeMilliseconds
-
+    val recordingTask = recordParticipantsStatsAsFile(participantCount, filePath)
     Timer().run {
-        onStart(recordParticipantsStatsAsFile(participantCount, filePath), startTime, period)
+        onStart(recordingTask, startTime, period)
         onEnd(calculateAvgAndMaxParticipants(participantCount, filePath), endTime)
     }
+    return recordingTask
 }
 
 private fun ScheduledEvent.recordParticipantsStatsAsFile(

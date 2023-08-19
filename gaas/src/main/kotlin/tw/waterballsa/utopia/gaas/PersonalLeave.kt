@@ -3,6 +3,7 @@ package tw.waterballsa.utopia.gaas
 import dev.minn.jda.ktx.generics.getChannel
 import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.entities.ScheduledEvent
+import net.dv8tion.jda.api.entities.ScheduledEvent.Status
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
@@ -23,7 +24,6 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption.APPEND
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalDateTime.now
 import java.time.ZoneId.systemDefault
 import kotlin.io.path.Path
 
@@ -44,6 +44,8 @@ class PersonalLeave(private val properties: WsaDiscordProperties) : UtopiaListen
         private val eventNameKeywords = listOf("遊戲微服務", "讀書會")
     }
 
+    private lateinit var gaasEvent: ScheduledEvent
+
     override fun onScheduledEventCreate(event: ScheduledEventCreateEvent) {
         with(event) {
             val partyChannelId = properties.wsaPartyChannelId
@@ -56,6 +58,7 @@ class PersonalLeave(private val properties: WsaDiscordProperties) : UtopiaListen
             scheduledEvent
                 .takeIf { it.isGaaSEvent() && it.channel?.id == partyChannelId }
                 ?.run {
+                    gaasEvent = this
                     conversationChannel
                         .sendMessage("<@&$wsaGaaSMemberRoleId>\n哈囉各位讀書會夥伴！如果不能參加 **[${eventTime.toLocalDate()}]** 讀書會的夥伴，請點擊按鈕請假喔")
                         .setAllowedMentions(listOf(MentionType.ROLE))
@@ -78,7 +81,7 @@ class PersonalLeave(private val properties: WsaDiscordProperties) : UtopiaListen
                     return
                 }
 
-                now().isAfter(eventTime) -> {
+                gaasEvent.status == Status.ACTIVE -> {
                     replyEphemerally("超過可以請假的時間囉，下次請記得要在活動開始前請假喔")
                     return
                 }
