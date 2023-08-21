@@ -50,7 +50,7 @@ class PollCommandListener : UtopiaListener() {
 
     override fun commands(): List<CommandData> {
         return listOf(
-                Commands.slash("poll", "Initiate a polling session and permit Discord members to cast their votes for various options within a specified amount of time.")
+                Commands.slash("poll", "Poll")
                         .addRequiredOption(OptionType.INTEGER, OPTION_TIME, "The duration of the poll session")
                         .addRequiredOption(OptionType.STRING, OPTION_TIMEUNIT, "(Day | Minute | Second)")
                         .addRequiredOption(OptionType.STRING, OPTION_QUESTION, "Question")
