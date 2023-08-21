@@ -92,11 +92,10 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>message-cherry-pick</artifactId>
         </dependency>
-
-        <!--        <dependency>-->
-        <!--            <groupId>tw.waterballsa.utopia</groupId>-->
-        <!--            <artifactId>poll</artifactId>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>poll</artifactId>
+            </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>mongo-gateway-impl</artifactId>
