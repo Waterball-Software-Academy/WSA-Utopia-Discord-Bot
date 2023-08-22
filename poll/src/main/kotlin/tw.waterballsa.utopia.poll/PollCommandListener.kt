@@ -161,39 +161,35 @@ data class Vote(val userId: String, val emoji: EmojiUnion)
 
 class PollingSession(
         val id: String, val channelId: String, val setting: PollingSetting) {
-    private val voterIdToVotedOptionIndices = hashMapOf<String, MutableList<Int>>()
+    private val voterIdToVotedOptionIndices = hashMapOf<String, Int>()
 
     fun vote(vote: Vote) {
-        findVoterOptionIndices(vote) {
-            log.info { """[Voted] {"userId": ${vote.userId}, "optionIndex": $it}" }""" }
-            add(it)
+        val emojiIndex = EMOJI_UNICODES.indexOf(vote.emoji.name)
+        if (emojiIndex >= 0) {
+            log.info { """[Voted] {"userId": ${vote.userId}, "optionIndex": $emojiIndex}" }""" }
+            voterIdToVotedOptionIndices[vote.userId] = emojiIndex
         }
     }
 
     fun devote(vote: Vote) {
-        findVoterOptionIndices(vote) {
-            log.info { """[Devoted] {"userId": ${vote.userId}, "optionIndex": $it}" }""" }
-            remove(it)
+        val emojiIndex = EMOJI_UNICODES.indexOf(vote.emoji.name)
+        if (emojiIndex >= 0) {
+            log.info { """[Devoted] {"userId": ${vote.userId}, "optionIndex": $emojiIndex}" }""" }
+            voterIdToVotedOptionIndices.remove(vote.userId)
         }
     }
 
-    private fun findVoterOptionIndices(vote: Vote, newIndexConsumer: MutableList<Int>.(int: Int) -> Unit) {
-        val emojiIndex = EMOJI_UNICODES.indexOf(vote.emoji.name)
-        if (emojiIndex >= 0) {
-            newIndexConsumer.invoke(voterIdToVotedOptionIndices.computeIfAbsent(vote.userId) { mutableListOf() }, emojiIndex)
-        }
-    }
+
 
     fun end(): PollingResult {
         return PollingResult(voterIdToVotedOptionIndices, setting)
     }
 }
 
-class PollingResult(private val voterIdToVotedOptionIndices: Map<String, MutableList<Int>>, private val setting: PollingSetting) {
+class PollingResult(private val voterIdToVotedOptionIndices: Map<String, Int>, private val setting: PollingSetting) {
     val messageBody: String
         get() {
             return voterIdToVotedOptionIndices.values
-                    .flatten()
                     .groupingBy { it }
                     .eachCount()
                     .map { (index, count) -> "${setting.getOption(index)}: $count votes." }

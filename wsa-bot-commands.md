@@ -71,6 +71,6 @@
 | weekly-messages-volume | channel-name(STRING): The channel to show the weekly messages volume | Show the weekly messages volume of the channel |
 
 ## poll
-| Commands | Arguments                                                                                                                                                                | Description |
-|:--------:| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-|   poll   | time(INTEGER): The duration of the poll session<br>time-unit(STRING): (Day | Minute | Second)<br>question(STRING): Question<br>options(STRING): Options (split by comma) | Poll        |
+| Commands | Arguments                                                                                                                                                                   | Description |
+|:--------:| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+|   poll   | time(INTEGER): The duration of the poll session<br>time-unit(STRING): (Days | Minutes | Seconds)<br>question(STRING): Question<br>options(STRING): Options (split by comma) | Poll        |
