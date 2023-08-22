@@ -52,7 +52,7 @@ class PollCommandListener : UtopiaListener() {
         return listOf(
                 Commands.slash("poll", "Poll")
                         .addRequiredOption(OptionType.INTEGER, OPTION_TIME, "The duration of the poll session")
-                        .addRequiredOption(OptionType.STRING, OPTION_TIMEUNIT, "(Day | Minute | Seconds)")
+                        .addRequiredOption(OptionType.STRING, OPTION_TIMEUNIT, "(Days | Minutes | Seconds)")
                         .addRequiredOption(OptionType.STRING, OPTION_QUESTION, "Question")
                         .addRequiredOption(OptionType.STRING, OPTION_OPTIONS, "Options (split by comma)")
         )
