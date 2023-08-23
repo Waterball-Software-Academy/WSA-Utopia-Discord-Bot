@@ -96,7 +96,7 @@ class PollCommandListener : UtopiaListener() {
             return null
         }
 
-        return PollingSetting(time, timeUnit, question, options, voteLimit)
+        return PollingSetting(time, timeUnit, question, options)
     }
 
     override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
