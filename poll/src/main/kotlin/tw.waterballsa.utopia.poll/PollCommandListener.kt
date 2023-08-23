@@ -100,7 +100,15 @@ class PollCommandListener : UtopiaListener() {
             if (userId == jda.selfUser.id) {
                 return
             }
-            session.vote(Vote(userId, emoji))
+
+            val optionIndex = session.voterIdToVotedOptionIndex[userId]
+            if (optionIndex == null) {
+                session.vote(Vote(userId, emoji))
+            } else {
+                val channel = jda.getTextChannelById(session.channelId)!!
+                val message = channel.retrieveMessageById(session.id).complete()
+                message.removeReaction(reaction.emoji, user!!).complete()
+            }
         }
     }
 
@@ -110,7 +118,11 @@ class PollCommandListener : UtopiaListener() {
             if (userId == jda.selfUser.id) {
                 return
             }
-            session.devote(Vote(userId, emoji))
+            val optionIndex = session.voterIdToVotedOptionIndex[userId]
+            val emojiIndex = EMOJI_UNICODES.indexOf(emoji.name)
+            if (optionIndex == emojiIndex) {
+                session.devote(Vote(userId, emoji))
+            }
         }
     }
 
@@ -161,13 +173,13 @@ data class Vote(val userId: String, val emoji: EmojiUnion)
 
 class PollingSession(
         val id: String, val channelId: String, val setting: PollingSetting) {
-    private val voterIdToVotedOptionIndices = hashMapOf<String, Int>()
+    val voterIdToVotedOptionIndex = hashMapOf<String, Int>()
 
     fun vote(vote: Vote) {
         val emojiIndex = EMOJI_UNICODES.indexOf(vote.emoji.name)
         if (emojiIndex >= 0) {
             log.info { """[Voted] {"userId": ${vote.userId}, "optionIndex": $emojiIndex}" }""" }
-            voterIdToVotedOptionIndices[vote.userId] = emojiIndex
+            voterIdToVotedOptionIndex[vote.userId] = emojiIndex
         }
     }
 
@@ -175,21 +187,21 @@ class PollingSession(
         val emojiIndex = EMOJI_UNICODES.indexOf(vote.emoji.name)
         if (emojiIndex >= 0) {
             log.info { """[Devoted] {"userId": ${vote.userId}, "optionIndex": $emojiIndex}" }""" }
-            voterIdToVotedOptionIndices.remove(vote.userId)
+            voterIdToVotedOptionIndex.remove(vote.userId)
         }
     }
 
 
 
     fun end(): PollingResult {
-        return PollingResult(voterIdToVotedOptionIndices, setting)
+        return PollingResult(voterIdToVotedOptionIndex, setting)
     }
 }
 
-class PollingResult(private val voterIdToVotedOptionIndices: Map<String, Int>, private val setting: PollingSetting) {
+class PollingResult(private val voterIdToVotedOptionIndex: Map<String, Int>, private val setting: PollingSetting) {
     val messageBody: String
         get() {
-            return voterIdToVotedOptionIndices.values
+            return voterIdToVotedOptionIndex.values
                     .groupingBy { it }
                     .eachCount()
                     .map { (index, count) -> "${setting.getOption(index)}: $count votes." }
