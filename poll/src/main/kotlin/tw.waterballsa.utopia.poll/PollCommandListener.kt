@@ -96,7 +96,7 @@ class PollCommandListener : UtopiaListener() {
             return null
         }
 
-        return PollingSetting(time, timeUnit, question, options)
+        return PollingSetting(time, timeUnit, question, options, voteLimit)
     }
 
     override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
@@ -146,7 +146,7 @@ class PollCommandListener : UtopiaListener() {
 }
 
 
-data class PollingSetting(val time: Long, val timeUnit: TimeUnit, val question: String, val options: List<String>) {
+data class PollingSetting(val time: Long, val timeUnit: TimeUnit, val question: String, val options: List<String>, val voteLimit: Long) {
     private val optionsMessageBody = options.mapIndexed { i, option ->
         "${EMOJI_UNICODES[i]} $option"
     }.joinToString(lineSeparator())
