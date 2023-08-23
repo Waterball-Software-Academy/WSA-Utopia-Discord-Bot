@@ -89,12 +89,14 @@ class PollCommandListener : UtopiaListener() {
 
         val question = getOption(OPTION_QUESTION)!!.asString
         val options = getOption(OPTION_OPTIONS)!!.asString.split(Regex("\\s*,\\s*"))
+        val voteLimit = getOptionAsLongInRange(OPTION_VOTE_LIMIT, 0..500L)!!
+
         if (options.size > EMOJI_UNICODES.size) {
             reply("The number of options cannot be greater than ${EMOJI_UNICODES.size}.").complete()
             return null
         }
 
-        return PollingSetting(time, timeUnit, question, options)
+        return PollingSetting(time, timeUnit, question, options, voteLimit)
     }
 
     override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
