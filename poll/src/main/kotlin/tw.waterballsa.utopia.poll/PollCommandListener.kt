@@ -33,6 +33,8 @@ private const val OPTION_QUESTION = "question"
 
 private const val OPTION_OPTIONS = "options"
 
+private const val OPTION_VOTE_LIMIT = "vote-limit"
+
 private val EMOJI_UNICODES: Array<String> = arrayOf("0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "\uD83D\uDD1F")
 
 private val log = KotlinLogging.logger {}
@@ -55,6 +57,7 @@ class PollCommandListener : UtopiaListener() {
                         .addRequiredOption(OptionType.STRING, OPTION_TIMEUNIT, "(Days | Minutes | Seconds)")
                         .addRequiredOption(OptionType.STRING, OPTION_QUESTION, "Question")
                         .addRequiredOption(OptionType.STRING, OPTION_OPTIONS, "Options (split by comma)")
+                        .addOption(OptionType.INTEGER, OPTION_VOTE_LIMIT, "Limit of vote a voter can vote")
         )
     }
 
