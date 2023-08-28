@@ -10,7 +10,7 @@ class Quiz(
     val quizQuestions: List<Question>,
     val quizTimeRange: QuizTimeRange,
     correctCount: Int = 0,
-    currentQuestionNumber: Int = 0,
+    currentQuestionNumber: Int = 1,
     answerCount: Int = 0
 ) {
 
@@ -35,25 +35,30 @@ class Quiz(
     var currentQuestionNumber: Int = currentQuestionNumber
         private set
 
-    fun getNextQuestion(): Question = quizQuestions[currentQuestionNumber++]
+    fun getCurrentQuestion(): Question = quizQuestions[currentQuestionNumber - 1]
 
-    fun answerQuestion(questionNumber: Int, choice: Int): Boolean {
-        val answer = Answer(questionNumber, choice)
-        answerCount++
-        if (quizQuestions[answer.questionNumber - 1].verify(answer.choice)) {
+    fun answerQuestion(answer: Answer): Boolean {
+        val currentQuestion = getCurrentQuestion()
+
+        if (currentQuestionNumber != answer.questionNumber) {
+            throw RuntimeException("")
+        }
+
+        answerCount += 1
+        currentQuestionNumber += 1
+
+        if (currentQuestion.verify(answer.choice)) {
             correctCount++
             return true
         }
+
         return false
     }
 
     fun pass(): Boolean = correctCount >= quizDefinition.requiredCorrectCount
-
-    fun isOver(): Boolean {
-        val isLastQuestion = answerCount >= quizDefinition.totalQuestions
-        val isTimeOver = quizTimeRange.contains(now()).not()
-        return isLastQuestion || isTimeOver
-    }
+    fun isAllowedToAnswer(questionNumber: Int) = questionNumber == currentQuestionNumber
+    fun isExpired() = quizTimeRange.contains(now()).not()
+    fun isAllAnswered() = answerCount >= quizDefinition.totalQuestions
 }
 
 class QuizTimeRange(

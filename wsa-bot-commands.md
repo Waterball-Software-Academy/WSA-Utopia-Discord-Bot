@@ -1,9 +1,19 @@
 # Commands Document
 
+## random
+|    Commands    | Arguments                                                                                                  | Description |
+|:--------------:| ---------------------------------------------------------------------------------------------------------- | ----------- |
+| random lottery | number(INTEGER): Number of choose members per room.<br>role(ROLE): Only select specific role in this round | Lottery     |
+
 ## 1a2b
 | Commands | Arguments | Description                 |
 |:--------:| --------- | --------------------------- |
 |   1a2b   |           | Start a new guess num game. |
+
+## rock-paper-scissors
+|      Commands       | Arguments | Description                           |
+|:-------------------:| --------- | ------------------------------------- |
+| rock-paper-scissors |           | start a new rock paper scissors game! |
 
 ## gaas
 |        Commands        | Arguments                                                                                          | Description                                          |
@@ -22,6 +32,12 @@
 |:--------:| --------- | ----------- |
 |   ping   |           | sends pong  |
 
+## utopia
+|      Commands      | Arguments | Description                           |
+|:------------------:| --------- | ------------------------------------- |
+| utopia first-quest |           | get first quest                       |
+|  utopia re-render  |           | re-render in_progress/completed quest |
+
 ## mute
 |    Commands    | Arguments                                                             | Description    |
 |:--------------:| --------------------------------------------------------------------- | -------------- |
@@ -33,15 +49,15 @@
 |:----------------:| ---------------------------------------------------- | ---------------------------------------------- |
 | audience counter | time-length(INTEGER): Time is calculated in minutes. | count the resent voice channel audience amount |
 
-## random
-|    Commands    | Arguments                                                                                                  | Description |
-|:--------------:| ---------------------------------------------------------------------------------------------------------- | ----------- |
-| random lottery | number(INTEGER): Number of choose members per room.<br>role(ROLE): Only select specific role in this round | Lottery     |
-
 ## roulette
 | Commands | Arguments | Description     |
 |:--------:| --------- | --------------- |
 | roulette |           | Start the game. |
+
+## quiz
+| Commands | Arguments                                 | Description          |
+|:--------:| ----------------------------------------- | -------------------- |
+|   quiz   | name(STRING): The quiz you want to start. | The quiz for utopia. |
 
 ## message
 |        Commands        | Arguments                                                                                                               | Description                               |
@@ -53,14 +69,3 @@
 |        Commands        | Arguments                                                            | Description                                    |
 |:----------------------:| -------------------------------------------------------------------- | ---------------------------------------------- |
 | weekly-messages-volume | channel-name(STRING): The channel to show the weekly messages volume | Show the weekly messages volume of the channel |
-
-## quiz
-| Commands | Arguments                                 | Description          |
-|:--------:| ----------------------------------------- | -------------------- |
-|   quiz   | name(STRING): The quiz you want to start. | The quiz for utopia. |
-
-## utopia
-|      Commands      | Arguments | Description                           |
-|:------------------:| --------- | ------------------------------------- |
-| utopia first-quest |           | get first quest                       |
-|  utopia re-render  |           | re-render in_progress/completed quest |
