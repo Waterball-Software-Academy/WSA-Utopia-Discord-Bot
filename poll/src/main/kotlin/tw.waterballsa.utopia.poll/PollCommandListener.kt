@@ -87,10 +87,9 @@ class PollCommandListener : UtopiaListener() {
         val timeUnit = getOptionAsStringWithValidation(OPTION_TIMEUNIT, "should be one of (Days | Minutes | Seconds)") {
             TimeUnit.values().any { unit -> unit.name == it.uppercase() }
         }?.let { TimeUnit.valueOf(it.uppercase()) } ?: return null
-
         val question = getOption(OPTION_QUESTION)!!.asString
         val options = getOption(OPTION_OPTIONS)!!.asString.split(Regex("\\s*,\\s*"))
-        val voteLimit = getOptionAsLongInRange(OPTION_VOTE_LIMIT, 0..500L)!!
+        val voteLimit = getOptionAsLongInRange(OPTION_VOTE_LIMIT, 0..500L) ?: 1
 
         if (options.size > EMOJI_UNICODES.size) {
             reply("The number of options cannot be greater than ${EMOJI_UNICODES.size}.").complete()
