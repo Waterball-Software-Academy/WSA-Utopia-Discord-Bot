@@ -106,10 +106,9 @@ class PollCommandListener : UtopiaListener() {
                 return
             }
 
-            val optionIndex = session.voterIdToVotedOptionIndex[userId]
-            if ((optionIndex?.size ?: 0) <= session.setting.voteLimit) {
+            try {
                 session.vote(Vote(userId, emoji))
-            } else {
+            } catch (e: VoteFailed) {
                 val channel = jda.getTextChannelById(session.channelId)!!
                 val message = channel.retrieveMessageById(session.id).complete()
                 message.removeReaction(reaction.emoji, user!!).complete()
@@ -173,23 +172,25 @@ data class PollingSetting(val time: Long, val timeUnit: TimeUnit, val question: 
 
 data class Vote(val userId: String, val emoji: EmojiUnion)
 class VoteFailed(message: String) : Exception(message)
+class DevoteFailed(message: String) : Exception(message)
 class PollingSession(
         val id: String, val channelId: String, val setting: PollingSetting) {
-    val voterIdToVotedOptionIndex = hashMapOf<String, MutableList<Int>>()
+    private val voterIdToVotedOptionIndex = hashMapOf<String, MutableList<Int>>()
 
     fun vote(vote: Vote) {
         val emojiIndex = EMOJI_UNICODES.indexOf(vote.emoji.name)
         if (emojiIndex >= 0) {
             val optionIndex = voterIdToVotedOptionIndex[vote.userId]
-            if (voterIdToVotedOptionIndex.size <= setting.voteLimit) {
-                log.info { """[Voted] {"userId": ${vote.userId}, "optionIndex": $emojiIndex}" }""" }
-                if (optionIndex == null) {
-                    voterIdToVotedOptionIndex[vote.userId] = mutableListOf(emojiIndex)
-                } else {
-                    voterIdToVotedOptionIndex[vote.userId]?.add(emojiIndex)
-                }
+
+            if (optionIndex == null) {
+                voterIdToVotedOptionIndex[vote.userId] = mutableListOf(emojiIndex)
             } else {
-                throw VoteFailed("Cannot vote")
+                if (optionIndex.size < setting.voteLimit) {
+                    voterIdToVotedOptionIndex[vote.userId]?.add(emojiIndex)
+                    log.info { """[Voted] {"userId": ${vote.userId}, "optionIndex": $emojiIndex}" }""" }
+                } else {
+                    throw VoteFailed("Cannot vote")
+                }
             }
         }
     }
@@ -201,7 +202,11 @@ class PollingSession(
             if (emojiIndex in optionIndex) {
                 log.info { """[Devoted] {"userId": ${vote.userId}, "optionIndex": $emojiIndex}" }""" }
                 voterIdToVotedOptionIndex.remove(vote.userId)
+            } else {
+                throw DevoteFailed("The emoji isn't voted by user")
             }
+        } else {
+            throw DevoteFailed("The emoji is not for voting purpose")
         }
     }
 
@@ -211,6 +216,8 @@ class PollingSession(
         return PollingResult(voterIdToVotedOptionIndex, setting)
     }
 }
+
+
 
 class PollingResult(private val voterIdToVotedOptionIndex: Map<String, MutableList<Int>>, private val setting: PollingSetting) {
     val messageBody: String
