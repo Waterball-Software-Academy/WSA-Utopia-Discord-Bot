@@ -2,7 +2,8 @@ package tw.waterballsa.utopia.utopiaquiz.domain
 
 import java.time.Duration
 import java.time.LocalDateTime
-import java.time.LocalDateTime.*
+import java.time.LocalDateTime.now
+import java.time.LocalDateTime.parse
 
 class Quiz(
     val id: QuizId,
@@ -41,11 +42,11 @@ class Quiz(
         val currentQuestion = getCurrentQuestion()
 
         if (currentQuestionNumber != answer.questionNumber) {
-            throw RuntimeException("")
+            throw IllegalArgumentException("無法回答這一題")
         }
 
-        answerCount += 1
-        currentQuestionNumber += 1
+        answerCount++
+        currentQuestionNumber++
 
         if (currentQuestion.verify(answer.choice)) {
             correctCount++
@@ -56,7 +57,6 @@ class Quiz(
     }
 
     fun pass(): Boolean = correctCount >= quizDefinition.requiredCorrectCount
-    fun isAllowedToAnswer(questionNumber: Int) = questionNumber == currentQuestionNumber
     fun isExpired() = quizTimeRange.contains(now()).not()
     fun isAllAnswered() = answerCount >= quizDefinition.totalQuestions
 }

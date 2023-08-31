@@ -1,21 +1,25 @@
 package tw.waterballsa.utopia.utopiaquiz
 
-import org.assertj.core.api.Assertions.*
-import org.junit.Test
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import tw.waterballsa.utopia.utopiaquiz.domain.QuestionSet
 
 class QuestionSetTest {
-
+    private lateinit var questionSet: QuestionSet
+    @BeforeEach
+    fun init(){
+        questionSet = QuestionSet()
+    }
     @Test
-    fun getRandomQuestionsTest() {
-        val questions = QuestionSet().getRandomQuestions(3)
+    fun testGetRandomQuestions() {
+        val questions = questionSet.getRandomQuestions(3)
         assertThat(questions.size).isEqualTo(3)
         assertThat(questions.size).isEqualTo(questions.distinct().size)
     }
 
     @Test
-    fun getQuestionsByIdsTest() {
-        val questionSet = QuestionSet()
+    fun testGetQuestionsByIds() {
         val questionIds = listOf(1, 2, 4)
         val questions = questionSet.getQuestionsByIds(questionIds)
 

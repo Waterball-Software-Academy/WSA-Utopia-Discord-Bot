@@ -15,17 +15,19 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.jda.UtopiaListener
-import tw.waterballsa.utopia.jda.domains.*
+import tw.waterballsa.utopia.jda.domains.EventPublisher
+import tw.waterballsa.utopia.jda.domains.QuizEndEvent
+import tw.waterballsa.utopia.jda.domains.QuizPreparationStartEvent
 import tw.waterballsa.utopia.jda.extensions.replyEphemerally
 import tw.waterballsa.utopia.utopiaquiz.domain.*
 import tw.waterballsa.utopia.utopiaquiz.repositories.QuizRepository
-import java.lang.RuntimeException
 import java.time.Duration
 import java.time.LocalDateTime.now
 
 const val QUIZ_COMMAND_NAME = "quiz"
 const val QUIZ_OPTION_NAME = "name"
 const val QUIZ_TAG = "utopiaQuiz"
+const val YELLOW = 16776960
 
 private val log = KotlinLogging.logger {}
 
@@ -145,7 +147,7 @@ class UtopiaQuizListener(
                 val answer = Answer(questionNumber.toInt(), answerChoice.toInt())
                 val result = quiz.answerQuestion(answer)
                 replyAnswerResult(result)
-            } catch (e: RuntimeException) {
+            } catch (e: IllegalArgumentException) {
                 reply(e.message ?: "無法回答這一題").queue()
             }
 
@@ -156,14 +158,14 @@ class UtopiaQuizListener(
                         Embed {
                             title = "🎊 紳士誕生 🎊"
                             description = "恭喜 ${user.asMention} 完成 **$quizName**！！！"
-                            color = 16776960
+                            color = YELLOW
                             footer {
                                 name = user.effectiveName
                                 iconUrl = user.avatarUrl
                             }
                         }
                     )?.queue()
-//                    eventPublisher.broadcastEvent(QuizEndEvent(user.id, quiz.id.quizName, quiz.correctCount))
+                    eventPublisher.broadcastEvent(QuizEndEvent(user.id, quiz.id.quizName, quiz.correctCount))
                 } else {
                     channel.sendMessage("考試未通過，答對題數: ${quiz.correctCount}").complete()
                 }
