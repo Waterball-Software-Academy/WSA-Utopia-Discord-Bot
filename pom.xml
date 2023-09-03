@@ -36,6 +36,7 @@
         <module>utopia-quiz</module>
         <module>message-cherry-pick</module>
         <module>weekly-messages-volume</module>
+        <module>utopia-test-kit</module>
     </modules>
 
     <properties>
