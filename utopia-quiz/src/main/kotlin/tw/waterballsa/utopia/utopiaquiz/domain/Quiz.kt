@@ -2,7 +2,8 @@ package tw.waterballsa.utopia.utopiaquiz.domain
 
 import java.time.Duration
 import java.time.LocalDateTime
-import java.time.LocalDateTime.*
+import java.time.LocalDateTime.now
+import java.time.LocalDateTime.parse
 
 class Quiz(
     val id: QuizId,
@@ -10,7 +11,7 @@ class Quiz(
     val quizQuestions: List<Question>,
     val quizTimeRange: QuizTimeRange,
     correctCount: Int = 0,
-    currentQuestionNumber: Int = 0,
+    currentQuestionNumber: Int = 1,
     answerCount: Int = 0
 ) {
 
@@ -35,25 +36,29 @@ class Quiz(
     var currentQuestionNumber: Int = currentQuestionNumber
         private set
 
-    fun getNextQuestion(): Question = quizQuestions[currentQuestionNumber++]
+    fun getCurrentQuestion(): Question = quizQuestions[currentQuestionNumber - 1]
 
-    fun answerQuestion(questionNumber: Int, choice: Int): Boolean {
-        val answer = Answer(questionNumber, choice)
+    fun answerQuestion(answer: Answer): Boolean {
+        val currentQuestion = getCurrentQuestion()
+
+        if (currentQuestionNumber != answer.questionNumber) {
+            throw IllegalArgumentException("無法回答這一題")
+        }
+
         answerCount++
-        if (quizQuestions[answer.questionNumber - 1].verify(answer.choice)) {
+        currentQuestionNumber++
+
+        if (currentQuestion.verify(answer.choice)) {
             correctCount++
             return true
         }
+
         return false
     }
 
     fun pass(): Boolean = correctCount >= quizDefinition.requiredCorrectCount
-
-    fun isOver(): Boolean {
-        val isLastQuestion = answerCount >= quizDefinition.totalQuestions
-        val isTimeOver = quizTimeRange.contains(now()).not()
-        return isLastQuestion || isTimeOver
-    }
+    fun isExpired() = quizTimeRange.contains(now()).not()
+    fun isAllAnswered() = answerCount >= quizDefinition.totalQuestions
 }
 
 class QuizTimeRange(

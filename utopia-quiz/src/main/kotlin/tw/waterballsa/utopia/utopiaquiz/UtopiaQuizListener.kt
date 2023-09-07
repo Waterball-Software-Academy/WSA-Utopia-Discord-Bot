@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.Command.*
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
@@ -16,8 +15,9 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.jda.UtopiaListener
-import tw.waterballsa.utopia.jda.domains.*
-import tw.waterballsa.utopia.jda.extensions.addRequiredOption
+import tw.waterballsa.utopia.jda.domains.EventPublisher
+import tw.waterballsa.utopia.jda.domains.QuizEndEvent
+import tw.waterballsa.utopia.jda.domains.QuizPreparationStartEvent
 import tw.waterballsa.utopia.jda.extensions.replyEphemerally
 import tw.waterballsa.utopia.utopiaquiz.domain.*
 import tw.waterballsa.utopia.utopiaquiz.repositories.QuizRepository
@@ -27,6 +27,7 @@ import java.time.LocalDateTime.now
 const val QUIZ_COMMAND_NAME = "quiz"
 const val QUIZ_OPTION_NAME = "name"
 const val QUIZ_TAG = "utopiaQuiz"
+const val YELLOW = 16776960
 
 private val log = KotlinLogging.logger {}
 
@@ -78,7 +79,7 @@ class UtopiaQuizListener(
                         QuizTimeRange(now(), Duration.ofMinutes(10))
                     )
 
-                    val question = quiz.getNextQuestion()
+                    val question = quiz.getCurrentQuestion()
                     quizRepository.saveQuiz(quiz)
                     user.publishQuestion(quiz, question)
                 }
@@ -137,26 +138,27 @@ class UtopiaQuizListener(
             val quizTakerId = user.id
             val quizId = QuizId(quizTakerId, quizName)
             val quiz = quizRepository.findQuizById(quizId) ?: return
-            if (quiz.isOver()) {
+            if (quiz.isExpired() || quiz.isAllAnswered()) {
                 reply("考試已結束").complete()
                 return
             }
 
-            val answer = Answer(questionNumber.toInt(), answerChoice.toInt())
-            if (answer.questionNumber != quiz.currentQuestionNumber) {
-                return
+            try {
+                val answer = Answer(questionNumber.toInt(), answerChoice.toInt())
+                val result = quiz.answerQuestion(answer)
+                replyAnswerResult(result)
+            } catch (e: IllegalArgumentException) {
+                reply(e.message ?: "無法回答這一題").queue()
             }
-            val result = quiz.answerQuestion(answer.questionNumber, answer.choice)
-            replyAnswerResult(result)
 
-            if (quiz.isOver()) {
+            if (quiz.isExpired() || quiz.isAllAnswered()) {
                 if (quiz.pass()) {
                     channel.sendMessage("考試通過，答對題數: ${quiz.correctCount}").complete()
                     wsaGuild.getTextChannelById(wsa.wsaGentlemenBroadcastChannelId)?.sendMessageEmbeds(
                         Embed {
                             title = "🎊 紳士誕生 🎊"
                             description = "恭喜 ${user.asMention} 完成 **$quizName**！！！"
-                            color = 16776960
+                            color = YELLOW
                             footer {
                                 name = user.effectiveName
                                 iconUrl = user.avatarUrl
@@ -169,7 +171,7 @@ class UtopiaQuizListener(
                 }
 
             } else {
-                val question = quiz.getNextQuestion()
+                val question = quiz.getCurrentQuestion()
                 user.publishQuestion(quiz, question)
             }
             quizRepository.saveQuiz(quiz)
