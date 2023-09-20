@@ -3,7 +3,7 @@ FROM maven:3.8.3-openjdk-17-slim
 
 ADD ./ /
 ## build after dependencies are down so it wont redownload unless the POM changes
-RUN mvn package -Dmaven.test.skip
+RUN mvn package
 
 # Part 2: use the JAR file used in the first part and copy it across ready to RUN
 FROM openjdk:17-jdk-slim
