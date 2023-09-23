@@ -28,7 +28,7 @@
         <module>actuator</module>
         <module>document</module>
         <module>audio-experience</module>
-        <module>utopia-gamification-quest</module>
+        <module>utopia-gamification</module>
         <module>poll</module>
         <module>russian-roulette</module>
         <module>mongo-gateway-impl</module>
@@ -240,7 +240,7 @@
             </dependency>
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
-                <artifactId>utopia-gamification-quest</artifactId>
+                <artifactId>utopia-gamification</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
