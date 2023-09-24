@@ -34,13 +34,13 @@ class EventJoiningListener(
             val player = user.toPlayer() ?: return
 
             channelJoined?.let {
-                val inProgressActivity = activityRepository.findInProgressActivityByChannelId(it.id) ?: return
+                val inProgressActivity = activityRepository.findInProgressActivityByChannelId(it.id) ?: return@let
                 inProgressActivity.join(player)
                 activityRepository.save(inProgressActivity)
             }
 
             channelLeft?.let {
-                val stayActivity = activityRepository.findAudienceStayActivity(it.id, player.id) ?: return
+                val stayActivity = activityRepository.findAudienceStayActivity(it.id, player.id) ?: return@let
                 val action = stayActivity.leave(player) ?: return
                 playerFulfillMissionsService.execute(action, user.claimMissionRewardPresenter)
                 activityRepository.save(stayActivity)
