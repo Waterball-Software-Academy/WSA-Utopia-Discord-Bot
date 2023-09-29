@@ -12,8 +12,8 @@ assignees: ''
 ### 任務描述
 請提供有關此 event handling 功能的簡要描述。
 
-## evnet 資訊
-1. discord evnet
+## event 資訊
+1. discord event
 2. 觸發間隔
 
 ### 測試步驟
