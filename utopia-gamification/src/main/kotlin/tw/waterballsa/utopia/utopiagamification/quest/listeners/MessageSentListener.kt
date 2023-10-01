@@ -7,14 +7,14 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamification.quest.domain.actions.MessageSentAction
+import tw.waterballsa.utopia.utopiagamification.quest.usecase.PlayerFulfillMissionsUsecase
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
-import tw.waterballsa.utopia.utopiagamification.quest.service.PlayerFulfillMissionsService
 
 @Component
 class MessageSentListener(
     guild: Guild,
     playerRepository: PlayerRepository,
-    private val playerFulfillMissionsService: PlayerFulfillMissionsService
+    private val playerFulfillMissionsUsecase: PlayerFulfillMissionsUsecase
 ) : UtopiaGamificationListener(guild, playerRepository) {
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
@@ -35,7 +35,7 @@ class MessageSentListener(
                 (channel as? VoiceChannel)?.members?.size ?: 0
             )
 
-            playerFulfillMissionsService.execute(action, user.claimMissionRewardPresenter)
+            playerFulfillMissionsUsecase.execute(action, user.claimMissionRewardPresenter)
         }
     }
 
@@ -57,7 +57,7 @@ class MessageSentListener(
                 (channel as? VoiceChannel)?.members?.size ?: 0
             )
 
-            playerFulfillMissionsService.execute(action, user.claimMissionRewardPresenter)
+            playerFulfillMissionsUsecase.execute(action, user.claimMissionRewardPresenter)
         }
     }
 }

@@ -7,12 +7,15 @@ import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.domains.QuizEndEvent
 import tw.waterballsa.utopia.jda.domains.QuizPreparationStartEvent
 import tw.waterballsa.utopia.jda.domains.UtopiaEvent
+import tw.waterballsa.utopia.utopiagamification.quest.domain.Quest
 import tw.waterballsa.utopia.utopiagamification.quest.domain.actions.QuizAction
-import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.Quests
-import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.quizQuest
+import tw.waterballsa.utopia.utopiagamification.quest.usecase.PlayerFulfillMissionsUsecase
 import tw.waterballsa.utopia.utopiagamification.repositories.MissionRepository
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
-import tw.waterballsa.utopia.utopiagamification.quest.service.PlayerFulfillMissionsService
+import tw.waterballsa.utopia.utopiagamification.repositories.QuestRepository
+import tw.waterballsa.utopia.utopiagamification.repositories.exceptions.NotFoundException.Companion.notFound
+
+private const val quizQuestId = 10
 
 private val log = KotlinLogging.logger {}
 
@@ -20,9 +23,9 @@ private val log = KotlinLogging.logger {}
 class QuizListener(
     guild: Guild,
     playerRepository: PlayerRepository,
-    private val playerFulfillMissionsService: PlayerFulfillMissionsService,
+    private val playerFulfillMissionsUsecase: PlayerFulfillMissionsUsecase,
     private val missionRepository: MissionRepository,
-    private val quests: Quests,
+    private val questRepository: QuestRepository,
     private val jda: JDA
 ) : UtopiaGamificationListener(guild, playerRepository) {
 
@@ -44,9 +47,16 @@ class QuizListener(
         }
     }
 
-    private fun QuizPreparationStartEvent.hasInProgressQuizQuest(): Boolean =
-        missionRepository.findInProgressMissionsByPlayerId(quizTakerId)
-            .any { it.quest.title == quests.quizQuest.title }
+    private fun QuizPreparationStartEvent.hasInProgressQuizQuest(): Boolean {
+        val quizQuest = questRepository.findById(quizQuestId)
+            ?: throw notFound(Quest::class)
+                .id(quizQuestId)
+                .message("check player has quiz quest")
+                .build()
+
+        return missionRepository.findInProgressMissionsByPlayerId(quizTakerId)
+            .any { it.quest.title == quizQuest.title }
+    }
 
     private fun onQuizEnd(event: QuizEndEvent) {
         with(event) {
@@ -61,7 +71,7 @@ class QuizListener(
 
             log.info { """[quiz end] { quizTakerId : "$quizTakerId", quizName : "$quizName", correctCount : "$correctCount" } """ }
 
-            playerFulfillMissionsService.execute(action, user.claimMissionRewardPresenter)
+            playerFulfillMissionsUsecase.execute(action, user.claimMissionRewardPresenter)
         }
     }
 }

@@ -1,13 +1,19 @@
-package tw.waterballsa.utopia.utopiagamification.quest.service
+package tw.waterballsa.utopia.utopiagamification.quest.usecase
 
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Mission
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
+import tw.waterballsa.utopia.utopiagamification.quest.domain.Quest
 import tw.waterballsa.utopia.utopiagamification.repositories.MissionRepository
+import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
+import tw.waterballsa.utopia.utopiagamification.repositories.QuestRepository
+import tw.waterballsa.utopia.utopiagamification.repositories.exceptions.NotFoundException.Companion.notFound
 
 @Component
-class ClaimMissionRewardService(
+class ClaimMissionRewardUsecase(
     private val missionRepository: MissionRepository,
+    private val playerRepository: PlayerRepository,
+    private val questRepository: QuestRepository
 ) {
 
     fun execute(request: Request, presenter: Presenter) {
@@ -21,15 +27,21 @@ class ClaimMissionRewardService(
 
             mission.rewardPlayer()
 
+            val player = playerRepository.savePlayer(mission.player)
             missionRepository.saveMission(mission)
 
             presenter.presentPlayerExpNotification(mission)
 
-            mission.nextMission()?.let { nextMission ->
+            val nextQuestId = mission.nextQuestId() ?: return
 
-                missionRepository.saveMission(nextMission)
-                presenter.presentNextMission(nextMission)
-            }
+            val nextQuest = questRepository.findById(nextQuestId)
+                ?: throw notFound(Quest::class)
+                    .id(nextQuestId)
+                    .message("assign player next quest id")
+                    .build()
+
+            missionRepository.saveMission(Mission(player, nextQuest))
+            presenter.presentNextMission(Mission(player, nextQuest))
         }
     }
 

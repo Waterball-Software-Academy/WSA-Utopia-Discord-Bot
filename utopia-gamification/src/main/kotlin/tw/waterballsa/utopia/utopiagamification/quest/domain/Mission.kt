@@ -32,11 +32,12 @@ class Mission(
         state = CLAIMED
     }
 
-    fun nextMission(): Mission? {
+    fun nextQuestId(): Int? {
         if (state == IN_PROGRESS) {
             return null
         }
-        return quest.nextQuest?.let { Mission(player, it) }
+
+        return quest.nextQuestId
     }
 }
 

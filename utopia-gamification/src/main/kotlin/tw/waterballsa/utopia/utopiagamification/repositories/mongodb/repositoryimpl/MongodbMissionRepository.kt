@@ -3,11 +3,14 @@ package tw.waterballsa.utopia.utopiagamification.repositories.mongodb.repository
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.mongo.gateway.*
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Mission
+import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
+import tw.waterballsa.utopia.utopiagamification.quest.domain.Quest
 import tw.waterballsa.utopia.utopiagamification.quest.domain.State
 import tw.waterballsa.utopia.utopiagamification.quest.domain.State.*
-import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.Quests
 import tw.waterballsa.utopia.utopiagamification.repositories.MissionRepository
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
+import tw.waterballsa.utopia.utopiagamification.repositories.QuestRepository
+import tw.waterballsa.utopia.utopiagamification.repositories.exceptions.NotFoundException.Companion.notFound
 import java.time.LocalDateTime
 import java.util.UUID.fromString
 
@@ -15,7 +18,7 @@ import java.util.UUID.fromString
 class MongodbMissionRepository(
     private val repository: MongoCollection<MissionDocument, String>,
     private val playerRepository: PlayerRepository,
-    private val quests: Quests
+    private val questRepository: QuestRepository
 ) : MissionRepository {
 
     override fun findPlayerMissionByQuestId(playerId: String, questId: Int): Mission? = repository.find(
@@ -43,15 +46,16 @@ class MongodbMissionRepository(
     ).map { it.toDomain() }
 
     override fun saveMission(mission: Mission): Mission {
-        playerRepository.savePlayer(mission.player)
         repository.save(mission.toDocument())
         return mission
     }
 
     // TODO 等到 @DBRef 功能上線後，將 playerId 改成 player，讓 MongoDB 協助 join
     private fun MissionDocument.toDomain(): Mission {
-        val player = playerRepository.findPlayerById(playerId) ?: throw RuntimeException("not find player")
-        val quest = quests.findById(questId)
+        val player = playerRepository.findPlayerById(playerId)
+            ?: throw notFound(Player::class).id(playerId).message("mission to domain").build()
+        val quest = questRepository.findById(questId)
+            ?: throw notFound(Quest::class).id(questId).message("mission to domain").build()
         return Mission(fromString(id), player, quest, state, completedTime)
     }
 
