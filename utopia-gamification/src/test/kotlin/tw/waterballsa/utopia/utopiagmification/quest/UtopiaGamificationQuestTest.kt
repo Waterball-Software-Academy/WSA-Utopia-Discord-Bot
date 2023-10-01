@@ -1,5 +1,6 @@
 package tw.waterballsa.utopia.utopiagmification.quest
 
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -72,6 +73,16 @@ class UtopiaGamificationQuestTest {
 
         assertNull(leaveActivityAction)
         assertFalse(activityMission.isCompleted())
+    }
+
+    @Test
+    fun `given playerA level 3 and exp 650, when player gain 6000 exp, then level is 11 and exp is 6650`() {
+        val player = Player("A", "A", 650u, 3u)
+        val rewardExp = 6000uL
+        player.gainExp(rewardExp)
+
+        assertThat(player.exp).isEqualTo(6650uL)
+        assertThat(player.level).isEqualTo(11u)
     }
 
     private fun Player.acceptQuest(quest: Quest) = Mission(this, quest)

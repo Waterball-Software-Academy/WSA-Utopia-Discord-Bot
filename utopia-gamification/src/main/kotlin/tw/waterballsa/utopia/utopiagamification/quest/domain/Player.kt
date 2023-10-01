@@ -1,33 +1,39 @@
 package tw.waterballsa.utopia.utopiagamification.quest.domain
 
-import tw.waterballsa.utopia.utopiagamification.quest.extensions.LevelSheet
-import tw.waterballsa.utopia.utopiagamification.quest.extensions.LevelSheet.Companion.calculateLevel
+import tw.waterballsa.utopia.utopiagamification.quest.extensions.LevelSheet.Companion.toLevel
 import java.time.OffsetDateTime
 import java.time.OffsetDateTime.now
-import kotlin.ULong.Companion.MIN_VALUE
 
 class Player(
     val id: String,
     var name: String,
-    var exp: ULong = MIN_VALUE,
-    var level: UInt = 1u,
+    exp: ULong = 0uL,
+    level: UInt = 1u,
     val joinDate: OffsetDateTime = now(),
-    var latestActivateDate: OffsetDateTime = now(),
-    var levelUpgradeDate: OffsetDateTime = now(),
-    // TODO achievement-system 這邊應該要改成 Role 陣列
-    val jdaRoles: MutableList<String> = mutableListOf(),
+    latestActivateDate: OffsetDateTime = now(),
+    levelUpgradeDate: OffsetDateTime? = null,
+    val jdaRoles: MutableList<String> = mutableListOf()
 ) {
 
-    init {
-        calculateLevel()
-    }
+    var exp = exp
+        private set
 
-    val currentLevelExpLimit
-        get() = LevelSheet.getLevelRange(level.toInt()).expLimit
+    var level = level
+        private set
+
+    var levelUpgradeDate = levelUpgradeDate
+        private set
+
+    var latestActivateDate = latestActivateDate
+        private set
 
     fun gainExp(rewardExp: ULong) {
         exp += rewardExp
-        calculateLevel()
+        val newLevel = exp.toLevel()
+        if (newLevel != level) {
+            level = newLevel
+            levelUpgradeDate = now()
+        }
         activate()
     }
 
@@ -37,14 +43,6 @@ class Player(
 
     fun addRole(role: String){
         jdaRoles.add(role)
-    }
-
-    private fun calculateLevel() {
-        val newLevel = calculateLevel(exp)
-        if (newLevel > level) {
-            level = newLevel
-            levelUpgradeDate = now()
-        }
     }
 
     private fun activate() {

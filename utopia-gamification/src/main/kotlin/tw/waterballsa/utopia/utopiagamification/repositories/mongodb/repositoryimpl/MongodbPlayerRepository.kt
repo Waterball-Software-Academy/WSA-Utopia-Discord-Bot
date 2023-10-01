@@ -48,6 +48,6 @@ data class PlayerDocument(
     val level: Int,
     val joinDate: OffsetDateTime,
     val latestActivateDate: OffsetDateTime,
-    val levelUpgradeDate: OffsetDateTime,
+    val levelUpgradeDate: OffsetDateTime?,
     val jdaRoles: MutableList<String>? = mutableListOf()
 )
