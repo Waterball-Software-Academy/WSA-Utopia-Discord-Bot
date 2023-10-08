@@ -13,6 +13,7 @@ class Player(
     val joinDate: OffsetDateTime = now(),
     var latestActivateDate: OffsetDateTime = now(),
     var levelUpgradeDate: OffsetDateTime = now(),
+    // TODO achievement-system 這邊應該要改成 Role 陣列
     val jdaRoles: MutableList<String> = mutableListOf(),
 ) {
 
@@ -29,17 +30,13 @@ class Player(
         activate()
     }
 
-    private fun calculateLevel() {
-        var explimit = getLevelExpLimit(level)
-        while (exp >= explimit) {
-            exp -= explimit
-            level++
-            explimit = getLevelExpLimit(level)
-            levelUpgradeDate = now()
-        }
+    fun hasRole(role: String): Boolean = jdaRoles.contains(role)
+
+    fun addRole(role: String){
+        jdaRoles.add(role)
     }
 
-    private fun calculateLevel1() {
+    private fun calculateLevel() {
         val newLevel = calculateLevel(exp)
         if (newLevel > level) {
             level = newLevel

@@ -6,8 +6,8 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import tw.waterballsa.utopia.mongo.gateway.MongoCollection
-import tw.waterballsa.utopia.mongo.gateway.Query as MGQuery  // Utopia Mongo Gateway Query
 import tw.waterballsa.utopia.mongo.gatweay.config.MongoDBConfiguration.Companion.MAPPER
+import tw.waterballsa.utopia.mongo.gateway.Query as MGQuery
 
 private const val MONGO_ID_FIELD_NAME = "_id"
 
@@ -47,6 +47,10 @@ class MongoCollectionAdapter<TDocument, ID>(
                 documentInformation.collectionName
             ).deletedCount
         }
+
+    override fun removeAll() {
+        mongoTemplate.dropCollection(documentInformation.collectionName)
+    }
 
     private fun TDocument.toBsonDocument(): Document = MAPPER.convertValue(this, Document::class.java)!!
         .convertIdField(documentInformation.idFieldName, MONGO_ID_FIELD_NAME)

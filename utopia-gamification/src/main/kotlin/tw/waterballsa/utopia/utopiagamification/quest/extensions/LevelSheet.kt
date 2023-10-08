@@ -1,6 +1,6 @@
 package tw.waterballsa.utopia.utopiagamification.quest.extensions
 
-import tw.waterballsa.utopia.utopiagamification.quest.extensions.LevelSheet.LevelRange.Companion.LEVEL_ONE
+import tw.waterballsa.utopia.utopiagamification.quest.extensions.LevelSheet.Range.Companion.LEVEL_ONE
 import kotlin.ULong.Companion.MIN_VALUE
 
 class LevelSheet private constructor() {
@@ -9,24 +9,31 @@ class LevelSheet private constructor() {
         const val EXP_PER_MINUTES = 10u
         private const val MAX_LEVEL = 100
         private val COEFFICIENTS = arrayOf(1u, 2u, 4u, 8u, 12u, 16u, 32u, 52u, 64u, 84u)
-        private val LEVEL_RANGES = generateSequence(LEVEL_ONE) { it.next() }.take(MAX_LEVEL)
+        private val LEVEL_TO_RANGE = generateSequence(LEVEL_ONE) { it.next() }.take(MAX_LEVEL).associateBy { it.level }
 
-        fun calculateLevel(exp: ULong) = (LEVEL_RANGES.find { it.isExpGreaterThan(exp) } ?: LEVEL_ONE).level.toUInt()
+        fun calculateLevel(exp: ULong) = (LEVEL_TO_RANGE.values.find { it.isExpGreaterThan(exp) } ?: LEVEL_ONE).level.toUInt()
+
+        fun getLevelRange(level: Int): Range = when {
+            level <= 0 -> LEVEL_ONE
+            LEVEL_TO_RANGE.contains(level) -> LEVEL_TO_RANGE[level]!!
+            level > MAX_LEVEL -> LEVEL_TO_RANGE.values.last()
+            else -> throw IllegalArgumentException("The level ($level) is incorrect.")
+        }
     }
 
-    private class LevelRange private constructor(val level: Int = 1, previousLevelRange: LevelRange? = null) {
+    class Range private constructor(val level: Int = 1, previousLevelRange: Range? = null) {
 
         // 升級時間
-        private val upgradeTime: ULong
+        val upgradeTime: ULong
 
         // 累積經驗值
-        private val accExp: ULong
+        val accExp: ULong
 
         // 當前經驗值上限
-        private val expLimit: ULong
+        val expLimit: ULong
 
         companion object {
-            val LEVEL_ONE = LevelRange()
+            val LEVEL_ONE = Range()
         }
 
         init {
@@ -37,7 +44,7 @@ class LevelSheet private constructor() {
             expLimit = accExp.minus(previousLevelRange?.accExp ?: MIN_VALUE)
         }
 
-        fun next() = LevelRange(level.plus(1), this)
+        fun next() = Range(level.plus(1), this)
 
         fun isExpGreaterThan(exp: ULong) = accExp > exp
 
