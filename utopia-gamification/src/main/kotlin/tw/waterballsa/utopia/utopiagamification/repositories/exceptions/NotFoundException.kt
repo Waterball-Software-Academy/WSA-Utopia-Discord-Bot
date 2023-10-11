@@ -6,7 +6,7 @@ class NotFoundException(
     resourceType: KClass<*>,
     id: String,
     message: String
-) : RuntimeException("Resource ($resourceType) not found: (id = $id) $message.") {
+) : RuntimeException("Resource (${resourceType.simpleName}) not found: (id = $id) $message.") {
 
     companion object {
 
