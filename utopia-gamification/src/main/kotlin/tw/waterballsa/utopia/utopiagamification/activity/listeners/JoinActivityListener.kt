@@ -15,7 +15,7 @@ import tw.waterballsa.utopia.utopiagamification.quest.extensions.toTaipeiLocalDa
 import tw.waterballsa.utopia.utopiagamification.quest.listeners.UtopiaGamificationListener
 import tw.waterballsa.utopia.utopiagamification.repositories.ActivityRepository
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
-import tw.waterballsa.utopia.utopiagamification.quest.service.PlayerFulfillMissionsService
+import tw.waterballsa.utopia.utopiagamification.quest.usecase.PlayerFulfillMissionsUsecase
 import java.time.LocalDateTime.now
 
 private val log = KotlinLogging.logger {}
@@ -24,7 +24,7 @@ private val log = KotlinLogging.logger {}
 class EventJoiningListener(
     guild: Guild,
     playerRepository: PlayerRepository,
-    private val playerFulfillMissionsService: PlayerFulfillMissionsService,
+    private val playerFulfillMissionsUsecase: PlayerFulfillMissionsUsecase,
     private val activityRepository: ActivityRepository
 ) : UtopiaGamificationListener(guild, playerRepository) {
 
@@ -42,7 +42,7 @@ class EventJoiningListener(
             channelLeft?.let {
                 val stayActivity = activityRepository.findAudienceStayActivity(it.id, player.id) ?: return@let
                 val action = stayActivity.leave(player) ?: return
-                playerFulfillMissionsService.execute(action, user.claimMissionRewardPresenter)
+                playerFulfillMissionsUsecase.execute(action, user.claimMissionRewardPresenter)
                 activityRepository.save(stayActivity)
             }
         }

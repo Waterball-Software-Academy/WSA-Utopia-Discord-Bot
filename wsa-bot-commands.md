@@ -60,8 +60,12 @@
 |   quiz   | name(STRING): The quiz you want to start. | The quiz for utopia. |
 
 ## utopia
-|      Commands       | Arguments                   | Description                           |
-|:-------------------:| --------------------------- | ------------------------------------- |
-| utopia first-quest  |                             | accept first quest                    |
-|  utopia re-render   |                             | re-render in_progress/completed quest |
-| utopia assign-quest | quest-id(INTEGER): quest id | accept quest                          |
+|      Commands      | Arguments | Description                           |
+|:------------------:| --------- | ------------------------------------- |
+| utopia first-quest |           | get first quest                       |
+|  utopia re-render  |           | re-render in_progress/completed quest |
+
+## rock-paper-scissors
+|      Commands       | Arguments | Description                           |
+|:-------------------:| --------- | ------------------------------------- |
+| rock-paper-scissors |           | start a new rock paper scissors game! |

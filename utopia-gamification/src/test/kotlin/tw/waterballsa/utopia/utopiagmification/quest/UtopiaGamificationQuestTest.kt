@@ -7,9 +7,8 @@ import org.junit.jupiter.api.TestTemplate
 import org.junit.jupiter.api.extension.*
 import tw.waterballsa.utopia.utopiagamification.activity.domain.Activity
 import tw.waterballsa.utopia.utopiagamification.activity.domain.Activity.State.ACTIVE
-import tw.waterballsa.utopia.utopiagamification.quest.domain.actions.JoinActivityCriteria
-import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.quest
 import tw.waterballsa.utopia.utopiagamification.quest.domain.*
+import tw.waterballsa.utopia.utopiagamification.quest.domain.actions.JoinActivityCriteria
 import java.util.*
 import java.util.UUID.randomUUID
 
@@ -22,13 +21,13 @@ class UtopiaGamificationQuestTest {
     @BeforeEach
     fun setup() {
         playerA = Player(id = randomUUID().toString(), name = "A")
-        quest = quest {
-            id = 9
-            title = "參與院長主持的學院節目"
-            description = ""
-            reward = Reward(100u, 100u, 1.0f)
+        quest = Quest(
+            id = 9,
+            title = "參與院長主持的學院節目",
+            description = "",
+            reward = Reward(100u, 100u, 1.0f),
             criteria = JoinActivityCriteria("遊戲微服務計畫：水球實況", 1, 0)
-        }
+        )
         activity = Activity(
             "遊戲微服務計畫：水球實況",
             "hostId",

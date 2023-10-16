@@ -1,16 +1,18 @@
 package tw.waterballsa.utopia.utopiagamification.quest.domain
 
+private const val completeMessage = "任務完成！"
+
 class Quest(
     val id: Int,
     val title: String,
     val description: String,
-    val preCondition: PreCondition,
-    val roleType: RoleType,
-    val periodType: PeriodType,
+    val preCondition: PreCondition = EmptyPreCondition(),
+    val roleType: RoleType = RoleType.EVERYONE,
+    val periodType: PeriodType = PeriodType.NONE,
     val criteria: Action.Criteria,
     val reward: Reward,
-    val nextQuest: Quest? = null,
-    val postMessage: String
+    val nextQuestId: Int? = null,
+    val postMessage: String = completeMessage
 )
 
 class Reward(

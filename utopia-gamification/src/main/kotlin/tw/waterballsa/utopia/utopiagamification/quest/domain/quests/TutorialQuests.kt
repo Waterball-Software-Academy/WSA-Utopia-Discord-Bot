@@ -2,15 +2,17 @@ package tw.waterballsa.utopia.utopiagamification.quest.domain.quests
 
 import tw.waterballsa.utopia.utopiagamification.quest.domain.*
 import tw.waterballsa.utopia.utopiagamification.quest.domain.actions.*
+import tw.waterballsa.utopia.utopiagamification.repositories.inmemory.repositoryimpl.InMemoryQuestRepository
 
 private const val unlockEmoji = "🔑"
 private const val missionTips = "> （要是你怕自己的訊息太突兀，只要在訊息的開頭加上 `#任務`，保證自在。）"
 
-val Quests.unlockAcademyQuest: Quest
-    get() = quest {
-        id = 1
-        title = "解鎖學院"
-        description =
+val InMemoryQuestRepository.unlockAcademyQuest: Quest
+    get() = findById(1) ?: save(
+        Quest(
+            id = 1,
+            title = "解鎖學院",
+            description =
             """
             **歡迎你加入水球軟體學院<:WaterBall:999330661171204177> ，這裡是最充實又歡樂的軟體社群！**
                   
@@ -20,35 +22,34 @@ val Quests.unlockAcademyQuest: Quest
             > 來吧，為了能夠參加學院中各式各樣的線上聚會，你需要先解鎖學院，只要點個表情符號幾秒內就能解鎖學院囉！
             
             **解鎖後你會獲得基礎的「學院公民」身份。**
-            """.trimIndent()
+            """.trimIndent(),
 
-        preCondition = EmptyPreCondition()
+            periodType = PeriodType.MAIN_QUEST,
 
-        roleType = RoleType.EVERYONE
+            criteria = MessageReactionCriteria(
+                ChannelIdRule(wsa.unlockEntryChannelId),
+                wsa.unlockEntryMessageId,
+                unlockEmoji
+            ),
 
-        periodType = PeriodType.MAIN_QUEST
+            reward = Reward(
+                100u,
+                100u,
+                1.0f,
+                RoleType.WSA_MEMBER
+            ),
 
-        criteria = MessageReactionCriteria(
-            ChannelIdRule(wsa.unlockEntryChannelId),
-            wsa.unlockEntryMessageId,
-            unlockEmoji
+            nextQuestId = 2
         )
+    )
 
-        reward = Reward(
-            100u,
-            100u,
-            1.0f,
-            RoleType.WSA_MEMBER
-        )
 
-        nextQuest = selfIntroductionQuest
-    }
-
-val Quests.selfIntroductionQuest: Quest
-    get() = quest {
-        id = 2
-        title = "自我介紹"
-        description =
+val InMemoryQuestRepository.selfIntroductionQuest: Quest
+    get() = findById(2) ?: save(
+        Quest(
+            id = 2,
+            title = "自我介紹",
+            description =
             """
             **來認識新朋友吧！為了讓你在學院中過得更自在一些，我會幫助你融入大家！**
             > **來吧！為了成為學院中的紳士，這裡要開始給你新手任務啦！**
@@ -72,37 +73,39 @@ val Quests.selfIntroductionQuest: Quest
             2.
             3.
             ```  
-            """.trimIndent()
-        preCondition = QuestIdPreCondition(1)
+            """.trimIndent(),
+            preCondition = QuestIdPreCondition(1),
 
-        roleType = RoleType.WSA_MEMBER
+            roleType = RoleType.WSA_MEMBER,
 
-        periodType = PeriodType.MAIN_QUEST
+            periodType = PeriodType.MAIN_QUEST,
 
-        reward = Reward(
-            100u,
-            100u,
-            1.0f
+            reward = Reward(
+                100u,
+                100u,
+                1.0f
+            ),
+
+            criteria = MessageSentCriteria(
+                ChannelIdRule(wsa.selfIntroChannelId),
+                regexRule = getSelfIntroductionRegex()
+            ),
+
+            nextQuestId = 3
         )
-
-        criteria = MessageSentCriteria(
-            ChannelIdRule(wsa.selfIntroChannelId),
-            regexRule = getSelfIntroductionRegex()
-        )
-
-        nextQuest = firstMessageActionQuest
-    }
+    )
 
 fun String.toRegexRule(): RegexRule = RegexRule(this.toRegex())
 
 private fun getSelfIntroductionRegex(): RegexRule =
     """【(.|\n)*】(.|\n)*工作職位：?(.|\n)*((公司產業：?(:)?(.|\n)*))?專長：?(.|\n)*興趣：?(.|\n)*簡介：?.(.|\n)*((三件關於我的事，猜猜哪一件是假的：?(:)?(.|\n)*))?""".toRegexRule()
 
-val Quests.firstMessageActionQuest: Quest
-    get() = quest {
-        id = 3
-        title = "新生降落"
-        description =
+val InMemoryQuestRepository.firstMessageActionQuest: Quest
+    get() = findById(3) ?: save(
+        Quest(
+            id = 3,
+            title = "新生降落",
+            description =
             """
             水球軟體學院中主要有三個常常用來聊天和交流的頻道（話題閒聊/工程師生活/職涯攻略），讓我來帶著你慢慢融入大家吧～
             
@@ -114,33 +117,34 @@ val Quests.firstMessageActionQuest: Quest
             大家都會熱情地和你打招呼的喲～
             
             $missionTips
-            """.trimIndent()
+            """.trimIndent(),
 
-        preCondition = QuestIdPreCondition(2)
+            preCondition = QuestIdPreCondition(2),
 
-        roleType = RoleType.WSA_MEMBER
+            roleType = RoleType.WSA_MEMBER,
 
-        periodType = PeriodType.MAIN_QUEST
+            periodType = PeriodType.MAIN_QUEST,
 
-        reward = Reward(
-            100u,
-            100u,
-            1.0f
+            reward = Reward(
+                100u,
+                100u,
+                1.0f
+            ),
+
+            criteria = MessageSentCriteria(
+                ChannelIdRule(wsa.discussionAreaChannelId)
+            ),
+
+            nextQuestId = 4
         )
+    )
 
-        criteria = MessageSentCriteria(
-            ChannelIdRule(wsa.discussionAreaChannelId)
-        )
-
-        nextQuest = SendContainsImageMessageInEngineerLifeChannelQuest
-
-    }
-
-val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
-    get() = quest {
-        id = 4
-        title = "融入大家"
-        description =
+val InMemoryQuestRepository.sendContainsImageMessageInEngineerLifeChannelQuest: Quest
+    get() = findById(4) ?: save(
+        Quest(
+            id = 4,
+            title = "融入大家",
+            description =
             """
             接著，我要帶你前往非常好融入的 ${wsa.engineerLifeChannelId.toLink()} 頻道，工程師紳士們會在這裡分享和「軟體」全然無關的生活話題。
 
@@ -151,32 +155,34 @@ val Quests.SendContainsImageMessageInEngineerLifeChannelQuest: Quest
             
             $missionTips
 
-            """.trimIndent()
-        preCondition = QuestIdPreCondition(3)
+            """.trimIndent(),
+            preCondition = QuestIdPreCondition(3),
 
-        roleType = RoleType.WSA_MEMBER
+            roleType = RoleType.WSA_MEMBER,
 
-        periodType = PeriodType.MAIN_QUEST
+            periodType = PeriodType.MAIN_QUEST,
 
-        reward = Reward(
-            100u,
-            100u,
-            1.0f
+            reward = Reward(
+                100u,
+                100u,
+                1.0f
+            ),
+
+            criteria = MessageSentCriteria(
+                ChannelIdRule(wsa.engineerLifeChannelId),
+                hasImageRule = BooleanRule.TRUE
+            ),
+
+            nextQuestId = 5
         )
+    )
 
-        criteria = MessageSentCriteria(
-            ChannelIdRule(wsa.engineerLifeChannelId),
-            hasImageRule = BooleanRule.TRUE
-        )
-
-        nextQuest = ReplyToAnyoneInCareerAdvancementTopicChannelQuest
-    }
-
-val Quests.ReplyToAnyoneInCareerAdvancementTopicChannelQuest: Quest
-    get() = quest {
-        id = 5
-        title = "職涯攻略"
-        description =
+val InMemoryQuestRepository.replyToAnyoneInCareerAdvancementTopicChannelQuest: Quest
+    get() = findById(5) ?: save(
+        Quest(
+            id = 5,
+            title = "職涯攻略",
+            description =
             """          
         最後，是充滿含金量和高談闊論的 ${wsa.careerAdvancementTopicChannelId.toLink()}。
         
@@ -188,34 +194,36 @@ val Quests.ReplyToAnyoneInCareerAdvancementTopicChannelQuest: Quest
         
         $missionTips
 
-            """.trimIndent()
+            """.trimIndent(),
 
-        preCondition = QuestIdPreCondition(4)
+            preCondition = QuestIdPreCondition(4),
 
-        roleType = RoleType.WSA_MEMBER
+            roleType = RoleType.WSA_MEMBER,
 
-        periodType = PeriodType.MAIN_QUEST
+            periodType = PeriodType.MAIN_QUEST,
 
-        reward = Reward(
-            100u,
-            100u,
-            1.0f,
-        )
+            reward = Reward(
+                100u,
+                100u,
+                1.0f,
+            ),
 
-        criteria =
+            criteria =
             MessageSentCriteria(
                 ChannelIdRule(wsa.careerAdvancementTopicChannelId),
                 hasRepliedRule = BooleanRule.TRUE
-            )
+            ),
 
-        nextQuest = watchVideoQuest
-    }
+            nextQuestId = 6
+        )
+    )
 
-val Quests.watchVideoQuest: Quest
-    get() = quest {
-        id = 6
-        title = "學院精華影片"
-        description = """       
+val InMemoryQuestRepository.watchVideoQuest: Quest
+    get() = findById(6) ?: save(
+        Quest(
+            id = 6,
+            title = "學院精華影片",
+            description = """       
             在學會如何自在地和大家聊天交流和參與話題之後，接下來要來帶你好好逛一下這個學院。
 
             我認為：「一個好的社群，會留下大家的足跡，這樣的社群就像是一座觀光勝地，逛都逛不完。」
@@ -224,32 +232,34 @@ val Quests.watchVideoQuest: Quest
             
             這個任務非常簡單，請你在 ${wsa.featuredVideosChannelId.toLink()} 論壇中，找一部精華影片來看，並在留言區留下你的觀影心得，或是任何一種支持或想法都可以喔！
    
-        """.trimIndent()
+        """.trimIndent(),
 
-        reward = Reward(
-            100u,
-            100u,
-            1.0f,
+            reward = Reward(
+                100u,
+                100u,
+                1.0f,
+            ),
+
+            preCondition = QuestIdPreCondition(5),
+
+            roleType = RoleType.WSA_MEMBER,
+
+            periodType = PeriodType.MAIN_QUEST,
+
+            criteria = MessageSentCriteria(
+                ChannelIdRule(wsa.featuredVideosChannelId),
+            ),
+
+            nextQuestId = 7
         )
+    )
 
-        preCondition = QuestIdPreCondition(5)
-
-        roleType = RoleType.WSA_MEMBER
-
-        periodType = PeriodType.MAIN_QUEST
-
-        criteria = MessageSentCriteria(
-            ChannelIdRule(wsa.featuredVideosChannelId)
-        )
-
-        nextQuest = flagPostQuest
-    }
-
-val Quests.flagPostQuest: Quest
-    get() = quest {
-        id = 7
-        title = "全民插旗：把學院當成自己的家"
-        description =
+val InMemoryQuestRepository.flagPostQuest: Quest
+    get() = findById(7) ?: save(
+        Quest(
+            id = 7,
+            title = "全民插旗：把學院當成自己的家",
+            description =
             """ 
             讓大家認識了你之後，還不夠！接下來我要教你如何「把學院當成自己的家！」
             在學院中，大家都會在 ${wsa.flagPostChannelId.toLink()} 論壇中，開「個人串」來記錄自己的各項心得或是日誌。
@@ -262,31 +272,33 @@ val Quests.flagPostQuest: Quest
             
             所以請你練習看看，先開一個屬於你的「個人串」吧。
 
-            """.trimIndent() //TODO: 尚未將暱稱條件加入 criteria ，並且貼文的名稱要打上 `<你的暱稱>`
+            """.trimIndent(), //TODO: 尚未將暱稱條件加入 criteria ，並且貼文的名稱要打上 `<你的暱稱>`
 
-        preCondition = QuestIdPreCondition(6)
+            preCondition = QuestIdPreCondition(6),
 
-        roleType = RoleType.WSA_MEMBER
+            roleType = RoleType.WSA_MEMBER,
 
-        periodType = PeriodType.MAIN_QUEST
+            periodType = PeriodType.MAIN_QUEST,
 
-        reward = Reward(
-            100u,
-            100u,
-            1.0f
+            reward = Reward(
+                100u,
+                100u,
+                1.0f
+            ),
+            criteria = PostCriteria(
+                ChannelIdRule(wsa.flagPostChannelId)
+            ),
+
+            nextQuestId = 8
         )
-        criteria = PostCriteria(
-            ChannelIdRule(wsa.flagPostChannelId)
-        )
+    )
 
-        nextQuest = SendMessageInVoiceChannelQuest
-    }
-
-val Quests.SendMessageInVoiceChannelQuest: Quest
-    get() = quest {
-        id = 8
-        title = "到處吃瓜"
-        description =
+val InMemoryQuestRepository.sendMessageInVoiceChannelQuest: Quest
+    get() = findById(8) ?: save(
+        Quest(
+            id = 8,
+            title = "到處吃瓜",
+            description =
             """
             水球軟體學院的其中一項最受大家喜愛的文化，就是所謂的「吃瓜文化」啦！
             
@@ -298,55 +310,59 @@ val Quests.SendMessageInVoiceChannelQuest: Quest
             
             很好玩吧！給你一個挑戰，加入「超過 2 人」的任意語音頻道中，並在該語音頻道的訊息區發表 1 則訊息（可以和大家打招呼，或是問問大家在幹什麼）。 
                        
-            """.trimIndent()
+            """.trimIndent(),
 
-        reward = Reward(
-            100u,
-            100u,
-            1.0f
+            reward = Reward(
+                100u,
+                100u,
+                1.0f
+            ),
+
+            preCondition = QuestIdPreCondition(7),
+
+            roleType = RoleType.WSA_MEMBER,
+
+            periodType = PeriodType.MAIN_QUEST,
+
+            criteria = MessageSentCriteria(
+                ChannelIdRule.ANY_CHANNEL,
+                numberOfVoiceChannelMembersRule = AtLeastRule(2)
+            ),
+
+            nextQuestId = 9
         )
+    )
 
-        preCondition = QuestIdPreCondition(7)
-
-        roleType = RoleType.WSA_MEMBER
-
-        periodType = PeriodType.MAIN_QUEST
-
-        criteria = MessageSentCriteria(
-            ChannelIdRule.ANY_CHANNEL,
-            numberOfVoiceChannelMembersRule = AtLeastRule(2)
-        )
-
-        nextQuest = JoinActivityQuest
-    }
-
-val Quests.JoinActivityQuest: Quest
-    get() = quest {
-        id = 9
-        title = "參與院長主持的學院節目"
-        description =
+val InMemoryQuestRepository.joinActivityQuest: Quest
+    get() = findById(9) ?: save(
+        Quest(
+            id = 9,
+            title = "參與院長主持的學院節目",
+            description =
             """
             在水球軟體學院中，每週都會有 3~5 個線上聚會，之前在全盛時期甚至一週有 7~10 個活動呢！（軟體英文派對、Amazon 共學會、遊戲微服務計畫（軟體工程讀書會）、純函式話題聚會、人工智慧共學會、Spring Boot 培訓班、水球遊戲微服務計畫實況、Leetcode 刷題屠龍會⋯⋯）
             我想邀請你參與學院中最穩定長跑的節目，也就是週六院長主持的「遊戲微服務計畫：水球實況」。在過去的 40 場節目中就平均有 90 幾位觀眾參與，是非常熱血和高含金量的節目，主要在討論「軟體工程各大方法論的實務運用，並且以線上遊戲作為示範」。
             想一睹學院各種節目主持的風采嗎？先參加一次「遊戲微服務計畫：水球實況」並和大家一起線上嗨吧！學習就是要和大家一起吃瓜的啦～！ 
             
-            """.trimIndent()
+            """.trimIndent(),
 
-        reward = Reward(
-            100u,
-            100u,
-            1.0f
+            reward = Reward(
+                100u,
+                100u,
+                1.0f
+            ),
+
+            criteria = JoinActivityCriteria("遊戲微服務計畫：水球實況", 60, 40),
+            nextQuestId = 10
         )
+    )
 
-        criteria = JoinActivityCriteria("遊戲微服務計畫：水球實況", 60, 40)
-        nextQuest = quizQuest
-    }
-
-val Quests.quizQuest: Quest
-    get() = quest {
-        id = 10
-        title = "考試"
-        description =
+val InMemoryQuestRepository.quizQuest: Quest
+    get() = findById(10) ?: save(
+        Quest(
+            id = 10,
+            title = "考試",
+            description =
             """
             恭喜你，你已經通過了一連串的新手試煉，接下來是最後一項「任務」，也就是「轉職任務」！
             只要做完這最後一項新手任務，你就能獲得「學院一轉紳士」的身份組！
@@ -358,19 +374,20 @@ val Quests.quizQuest: Quest
             
             考試時間為 10 分鐘，到學院指令區輸入以下指令吧！ 
             [ /quiz name: 紳士考題 ] 
-            """.trimIndent()
+            """.trimIndent(),
 
-        preCondition = QuestIdPreCondition(8)
+            preCondition = QuestIdPreCondition(8),
 
-        roleType = RoleType.WSA_MEMBER
+            roleType = RoleType.WSA_MEMBER,
 
-        periodType = PeriodType.MAIN_QUEST
+            periodType = PeriodType.MAIN_QUEST,
 
-        reward = Reward(
-            100u,
-            100u,
-            1.0f
+            reward = Reward(
+                100u,
+                100u,
+                1.0f
+            ),
+
+            criteria = QuizCriteria("紳士考題", 4, 5),
         )
-
-        criteria = QuizCriteria("紳士考題", 4, 5)
-    }
+    )

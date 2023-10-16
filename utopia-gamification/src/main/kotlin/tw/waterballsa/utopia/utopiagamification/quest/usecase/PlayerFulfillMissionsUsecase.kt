@@ -1,4 +1,4 @@
-package tw.waterballsa.utopia.utopiagamification.quest.service
+package tw.waterballsa.utopia.utopiagamification.quest.usecase
 
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Action
@@ -6,7 +6,7 @@ import tw.waterballsa.utopia.utopiagamification.quest.domain.Mission
 import tw.waterballsa.utopia.utopiagamification.repositories.MissionRepository
 
 @Component
-class PlayerFulfillMissionsService(
+class PlayerFulfillMissionsUsecase(
     private val missionRepository: MissionRepository
 ) {
 

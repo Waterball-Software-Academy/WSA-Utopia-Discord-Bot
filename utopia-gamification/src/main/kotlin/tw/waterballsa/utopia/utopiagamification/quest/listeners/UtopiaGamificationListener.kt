@@ -8,8 +8,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Mission
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
+import tw.waterballsa.utopia.utopiagamification.quest.usecase.PlayerFulfillMissionsUsecase
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
-import tw.waterballsa.utopia.utopiagamification.quest.service.PlayerFulfillMissionsService
 
 open class UtopiaGamificationListener(
     private val guild: Guild,
@@ -39,7 +39,7 @@ open class UtopiaGamificationListener(
     }
 
     protected val User.claimMissionRewardPresenter
-        get() = object : PlayerFulfillMissionsService.Presenter {
+        get() = object : PlayerFulfillMissionsUsecase.Presenter {
             override fun presentClaimMissionReward(mission: Mission) {
                 openPrivateChannel().queue {
                     it.sendMessage(mission.postMessage)

@@ -7,8 +7,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Mission
 import tw.waterballsa.utopia.utopiagamification.quest.extensions.publishToUser
+import tw.waterballsa.utopia.utopiagamification.quest.usecase.ClaimMissionRewardUsecase
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
-import tw.waterballsa.utopia.utopiagamification.quest.service.ClaimMissionRewardService
 
 const val BUTTON_QUEST_TAG = "quest"
 
@@ -25,7 +25,7 @@ class RewardButton {
 class UtopiaGamificationQuestListener(
     guild: Guild,
     playerRepository: PlayerRepository,
-    private val claimMissionRewardService: ClaimMissionRewardService,
+    private val claimMissionRewardUsecase: ClaimMissionRewardUsecase,
 ) : UtopiaGamificationListener(guild, playerRepository) {
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
@@ -42,8 +42,8 @@ class UtopiaGamificationQuestListener(
 
             val player = user.toPlayer() ?: return
 
-            val request = ClaimMissionRewardService.Request(player, questId)
-            val presenter = object : ClaimMissionRewardService.Presenter {
+            val request = ClaimMissionRewardUsecase.Request(player, questId)
+            val presenter = object : ClaimMissionRewardUsecase.Presenter {
                 override fun presentPlayerExpNotification(mission: Mission) {
                     publishMessage(
                         """
@@ -63,7 +63,7 @@ class UtopiaGamificationQuestListener(
                 }
             }
 
-            claimMissionRewardService.execute(request, presenter)
+            claimMissionRewardUsecase.execute(request, presenter)
         }
     }
 
