@@ -41,14 +41,21 @@ class AudienceCounterListener(private val wsa: WsaDiscordProperties) : UtopiaLis
                 return
             }
 
-            val recordPeriodTime =
-                getOptionAsPositiveInt(TIME_LENGTH)!!.toLong() // period time between startTime and endTime
-            val currentTime = LocalDateTime.now() // now time
-            val startRecordTime = currentTime.truncatedTo(ChronoUnit.MINUTES).toDate() // start time
-            val endRecordTime = currentTime.plusMinutes(recordPeriodTime).toDate() // end time
+            val userRoles = member?.roles?.map { it.id } ?: emptyList()
+            val requiredRole = wsa.wsaAlphaRoleId
 
-            reply("counter start!!!").queue {
-                scheduledRecordHighestAudience(startRecordTime, endRecordTime)
+            if (userRoles.contains(requiredRole)) {
+                val recordPeriodTime =
+                    getOptionAsPositiveInt(TIME_LENGTH)!!.toLong() // period time between startTime and endTime
+                val currentTime = LocalDateTime.now() // now time
+                val startRecordTime = currentTime.truncatedTo(ChronoUnit.MINUTES).toDate() // start time
+                val endRecordTime = currentTime.plusMinutes(recordPeriodTime).toDate() // end time
+
+                reply("counter start!!!").queue {
+                    scheduledRecordHighestAudience(startRecordTime, endRecordTime)
+                }
+            } else {
+                reply("You should be the Alpha!").setEphemeral(true).queue()
             }
         }
     }
