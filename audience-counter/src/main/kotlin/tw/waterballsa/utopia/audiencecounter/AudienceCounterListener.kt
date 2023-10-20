@@ -12,6 +12,7 @@ import tw.waterballsa.utopia.commons.extensions.onStart
 import tw.waterballsa.utopia.commons.extensions.toDate
 import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.jda.extensions.getOptionAsPositiveInt
+import tw.waterballsa.utopia.jda.extensions.replyEphemerally
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -41,21 +42,21 @@ class AudienceCounterListener(private val wsa: WsaDiscordProperties) : UtopiaLis
                 return
             }
 
-            val userRoles = member?.roles?.map { it.id } ?: emptyList()
+            val memberRoleIds = member?.roles?.map { it.id } ?: emptyList()
             val requiredRole = wsa.wsaAlphaRoleId
 
-            if (userRoles.contains(requiredRole)) {
+            if (memberRoleIds.contains(requiredRole)) {
                 val recordPeriodTime =
-                    getOptionAsPositiveInt(TIME_LENGTH)!!.toLong() // period time between startTime and endTime
-                val currentTime = LocalDateTime.now() // now time
-                val startRecordTime = currentTime.truncatedTo(ChronoUnit.MINUTES).toDate() // start time
-                val endRecordTime = currentTime.plusMinutes(recordPeriodTime).toDate() // end time
+                    getOptionAsPositiveInt(TIME_LENGTH)!!.toLong()
+                val currentTime = LocalDateTime.now()
+                val startRecordTime = currentTime.truncatedTo(ChronoUnit.MINUTES).toDate()
+                val endRecordTime = currentTime.plusMinutes(recordPeriodTime).toDate()
 
                 reply("counter start!!!").queue {
                     scheduledRecordHighestAudience(startRecordTime, endRecordTime)
                 }
             } else {
-                reply("You should be the Alpha!").setEphemeral(true).queue()
+                replyEphemerally("You should be the Alpha!")
             }
         }
     }
