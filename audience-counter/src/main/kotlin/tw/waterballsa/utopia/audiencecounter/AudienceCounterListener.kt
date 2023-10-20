@@ -13,7 +13,7 @@ import tw.waterballsa.utopia.commons.extensions.toDate
 import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.jda.extensions.getOptionAsPositiveInt
 import tw.waterballsa.utopia.jda.extensions.replyEphemerally
-import java.time.LocalDateTime
+import java.time.LocalDateTime.now
 import java.time.temporal.ChronoUnit
 import java.util.*
 import kotlin.concurrent.timerTask
@@ -48,7 +48,7 @@ class AudienceCounterListener(private val wsa: WsaDiscordProperties) : UtopiaLis
             if (memberRoleIds.contains(requiredRole)) {
                 val recordPeriodTime =
                     getOptionAsPositiveInt(TIME_LENGTH)!!.toLong()
-                val currentTime = LocalDateTime.now()
+                val currentTime = now()
                 val startRecordTime = currentTime.truncatedTo(ChronoUnit.MINUTES).toDate()
                 val endRecordTime = currentTime.plusMinutes(recordPeriodTime).toDate()
 
