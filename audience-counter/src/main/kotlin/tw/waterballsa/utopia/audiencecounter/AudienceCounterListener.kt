@@ -22,7 +22,6 @@ import kotlin.math.max
 import kotlin.time.Duration.Companion.seconds
 
 
-
 private const val TIME_LENGTH = "time-length"
 private val channelIdToChannelHighestAudience = hashMapOf<String, Int>()
 
@@ -59,6 +58,7 @@ class AudienceCounterListener(private val wsa: WsaDiscordProperties) : UtopiaLis
             }
         }
     }
+
     private fun Member?.isAlpha(): Boolean = this?.roles?.any { it.id == wsa.wsaAlphaRoleId } ?: false
 }
 
