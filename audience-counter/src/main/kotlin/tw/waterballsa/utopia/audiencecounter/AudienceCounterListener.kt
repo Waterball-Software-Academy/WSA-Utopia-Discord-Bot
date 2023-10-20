@@ -13,12 +13,14 @@ import tw.waterballsa.utopia.commons.extensions.toDate
 import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.jda.extensions.getOptionAsPositiveInt
 import tw.waterballsa.utopia.jda.extensions.replyEphemerally
+import net.dv8tion.jda.api.entities.Member
 import java.time.LocalDateTime.now
 import java.time.temporal.ChronoUnit
 import java.util.*
 import kotlin.concurrent.timerTask
 import kotlin.math.max
 import kotlin.time.Duration.Companion.seconds
+
 
 
 private const val TIME_LENGTH = "time-length"
@@ -42,11 +44,7 @@ class AudienceCounterListener(private val wsa: WsaDiscordProperties) : UtopiaLis
                 return
             }
 
-            val memberRoleIds = member?.roles?.map { it.id } ?: emptyList()
-            val requiredRole = wsa.wsaAlphaRoleId
-            val hasRequiredRole = memberRoleIds.contains(requiredRole)
-
-            if (hasRequiredRole) {
+            if (member.isAlpha()) {
                 val recordPeriodTime =
                     getOptionAsPositiveInt(TIME_LENGTH)!!.toLong()
                 val currentTime = now()
@@ -61,6 +59,7 @@ class AudienceCounterListener(private val wsa: WsaDiscordProperties) : UtopiaLis
             }
         }
     }
+    private fun Member?.isAlpha(): Boolean = this?.roles?.any { it.id == wsa.wsaAlphaRoleId } ?: false
 }
 
 private fun SlashCommandInteractionEvent.scheduledRecordHighestAudience(startRecordTime: Date, endRecordTime: Date) {
