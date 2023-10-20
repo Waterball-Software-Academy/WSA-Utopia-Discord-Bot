@@ -44,8 +44,9 @@ class AudienceCounterListener(private val wsa: WsaDiscordProperties) : UtopiaLis
 
             val memberRoleIds = member?.roles?.map { it.id } ?: emptyList()
             val requiredRole = wsa.wsaAlphaRoleId
+            val hasRequiredRole = memberRoleIds.contains(requiredRole)
 
-            if (memberRoleIds.contains(requiredRole)) {
+            if (hasRequiredRole) {
                 val recordPeriodTime =
                     getOptionAsPositiveInt(TIME_LENGTH)!!.toLong()
                 val currentTime = now()
