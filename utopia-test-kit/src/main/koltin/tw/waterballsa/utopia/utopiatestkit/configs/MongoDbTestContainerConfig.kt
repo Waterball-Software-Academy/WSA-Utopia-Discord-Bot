@@ -5,16 +5,14 @@ import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
-import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.testcontainers.containers.MongoDBContainer
 import java.lang.System.setProperty
 
 @Configuration
-open class MongoDbTestContainerConfig : AbstractMongoClientConfiguration(), BeforeEachCallback, AfterAllCallback {
+open class MongoDbTestContainerConfig : BeforeEachCallback, AfterAllCallback {
 
     companion object {
-        private const val TEST_DATABASE = "TEST_DATABASE"
         private lateinit var MONGO_DB_CONTAINER: MongoDBContainer
 
         init {
@@ -34,10 +32,9 @@ open class MongoDbTestContainerConfig : AbstractMongoClientConfiguration(), Befo
     @Autowired
     private lateinit var mongo: MongoTemplate
 
-    override fun getDatabaseName(): String = TEST_DATABASE
-
     override fun beforeEach(context: ExtensionContext?) {
-        mongo.db.drop()
+        mongo.db.listCollectionNames()
+                .forEach(mongo::dropCollection)
     }
 
     override fun afterAll(context: ExtensionContext?) {

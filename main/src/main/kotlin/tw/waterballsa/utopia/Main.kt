@@ -1,8 +1,11 @@
 package tw.waterballsa.utopia
 
 import ch.qos.logback.core.util.OptionHelper
-import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import org.springframework.beans.factory.config.ConfigurableBeanFactory.*
@@ -31,8 +34,11 @@ open class MyDependencyInjectionConfig {
             CommonAnnotationBeanPostProcessor()
 
     @Bean
-    open fun objectMapper(): ObjectMapper =
-            ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    open fun objectMapper(): ObjectMapper = ObjectMapper()
+            .registerKotlinModule()
+            .registerModule(JavaTimeModule())
+            .disable(WRITE_DATES_AS_TIMESTAMPS)
+            .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     @Bean
     open fun wsaProperties(): WsaDiscordProperties {
