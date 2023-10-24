@@ -15,11 +15,8 @@ abstract class Achievement(
     private val reward: Reward,
 ) {
 
-    fun progressAction(action: Action, progression: Progression?): Progression {
-        val newProgression = Progression(randomUUID().toString(), action.player.id, name, type)
-
-        return progress(action, progression ?: newProgression)
-    }
+    fun progressAction(action: Action, progression: Progression?): Progression =
+        progress(action, progression ?: Progression(randomUUID().toString(), action.player.id, name, type))
 
     /**
      * progress flow
@@ -40,11 +37,10 @@ abstract class Achievement(
      *    2-2. if not, return null
      */
     fun achieve(player: Player, progression: Progression): AchievementAchievedEvent? {
-        if (rule.isAchieved(player, progression)) {
+        return if (rule.isAchieved(player, progression)) {
             reward.reward(player)
-            return toAchieveEvent()
-        }
-        return null
+            toAchieveEvent()
+        } else null
     }
 
     protected fun toAchieveEvent(): AchievementAchievedEvent = AchievementAchievedEvent(reward)

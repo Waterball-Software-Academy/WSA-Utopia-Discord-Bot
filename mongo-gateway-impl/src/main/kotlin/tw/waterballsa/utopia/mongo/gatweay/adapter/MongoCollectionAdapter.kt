@@ -48,10 +48,6 @@ class MongoCollectionAdapter<TDocument, ID>(
             ).deletedCount
         }
 
-    override fun removeAll() {
-        mongoTemplate.dropCollection(documentInformation.collectionName)
-    }
-
     private fun TDocument.toBsonDocument(): Document = MAPPER.convertValue(this, Document::class.java)!!
         .convertIdField(documentInformation.idFieldName, MONGO_ID_FIELD_NAME)
 

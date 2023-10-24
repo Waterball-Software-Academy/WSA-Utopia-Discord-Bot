@@ -36,7 +36,7 @@ class AchievementListener(
 
     private fun MessageReceivedEvent.addRolesToPlayer(presenter: ProgressAchievementPresenter) {
         presenter.toRoleIds().forEach {
-            guild.addRoleToMember(author, guild.getRoleById(it)!!).complete()
+            guild.addRoleToMember(author, guild.getRoleById(it)!!).queue()
         }
     }
 

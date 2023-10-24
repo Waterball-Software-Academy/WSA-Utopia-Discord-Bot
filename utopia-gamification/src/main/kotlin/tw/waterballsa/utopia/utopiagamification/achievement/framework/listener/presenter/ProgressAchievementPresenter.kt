@@ -7,10 +7,8 @@ import tw.waterballsa.utopia.utopiagamification.quest.domain.RoleType
 class ProgressAchievementPresenter : Presenter {
     val progressAchievementViewModels = mutableListOf<ProgressAchievementViewModel>()
 
-    override fun present(event: List<AchievementAchievedEvent>) {
-        for (achievedEvent in event) {
-            progressAchievementViewModels.add(achievedEvent.toViewModel())
-        }
+    override fun present(events: List<AchievementAchievedEvent>) {
+        events.forEach { progressAchievementViewModels.add(it.toViewModel()) }
     }
 
     fun toMessage(): String = progressAchievementViewModels.joinToString("\n") {

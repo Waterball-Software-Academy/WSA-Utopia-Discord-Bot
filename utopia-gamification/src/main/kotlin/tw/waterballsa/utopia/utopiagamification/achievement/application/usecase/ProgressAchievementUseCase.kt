@@ -75,12 +75,9 @@ class ProgressAchievementUseCase(
         progressions: Map<Name, Progression>,
         achievement: Achievement,
     ): AchievementAchievedEvent? {
-
         val progression = progressions.findProgressionByAchievement(achievement)
         val refreshedProgression = achievement.progressAction(action, progression)
-
         progressionRepository.save(refreshedProgression)
-
         return achievement.achieve(this, refreshedProgression)
     }
 
