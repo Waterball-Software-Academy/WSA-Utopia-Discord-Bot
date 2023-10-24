@@ -1,5 +1,6 @@
 package tw.waterballsa.utopia.utopiagmification.achievement.ut
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -10,7 +11,9 @@ import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.Achievement.Type.TEXT_MESSAGE
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.LongArticleAchievement
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.TopicMasterAchievement
+import tw.waterballsa.utopia.utopiagamification.achievement.domain.actions.Action
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.actions.SendMessageAction
+import tw.waterballsa.utopia.utopiagamification.achievement.domain.events.AchievementAchievedEvent
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Reward
 import tw.waterballsa.utopia.utopiagamification.quest.domain.RoleType.LONG_ARTICLE
@@ -37,12 +40,7 @@ class AchievementUnitTest {
 
     @BeforeEach
     fun setup() {
-        playerA = Player(
-            id = randomUUID().toString(),
-            name = "A",
-            exp = 1200uL,
-            jdaRoles = mutableListOf()
-        )
+        playerA = Player(id = randomUUID().toString(), name = "A", exp = 1200uL)
 
         progression = Achievement.Progression(
             randomUUID().toString(),
@@ -68,15 +66,13 @@ class AchievementUnitTest {
     """
     )
     fun `player doesn't achieve the article-achievement`() {
-
         // when
         val sendMessageAction = playerA.sendMessage("Test123456")
-        val progression = sendMessageAction.progress(longArticleAchievement, progression)
-        sendMessageAction.achieve(longArticleAchievement, progression)
+        sendMessageAction.progress(longArticleAchievement, progression)
 
         // then
-        assertEquals(playerA.exp, 1200uL)
-        assertFalse(playerA.hasRole(LONG_ARTICLE.description))
+        assertThat(playerA.exp).isEqualTo(1200uL)
+        assertThat(playerA.hasRole(LONG_ARTICLE)).isFalse
     }
 
 
@@ -96,16 +92,14 @@ class AchievementUnitTest {
     """
     )
     fun `player achieve the article-achievement`() {
-        val article = "1".repeat(1000)
-
         //when
+        val article = "1".repeat(1000)
         val sendMessageAction = playerA.sendMessage(article)
+        sendMessageAction.progress(longArticleAchievement, progression)
+        
         //then
-        val progression = sendMessageAction.progress(longArticleAchievement, progression)
-        sendMessageAction.achieve(longArticleAchievement, progression)
-
-        assertEquals(playerA.exp, 2200uL)
-        assertTrue(playerA.hasRole(LONG_ARTICLE.name))
+        assertThat(playerA.exp).isEqualTo(2200uL)
+        assertThat(playerA.hasRole(LONG_ARTICLE)).isTrue
     }
 
     @Test
@@ -125,12 +119,11 @@ class AchievementUnitTest {
     fun `player doesn't achieve the topic-master-achievement`() {
         // when
         val sendMessageAction = playerA.sendMessage("一二三四五")
-        val progression = sendMessageAction.progress(topicMasterAchievement, progression)
-        sendMessageAction.achieve(topicMasterAchievement, progression)
+        sendMessageAction.progress(topicMasterAchievement, progression)
 
         // then
-        assertFalse(playerA.hasRole(TOPIC_MASTER.description))
-        assertEquals(playerA.exp, 1200uL)
+        assertThat(playerA.exp).isEqualTo(1200uL)
+        assertThat(playerA.hasRole(TOPIC_MASTER)).isFalse
     }
 
     @Test
@@ -148,6 +141,7 @@ class AchievementUnitTest {
     """
     )
     fun `player achieve the topic-master-achievement`() {
+        // given
         val sendTwoHundredNinetyNineMessageProgression = Achievement.Progression(
             randomUUID().toString(),
             playerId = playerA.id,
@@ -155,17 +149,21 @@ class AchievementUnitTest {
             type = TEXT_MESSAGE,
             count = 299
         )
+
         // when
         val sendMessageAction = playerA.sendMessage("一二三四五")
-        val progression =
-            sendMessageAction.progress(topicMasterAchievement, sendTwoHundredNinetyNineMessageProgression)
-        sendMessageAction.achieve(topicMasterAchievement, progression)
+        sendMessageAction.progress(topicMasterAchievement, sendTwoHundredNinetyNineMessageProgression)
 
         // then
-        assertTrue(playerA.hasRole(TOPIC_MASTER.name))
-        assertEquals(playerA.exp, 3700uL)
+        assertThat(playerA.exp).isEqualTo(3700uL)
+        assertThat(playerA.hasRole(TOPIC_MASTER)).isTrue
     }
 
     private fun Player.sendMessage(words: String): SendMessageAction =
         SendMessageAction(this, words)
+
+    private fun Action.progress(achievement: Achievement, progression: Achievement.Progression?): AchievementAchievedEvent? {
+        val refreshedProgression = achievement.progressAction(this, progression)
+        return achievement.achieve(player, refreshedProgression)
+    }
 }

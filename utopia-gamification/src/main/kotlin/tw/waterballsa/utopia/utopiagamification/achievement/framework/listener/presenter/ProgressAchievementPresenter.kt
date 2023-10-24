@@ -5,17 +5,19 @@ import tw.waterballsa.utopia.utopiagamification.achievement.domain.events.Achiev
 import tw.waterballsa.utopia.utopiagamification.quest.domain.RoleType
 
 class ProgressAchievementPresenter : Presenter {
-    val progressAchievementViewModels = mutableListOf<ProgressAchievementViewModel>()
+
+    lateinit var viewModels: List<ProgressAchievementViewModel>
+        private set
 
     override fun present(events: List<AchievementAchievedEvent>) {
-        events.forEach { progressAchievementViewModels.add(it.toViewModel()) }
+        viewModels = events.map { it.toViewModel() }
     }
 
-    fun toMessage(): String = progressAchievementViewModels.joinToString("\n") {
+    fun toAchievementAchievedNotification(): String = viewModels.joinToString("\n") {
         "恭喜達成 **_${it.roleType.description}_** 成就，取得 **_${it.exp}_** 點經驗值！"
     }
 
-    fun isViewModelsNotEmpty(): Boolean = progressAchievementViewModels.isNotEmpty()
+    fun isAchievementAchieved(): Boolean = viewModels.isNotEmpty()
 
     private fun AchievementAchievedEvent.toViewModel(): ProgressAchievementViewModel =
         ProgressAchievementViewModel(reward.exp.toLong(), reward.role!!)

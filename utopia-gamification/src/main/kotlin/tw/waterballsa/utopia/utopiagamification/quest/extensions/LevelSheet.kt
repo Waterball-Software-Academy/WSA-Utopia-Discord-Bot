@@ -15,9 +15,8 @@ class LevelSheet private constructor() {
 
         fun getLevelRange(level: Int): Range = when {
             level <= 0 -> LEVEL_ONE
-            LEVEL_TO_RANGE.contains(level) -> LEVEL_TO_RANGE[level]!!
             level > MAX_LEVEL -> LEVEL_TO_RANGE.values.last()
-            else -> throw IllegalArgumentException("The level ($level) is incorrect.")
+            else -> LEVEL_TO_RANGE[level] ?: throw IllegalArgumentException("The level ($level) is incorrect.")
         }
     }
 

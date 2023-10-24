@@ -3,5 +3,5 @@ package tw.waterballsa.utopia.utopiagamification.achievement.application.present
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.events.AchievementAchievedEvent
 
 interface Presenter {
-    fun present(event: List<AchievementAchievedEvent>)
+    fun present(events: List<AchievementAchievedEvent>)
 }

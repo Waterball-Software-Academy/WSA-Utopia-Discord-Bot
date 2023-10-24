@@ -5,7 +5,6 @@ import tw.waterballsa.utopia.utopiagamification.achievement.application.presente
 import tw.waterballsa.utopia.utopiagamification.achievement.application.repository.AchievementRepository
 import tw.waterballsa.utopia.utopiagamification.achievement.application.repository.ProgressionRepository
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.Achievement
-import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.Achievement.*
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.Achievement.Type.TEXT_MESSAGE
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.actions.Action
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.actions.SendMessageAction
@@ -37,15 +36,15 @@ class ProgressAchievementUseCase(
     fun execute(request: Request, presenter: Presenter) {
         with(request) {
             // 查
-            val player = playerRepository.findPlayerById(playerId) ?: throw notFound(Player::class).id(playerId).build()
-            val progressions = progressionRepository.findByPlayerIdAndAchievementType(playerId, type)
+            val player = findPlayer()
             val achievements = achievementRepository.findByType(type)
-
-            val action = request.toAction(player)
+            val achievementNameToProgression = achievementNameToProgression()
 
             // 改
+            val action = toAction(player)
             val events = achievements.mapNotNull { achievement ->
-                player.progress(action, progressions, achievement)
+                val progression = achievementNameToProgression[achievement.name]
+                action.progress(achievement, progression)
             }
 
             // 存
@@ -56,31 +55,30 @@ class ProgressAchievementUseCase(
         }
     }
 
-    data class Request(
-        val playerId: String,
-        val type: Type,
-        val message: String
-    ) {
-        fun toAction(player: Player): Action {
-            if (type == TEXT_MESSAGE) {
-                return SendMessageAction(player, message)
-            } else {
-                throw IllegalArgumentException("This achievement type '$type' is undefined.")
-            }
+    private fun Request.findPlayer(): Player =
+            playerRepository.findPlayerById(playerId) ?: throw notFound(Player::class).id(playerId).build()
+
+    private fun Request.achievementNameToProgression(): Map<Achievement.Name, Achievement.Progression> =
+            progressionRepository.findByPlayerIdAndAchievementType(playerId, type)
+                    .associateBy { it.name }
+
+    private fun Request.toAction(player: Player): Action {
+        return if (type == TEXT_MESSAGE) {
+            SendMessageAction(player, message)
+        } else {
+            throw IllegalArgumentException("This achievement type '$type' is undefined.")
         }
     }
 
-    private fun Player.progress(
-        action: Action,
-        progressions: Map<Name, Progression>,
-        achievement: Achievement,
-    ): AchievementAchievedEvent? {
-        val progression = progressions.findProgressionByAchievement(achievement)
-        val refreshedProgression = achievement.progressAction(action, progression)
-        progressionRepository.save(refreshedProgression)
-        return achievement.achieve(this, refreshedProgression)
+    private fun Action.progress(achievement: Achievement, progression: Achievement.Progression?): AchievementAchievedEvent? {
+        val refreshedProgression = progressionRepository.save(achievement.progressAction(this, progression))
+        return achievement.achieve(player, refreshedProgression)
     }
 
-    private fun Map<Name, Progression>.findProgressionByAchievement(achievement: Achievement): Progression? =
-        this[achievement.name]
+    data class Request(
+            val playerId: String,
+            val type: Achievement.Type,
+            val message: String
+    )
+
 }

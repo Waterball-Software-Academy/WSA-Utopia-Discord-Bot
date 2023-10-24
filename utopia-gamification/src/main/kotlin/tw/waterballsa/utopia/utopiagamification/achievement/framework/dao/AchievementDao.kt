@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamification.achievement.application.repository.AchievementRepository
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.Achievement
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.Achievement.Rule
-import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.Achievement.Type
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.LongArticleAchievement
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.TopicMasterAchievement
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Reward
@@ -33,5 +32,5 @@ class AchievementDao : AchievementRepository {
         )
     }
 
-    override fun findByType(type: Type): List<Achievement> = achievements.filter { it.type == type }
+    override fun findByType(type: Achievement.Type): List<Achievement> = achievements.filter { it.type == type }
 }

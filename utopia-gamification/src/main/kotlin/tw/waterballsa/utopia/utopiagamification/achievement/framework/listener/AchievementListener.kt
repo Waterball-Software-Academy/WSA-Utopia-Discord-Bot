@@ -1,5 +1,7 @@
 package tw.waterballsa.utopia.utopiagamification.achievement.framework.listener
 
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.UtopiaListener
@@ -11,8 +13,9 @@ import tw.waterballsa.utopia.utopiagamification.achievement.framework.listener.p
 
 @Component
 class AchievementListener(
-    private val discordRole: DiscordRole,
-    private val progressAchievementUseCase: ProgressAchievementUseCase
+        private val wsaGuild: Guild,
+        private val discordRole: DiscordRole,
+        private val progressAchievementUseCase: ProgressAchievementUseCase
 ) : UtopiaListener() {
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
@@ -20,26 +23,23 @@ class AchievementListener(
             if (author.isBot) return
 
             val presenter = ProgressAchievementPresenter()
-            val action = ProgressAchievementUseCase.Request(
-                author.id,
-                TEXT_MESSAGE,
-                message.contentDisplay,
-            )
+            val request = ProgressAchievementUseCase.Request(author.id, TEXT_MESSAGE, message.contentDisplay)
 
-            progressAchievementUseCase.execute(action, presenter)
-            addRolesToPlayer(presenter)
-            if (presenter.isViewModelsNotEmpty()) {
-                channel.sendMessage(presenter.toMessage()).queue()
+            progressAchievementUseCase.execute(request, presenter)
+
+            presenter.addPlayerRoles(author)
+
+            if (presenter.isAchievementAchieved()) {
+                val achievementAchievedNotification = presenter.toAchievementAchievedNotification()
+                channel.sendMessage(achievementAchievedNotification).queue()
             }
         }
     }
 
-    private fun MessageReceivedEvent.addRolesToPlayer(presenter: ProgressAchievementPresenter) {
-        presenter.toRoleIds().forEach {
-            guild.addRoleToMember(author, guild.getRoleById(it)!!).queue()
-        }
+    private fun ProgressAchievementPresenter.addPlayerRoles(player: User) {
+        viewModels.map { discordRole.getRoleId(it.roleType) }
+                .mapNotNull { wsaGuild.getRoleById(it) }
+                .forEach { wsaGuild.addRoleToMember(player, it).queue() }
     }
 
-    private fun ProgressAchievementPresenter.toRoleIds(): List<String> =
-        progressAchievementViewModels.map { discordRole.getRoleId(it.roleType) }
 }

@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component
 import org.testcontainers.shaded.org.bouncycastle.asn1.x500.style.RFC4519Style.name
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.utopiagamification.quest.domain.RoleType
+import tw.waterballsa.utopia.utopiagamification.quest.domain.RoleType.LONG_ARTICLE
+import tw.waterballsa.utopia.utopiagamification.quest.domain.RoleType.TOPIC_MASTER
 
 /**
  *  把 DiscordRole 和 Domain RoleType 用 RoleName 作為 key 連結起來
@@ -17,8 +19,8 @@ class DiscordRole(
     private val roleTypeToId = mutableMapOf<RoleType, String>()
 
     init {
-        roleTypeToId[RoleType.LONG_ARTICLE] = properties.wsaLongArticleRoleId
-        roleTypeToId[RoleType.TOPIC_MASTER] = properties.wsaTopicMasterRoleId
+        roleTypeToId[LONG_ARTICLE] = properties.wsaLongArticleRoleId
+        roleTypeToId[TOPIC_MASTER] = properties.wsaTopicMasterRoleId
     }
 
     fun getRoleId(roleType: RoleType): String =

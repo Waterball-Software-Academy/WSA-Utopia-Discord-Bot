@@ -13,8 +13,7 @@ import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.Achievement.Type.TEXT_MESSAGE
 import tw.waterballsa.utopia.utopiagamification.achievement.framework.listener.presenter.ProgressAchievementPresenter
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
-import tw.waterballsa.utopia.utopiagamification.quest.domain.RoleType.LONG_ARTICLE
-import tw.waterballsa.utopia.utopiagamification.quest.domain.RoleType.TOPIC_MASTER
+import tw.waterballsa.utopia.utopiagamification.quest.domain.RoleType.*
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
 import tw.waterballsa.utopia.utopiatestkit.annotations.UtopiaTest
 import java.util.UUID.randomUUID
@@ -27,24 +26,10 @@ class AchievementIntegrationTest @Autowired constructor(
 ) {
     private lateinit var playerA: Player
 
-    private lateinit var sendTwoHundredNinetyNineMessageProgression: Progression
 
     @BeforeEach
     fun setup() {
-        playerA = Player(
-            id = randomUUID().toString(),
-            name = "A",
-            exp = 1200uL,
-            jdaRoles = mutableListOf()
-        )
-        sendTwoHundredNinetyNineMessageProgression = Progression(
-            randomUUID().toString(),
-            playerId = playerA.id,
-            name = Achievement.Name.TOPIC_MASTER,
-            type = TEXT_MESSAGE,
-            count = 299
-        )
-        playerRepository.savePlayer(playerA)
+        playerA = playerRepository.savePlayer(Player(id = randomUUID().toString(), name = "A", exp = 1200uL))
     }
 
     @Test
@@ -62,18 +47,16 @@ class AchievementIntegrationTest @Autowired constructor(
     """
     )
     fun `player doesn't achieve the article-achievement`() {
-
+        // when
         val request = Request(playerA.id, TEXT_MESSAGE, "Test123456")
         val presenter = ProgressAchievementPresenter()
-
-        // when
         progressAchievementUsecase.execute(request, presenter)
 
         // then
         val player = playerRepository.findPlayerById(playerA.id)
         assertThat(player).isNotNull
-        assertThat(player?.exp).isEqualTo(1200uL)
-        assertThat(player?.hasRole(LONG_ARTICLE.description)).isFalse()
+        assertThat(player!!.exp).isEqualTo(1200uL)
+        assertThat(player.hasRole(LONG_ARTICLE)).isFalse
     }
 
     @Test
@@ -92,20 +75,17 @@ class AchievementIntegrationTest @Autowired constructor(
     """
     )
     fun `player achieve the article-achievement`() {
+        //when
         val article = "1".repeat(1000)
-
         val request = Request(playerA.id, TEXT_MESSAGE, article)
         val presenter = ProgressAchievementPresenter()
-
-        //when
         progressAchievementUsecase.execute(request, presenter)
 
         //then
         val player = playerRepository.findPlayerById(playerA.id)
-
-        assertThat(player).isNotNull()
-        assertThat(player?.exp).isEqualTo(2200uL)
-        assertThat(player?.hasRole(LONG_ARTICLE.name)).isTrue()
+        assertThat(player).isNotNull
+        assertThat(player!!.exp).isEqualTo(2200uL)
+        assertThat(player.hasRole(LONG_ARTICLE)).isTrue
     }
 
     @Test
@@ -123,20 +103,16 @@ class AchievementIntegrationTest @Autowired constructor(
     """
     )
     fun `player doesn't achieve the topic-master-achievement`() {
-
+        // when
         val request = Request(playerA.id, TEXT_MESSAGE, "一二三四五")
         val presenter = ProgressAchievementPresenter()
-
-        // when
-
         progressAchievementUsecase.execute(request, presenter)
 
         // then
-
         val player = playerRepository.findPlayerById(playerA.id)
         assertThat(player).isNotNull
-        assertThat(player?.hasRole(TOPIC_MASTER.description)).isFalse()
-        assertThat(player?.exp).isEqualTo(1200uL)
+        assertThat(player!!.exp).isEqualTo(1200uL)
+        assertThat(player.hasRole(TOPIC_MASTER)).isFalse
     }
 
     @Test
@@ -154,21 +130,19 @@ class AchievementIntegrationTest @Autowired constructor(
     """
     )
     fun `player achieve the topic-master-achievement`() {
-
-        progressionRepository.save(sendTwoHundredNinetyNineMessageProgression)
-
-        val request = Request(playerA.id, TEXT_MESSAGE, "一二三四五")
-        val presenter = ProgressAchievementPresenter()
+        // given
+        playerA.sendMessages(299)
 
         // when
+        val request = Request(playerA.id, TEXT_MESSAGE, "一二三四五")
+        val presenter = ProgressAchievementPresenter()
         progressAchievementUsecase.execute(request, presenter)
 
-        val player = playerRepository.findPlayerById(playerA.id)
-
         // then
-        assertThat(player).isNotNull()
-        assertThat(player?.exp).isEqualTo(3700uL)
-        assertThat(player?.hasRole(TOPIC_MASTER.name)).isTrue()
+        val player = playerRepository.findPlayerById(playerA.id)
+        assertThat(player).isNotNull
+        assertThat(player!!.exp).isEqualTo(3700uL)
+        assertThat(player.hasRole(TOPIC_MASTER)).isTrue
     }
 
     @Test
@@ -188,18 +162,29 @@ class AchievementIntegrationTest @Autowired constructor(
     """
     )
     fun `player achieve the topic-master-achievement and article-achievement`() {
+        // given
+        playerA.sendMessages(299)
 
-        progressionRepository.save(sendTwoHundredNinetyNineMessageProgression)
+        // when
         val request = Request(playerA.id, TEXT_MESSAGE, "1".repeat(801))
         val presenter = ProgressAchievementPresenter()
-        // when
         progressAchievementUsecase.execute(request, presenter)
 
         // then
         val player = playerRepository.findPlayerById(playerA.id)
-        assertThat(player).isNotNull()
-        assertThat(player?.exp).isEqualTo(4700uL)
-        assertThat(player?.hasRole(TOPIC_MASTER.name)).isTrue()
-        assertThat(player?.hasRole(LONG_ARTICLE.name)).isTrue()
+        assertThat(player).isNotNull
+        assertThat(player!!.exp).isEqualTo(4700uL)
+        assertThat(player.hasRole(TOPIC_MASTER)).isTrue
+        assertThat(player.hasRole(LONG_ARTICLE)).isTrue
+    }
+
+    private fun Player.sendMessages(messageCount: Int) {
+        val sendMessagesProgression = Progression(
+                randomUUID().toString(),
+                playerId = id,
+                name = Achievement.Name.TOPIC_MASTER,
+                type = TEXT_MESSAGE,
+                count = messageCount)
+        progressionRepository.save(sendMessagesProgression)
     }
 }

@@ -5,9 +5,9 @@ import tw.waterballsa.utopia.mongo.gateway.Criteria
 import tw.waterballsa.utopia.mongo.gateway.MongoCollection
 import tw.waterballsa.utopia.mongo.gateway.Query
 import tw.waterballsa.utopia.utopiagamification.achievement.application.repository.ProgressionRepository
-import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.Achievement.*
+import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.Achievement
+import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.Achievement.Progression
 import tw.waterballsa.utopia.utopiagamification.achievement.framework.dao.documents.ProgressionDocument
-import java.util.UUID.randomUUID
 
 @Component
 class ProgressionDao(
@@ -15,20 +15,15 @@ class ProgressionDao(
 ) : ProgressionRepository {
 
     override fun findByPlayerIdAndAchievementType(
-        playerId: String,
-        type: Type
-    ): Map<Name, Progression> {
-        return repository.find(
-            Query(
-                Criteria("playerId").`is`(playerId)
-                    .and("achievementType").`is`(type)
-            )
-        ).associate { it.achievementName to it.toDomain() }
+            playerId: String,
+            type: Achievement.Type
+    ): List<Progression> {
+        val query = Query(Criteria("playerId").`is`(playerId).and("achievementType").`is`(type))
+        return repository.find(query)
+                .map { it.toDomain() }
     }
 
-    override fun save(progression: Progression) {
-        repository.save(progression.toDocument())
-    }
+    override fun save(progression: Progression): Progression = repository.save(progression.toDocument()).toDomain()
 
     private fun Progression.toDocument(): ProgressionDocument =
         ProgressionDocument(id, playerId, type, name, count)
