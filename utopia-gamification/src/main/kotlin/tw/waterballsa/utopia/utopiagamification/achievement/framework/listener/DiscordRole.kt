@@ -1,4 +1,4 @@
-package tw.waterballsa.utopia.utopiagamification.achievement.framework.listener.enums
+package tw.waterballsa.utopia.utopiagamification.achievement.framework.listener
 
 import org.springframework.stereotype.Component
 import org.testcontainers.shaded.org.bouncycastle.asn1.x500.style.RFC4519Style.name

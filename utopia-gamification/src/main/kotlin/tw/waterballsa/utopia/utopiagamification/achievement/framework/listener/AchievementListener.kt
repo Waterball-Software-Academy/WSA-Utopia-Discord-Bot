@@ -7,15 +7,14 @@ import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.utopiagamification.achievement.application.usecase.ProgressAchievementUseCase
 import tw.waterballsa.utopia.utopiagamification.achievement.domain.achievements.Achievement.Type.TEXT_MESSAGE
-import tw.waterballsa.utopia.utopiagamification.achievement.framework.listener.enums.DiscordRole
 import tw.waterballsa.utopia.utopiagamification.achievement.framework.listener.presenter.ProgressAchievementPresenter
 
 
 @Component
 class AchievementListener(
-        private val wsaGuild: Guild,
-        private val discordRole: DiscordRole,
-        private val progressAchievementUseCase: ProgressAchievementUseCase
+    private val wsaGuild: Guild,
+    private val discordRole: DiscordRole,
+    private val progressAchievementUseCase: ProgressAchievementUseCase
 ) : UtopiaListener() {
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
