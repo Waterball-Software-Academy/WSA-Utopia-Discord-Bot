@@ -1,4 +1,4 @@
-package tw.waterballsa.utopia.utopiagmification
+package tw.waterballsa.utopia.utopiagamification
 
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ParameterContext

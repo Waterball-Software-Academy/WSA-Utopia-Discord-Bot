@@ -2,15 +2,41 @@ package tw.waterballsa.utopia.utopiagamification.quest.domain.quests
 
 import tw.waterballsa.utopia.utopiagamification.quest.domain.*
 import tw.waterballsa.utopia.utopiagamification.quest.domain.actions.*
+import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.firstMessageActionQuestId
+import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.flagPostQuestId
+import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.joinActivityQuestId
+import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.quizQuestId
+import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.replyToAnyoneInCareerAdvancementTopicChannelQuestId
+import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.selfIntroductionQuestId
+import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.sendContainsImageMessageInEngineerLifeChannelQuestId
+import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.sendMessageInVoiceChannelQuestId
+import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.unlockAcademyQuestId
+import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.watchVideoQuestId
 import tw.waterballsa.utopia.utopiagamification.repositories.inmemory.repositoryimpl.InMemoryQuestRepository
 
 private const val unlockEmoji = "🔑"
 private const val missionTips = "> （要是你怕自己的訊息太突兀，只要在訊息的開頭加上 `#任務`，保證自在。）"
 
+class QuestIds {
+    companion object {
+        const val unlockAcademyQuestId = 1
+        const val selfIntroductionQuestId = 2
+        const val firstMessageActionQuestId = 3
+        const val sendContainsImageMessageInEngineerLifeChannelQuestId = 4
+        const val replyToAnyoneInCareerAdvancementTopicChannelQuestId = 5
+        const val watchVideoQuestId = 6
+        const val flagPostQuestId = 7
+        const val sendMessageInVoiceChannelQuestId = 8
+        const val joinActivityQuestId = 9
+        const val quizQuestId = 10
+    }
+}
+
+
 val InMemoryQuestRepository.unlockAcademyQuest: Quest
-    get() = findById(1) ?: save(
+    get() = findById(unlockAcademyQuestId) ?: save(
         Quest(
-            id = 1,
+            id = unlockAcademyQuestId,
             title = "解鎖學院",
             description =
             """
@@ -32,6 +58,8 @@ val InMemoryQuestRepository.unlockAcademyQuest: Quest
                 unlockEmoji
             ),
 
+            link = wsa.unlockEntryChannelId.toLink(),
+
             reward = Reward(
                 100u,
                 100u,
@@ -39,15 +67,15 @@ val InMemoryQuestRepository.unlockAcademyQuest: Quest
                 RoleType.WSA_MEMBER
             ),
 
-            nextQuestId = 2
+            nextQuestId = selfIntroductionQuestId
         )
     )
 
 
 val InMemoryQuestRepository.selfIntroductionQuest: Quest
-    get() = findById(2) ?: save(
+    get() = findById(selfIntroductionQuestId) ?: save(
         Quest(
-            id = 2,
+            id = selfIntroductionQuestId,
             title = "自我介紹",
             description =
             """
@@ -91,7 +119,9 @@ val InMemoryQuestRepository.selfIntroductionQuest: Quest
                 regexRule = getSelfIntroductionRegex()
             ),
 
-            nextQuestId = 3
+            link = wsa.selfIntroChannelId.toLink(),
+
+            nextQuestId = firstMessageActionQuestId
         )
     )
 
@@ -101,9 +131,9 @@ private fun getSelfIntroductionRegex(): RegexRule =
     """【(.|\n)*】(.|\n)*工作職位：?(.|\n)*((公司產業：?(:)?(.|\n)*))?專長：?(.|\n)*興趣：?(.|\n)*簡介：?.(.|\n)*((三件關於我的事，猜猜哪一件是假的：?(:)?(.|\n)*))?""".toRegexRule()
 
 val InMemoryQuestRepository.firstMessageActionQuest: Quest
-    get() = findById(3) ?: save(
+    get() = findById(firstMessageActionQuestId) ?: save(
         Quest(
-            id = 3,
+            id = firstMessageActionQuestId,
             title = "新生降落",
             description =
             """
@@ -135,14 +165,16 @@ val InMemoryQuestRepository.firstMessageActionQuest: Quest
                 ChannelIdRule(wsa.discussionAreaChannelId)
             ),
 
-            nextQuestId = 4
+            link = wsa.discussionAreaChannelId.toLink(),
+
+            nextQuestId = sendContainsImageMessageInEngineerLifeChannelQuestId
         )
     )
 
 val InMemoryQuestRepository.sendContainsImageMessageInEngineerLifeChannelQuest: Quest
-    get() = findById(4) ?: save(
+    get() = findById(sendContainsImageMessageInEngineerLifeChannelQuestId) ?: save(
         Quest(
-            id = 4,
+            id = sendContainsImageMessageInEngineerLifeChannelQuestId,
             title = "融入大家",
             description =
             """
@@ -173,14 +205,16 @@ val InMemoryQuestRepository.sendContainsImageMessageInEngineerLifeChannelQuest: 
                 hasImageRule = BooleanRule.TRUE
             ),
 
-            nextQuestId = 5
+            link = wsa.engineerLifeChannelId.toLink(),
+
+            nextQuestId = replyToAnyoneInCareerAdvancementTopicChannelQuestId
         )
     )
 
 val InMemoryQuestRepository.replyToAnyoneInCareerAdvancementTopicChannelQuest: Quest
-    get() = findById(5) ?: save(
+    get() = findById(replyToAnyoneInCareerAdvancementTopicChannelQuestId) ?: save(
         Quest(
-            id = 5,
+            id = replyToAnyoneInCareerAdvancementTopicChannelQuestId,
             title = "職涯攻略",
             description =
             """          
@@ -214,14 +248,16 @@ val InMemoryQuestRepository.replyToAnyoneInCareerAdvancementTopicChannelQuest: Q
                 hasRepliedRule = BooleanRule.TRUE
             ),
 
-            nextQuestId = 6
+            link = wsa.careerAdvancementTopicChannelId.toLink(),
+
+            nextQuestId = watchVideoQuestId
         )
     )
 
 val InMemoryQuestRepository.watchVideoQuest: Quest
-    get() = findById(6) ?: save(
+    get() = findById(watchVideoQuestId) ?: save(
         Quest(
-            id = 6,
+            id = watchVideoQuestId,
             title = "學院精華影片",
             description = """       
             在學會如何自在地和大家聊天交流和參與話題之後，接下來要來帶你好好逛一下這個學院。
@@ -250,14 +286,16 @@ val InMemoryQuestRepository.watchVideoQuest: Quest
                 ChannelIdRule(wsa.featuredVideosChannelId),
             ),
 
-            nextQuestId = 7
+            link = wsa.featuredVideosChannelId.toLink(),
+
+            nextQuestId = flagPostQuestId
         )
     )
 
 val InMemoryQuestRepository.flagPostQuest: Quest
-    get() = findById(7) ?: save(
+    get() = findById(flagPostQuestId) ?: save(
         Quest(
-            id = 7,
+            id = flagPostQuestId,
             title = "全民插旗：把學院當成自己的家",
             description =
             """ 
@@ -289,14 +327,16 @@ val InMemoryQuestRepository.flagPostQuest: Quest
                 ChannelIdRule(wsa.flagPostChannelId)
             ),
 
-            nextQuestId = 8
+            link = wsa.flagPostGuideId.toLink(),
+
+            nextQuestId = sendMessageInVoiceChannelQuestId
         )
     )
 
 val InMemoryQuestRepository.sendMessageInVoiceChannelQuest: Quest
-    get() = findById(8) ?: save(
+    get() = findById(sendMessageInVoiceChannelQuestId) ?: save(
         Quest(
-            id = 8,
+            id = sendMessageInVoiceChannelQuestId,
             title = "到處吃瓜",
             description =
             """
@@ -329,14 +369,16 @@ val InMemoryQuestRepository.sendMessageInVoiceChannelQuest: Quest
                 numberOfVoiceChannelMembersRule = AtLeastRule(2)
             ),
 
-            nextQuestId = 9
+            link = "任意頻道",
+
+            nextQuestId = joinActivityQuestId
         )
     )
 
 val InMemoryQuestRepository.joinActivityQuest: Quest
-    get() = findById(9) ?: save(
+    get() = findById(joinActivityQuestId) ?: save(
         Quest(
-            id = 9,
+            id = joinActivityQuestId,
             title = "參與院長主持的學院節目",
             description =
             """
@@ -353,14 +395,14 @@ val InMemoryQuestRepository.joinActivityQuest: Quest
             ),
 
             criteria = JoinActivityCriteria("遊戲微服務計畫：水球實況", 60, 40),
-            nextQuestId = 10
+            nextQuestId = quizQuestId
         )
     )
 
 val InMemoryQuestRepository.quizQuest: Quest
-    get() = findById(10) ?: save(
+    get() = findById(quizQuestId) ?: save(
         Quest(
-            id = 10,
+            id = quizQuestId,
             title = "考試",
             description =
             """
@@ -389,5 +431,7 @@ val InMemoryQuestRepository.quizQuest: Quest
             ),
 
             criteria = QuizCriteria("紳士考題", 4, 5),
-        )
+
+
+            )
     )

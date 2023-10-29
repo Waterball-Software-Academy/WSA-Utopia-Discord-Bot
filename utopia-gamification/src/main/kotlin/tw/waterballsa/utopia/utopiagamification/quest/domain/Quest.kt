@@ -11,6 +11,7 @@ class Quest(
     val periodType: PeriodType = PeriodType.NONE,
     val criteria: Action.Criteria,
     val reward: Reward,
+    val link: String = "",
     val nextQuestId: Int? = null,
     val postMessage: String = completeMessage
 )

@@ -6,29 +6,25 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import org.springframework.stereotype.Component
-import tw.waterballsa.utopia.utopiagamification.quest.domain.Mission
-import tw.waterballsa.utopia.utopiagamification.quest.domain.Quest
 import tw.waterballsa.utopia.utopiagamification.quest.domain.State.*
+import tw.waterballsa.utopia.utopiagamification.quest.domain.exception.AssignedQuestException
+import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.quizQuestId
+import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.unlockAcademyQuestId
 import tw.waterballsa.utopia.utopiagamification.quest.extensions.publishToUser
-import tw.waterballsa.utopia.utopiagamification.quest.usecase.PlayerAcceptQuestUsecase
+import tw.waterballsa.utopia.utopiagamification.quest.listeners.presenters.AssignPlayerQuestPresenter
+import tw.waterballsa.utopia.utopiagamification.quest.usecase.AssignPlayerQuestUsecase
 import tw.waterballsa.utopia.utopiagamification.repositories.MissionRepository
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
-import tw.waterballsa.utopia.utopiagamification.repositories.QuestRepository
-import tw.waterballsa.utopia.utopiagamification.repositories.exceptions.NotFoundException.Companion.notFound
 
 const val UTOPIA_COMMAND_NAME = "utopia"
 const val FIRST_QUEST_COMMAND_NAME = "first-quest"
 const val REVIEW_COMMAND_NAME = "re-render"
 
-private const val unlockAcademyQuestId = 1
-private const val quizQuestId = 10
-
 @Component
 class SlashCommandListener(
     guild: Guild,
     playerRepository: PlayerRepository,
-    private val questRepository: QuestRepository,
-    private val playerAcceptQuestUsecase: PlayerAcceptQuestUsecase,
+    private val assignPlayerQuestUsecase: AssignPlayerQuestUsecase,
     private val missionRepository: MissionRepository
 ) : UtopiaGamificationListener(guild, playerRepository) {
 
@@ -57,29 +53,25 @@ class SlashCommandListener(
     }
 
     private fun SlashCommandInteractionEvent.handleFirstQuestCommand() {
+        //TODO 這個 toPlayer 會有副作用，會註冊玩家，之後會發 pr 解決這個問題
         val player = user.toPlayer() ?: return
 
-        val unlockAcademyQuest = questRepository.findById(unlockAcademyQuestId)
-            ?: throw notFound(Quest::class)
-                .id(unlockAcademyQuestId)
-                .message("assign old member first quest")
-                .build()
+        val request = AssignPlayerQuestUsecase.Request(user.id, unlockAcademyQuestId)
+        val presenter = AssignPlayerQuestPresenter()
 
-        val request = PlayerAcceptQuestUsecase.Request(player, unlockAcademyQuest)
+        try {
+            assignPlayerQuestUsecase.execute(request, presenter)
 
-        val presenter = object : PlayerAcceptQuestUsecase.Presenter {
-            override fun presentPlayerHasAcquiredMission() {
-                hook.editOriginal("已獲得新手任務，無法再次獲得。").queue()
-            }
+            val viewModel = presenter.viewModel ?: return
 
-            override fun presentPlayerAcquiresMission(mission: Mission) {
-                mission.publishToUser(user)
-                hook.editOriginal("已經接取第一個任務，去私訊查看任務內容。").queue()
-            }
+            hook.editOriginal(viewModel.assignQuestMessage).queue()
+            viewModel.publishToUser(user)
+
+        } catch (e: AssignedQuestException) {
+            hook.editOriginal("已獲得新手任務，無法再次獲得！").queue()
         }
-
-        playerAcceptQuestUsecase.execute(request, presenter)
     }
+
 
     private fun SlashCommandInteractionEvent.handleReviewCommand() {
         var result = "執行結束"
@@ -92,7 +84,9 @@ class SlashCommandListener(
 
             if (state == IN_PROGRESS) {
                 result = "執行結束，已獲得上個任務的獎勵"
-                publishToUser(user)
+                val presenter = AssignPlayerQuestPresenter()
+                presenter.presentMission(mission)
+                presenter.viewModel?.publishToUser(user)
             }
 
             if (state == CLAIMED) {

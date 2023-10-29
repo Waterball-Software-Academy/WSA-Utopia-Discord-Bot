@@ -1,11 +1,10 @@
-package tw.waterballsa.utopia.utopiagmification.quest
+package tw.waterballsa.utopia.utopiagamification.quest.ut
 
 import org.junit.jupiter.api.extension.Extension
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider
-import org.testcontainers.shaded.org.bouncycastle.asn1.x500.style.RFC4519Style.description
-import org.testcontainers.shaded.org.bouncycastle.asn1.x500.style.RFC4519Style.title
+import tw.waterballsa.utopia.utopiagamification.GenericTypedParameterResolver
 import tw.waterballsa.utopia.utopiagamification.quest.domain.*
 import tw.waterballsa.utopia.utopiagamification.quest.domain.PeriodType.MAIN_QUEST
 import tw.waterballsa.utopia.utopiagamification.quest.domain.RoleType.EVERYONE
@@ -14,7 +13,6 @@ import tw.waterballsa.utopia.utopiagamification.quest.domain.actions.*
 import tw.waterballsa.utopia.utopiagamification.quest.domain.actions.BooleanRule.TRUE
 import tw.waterballsa.utopia.utopiagamification.quest.domain.actions.ChannelIdRule.Companion.ANY_CHANNEL
 import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.toRegexRule
-import tw.waterballsa.utopia.utopiagmification.GenericTypedParameterResolver
 import java.util.UUID.randomUUID
 import java.util.stream.Stream
 

@@ -27,10 +27,5 @@
             <artifactId>utopia-test-kit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>tw.waterballsa.utopia</groupId>
-            <artifactId>utopia-test-kit</artifactId>
-            <version>${revision}</version>
-        </dependency>
     </dependencies>
 </project>
