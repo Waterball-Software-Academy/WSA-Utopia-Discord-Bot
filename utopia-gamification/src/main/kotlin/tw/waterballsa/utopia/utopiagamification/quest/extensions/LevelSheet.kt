@@ -13,7 +13,7 @@ class LevelSheet private constructor() {
         private val LEVEL_TO_LEVEL_RANGE = generateSequence(LEVEL_ONE) { it.next() }.take(MAX_LEVEL).associateBy { it.level }
 
         // exp to level
-        fun ULong.toLevel() = (LEVEL_TO_LEVEL_RANGE.values.find { it.isMatchLevel(this) } ?: LEVEL_ONE).level.toUInt()
+        fun ULong.toLevel() = (LEVEL_TO_LEVEL_RANGE.values.find { it.isMatchedLevel(this) } ?: LEVEL_ONE).level.toUInt()
 
         // level to level range
         fun UInt.toLevelRange(): LevelRange = LEVEL_TO_LEVEL_RANGE[toInt()] ?: throw IllegalArgumentException("The given level ($this) not found.")
@@ -44,7 +44,7 @@ class LevelSheet private constructor() {
 
         fun next() = LevelRange(level.plus(1), this)
 
-        fun isMatchLevel(exp: ULong) = accExp > exp
+        fun isMatchedLevel(exp: ULong) = accExp > exp
 
         override fun toString(): String = format("| level: %3d | upgrade time: %5d | exp limit: %6d | acc exp: %7d | %n${"-".repeat(75)}",
             level, upgradeTime.toLong(), expLimit.toLong(), accExp.toLong())
