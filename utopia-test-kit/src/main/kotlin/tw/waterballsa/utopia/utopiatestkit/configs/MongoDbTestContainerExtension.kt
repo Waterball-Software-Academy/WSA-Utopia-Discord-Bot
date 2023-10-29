@@ -3,14 +3,12 @@ package tw.waterballsa.utopia.utopiatestkit.configs
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Configuration
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.test.context.junit.jupiter.SpringExtension.getApplicationContext
 import org.testcontainers.containers.MongoDBContainer
-import java.lang.System.*
+import java.lang.System.setProperty
 
-@Configuration
-open class MongoDbTestContainerConfig : BeforeEachCallback, AfterAllCallback {
+open class MongoDbTestContainerExtension : BeforeEachCallback, AfterAllCallback {
 
     companion object {
         private lateinit var MONGO_DB_CONTAINER: MongoDBContainer
@@ -29,12 +27,10 @@ open class MongoDbTestContainerConfig : BeforeEachCallback, AfterAllCallback {
         }
     }
 
-    @Autowired
-    private lateinit var mongo: MongoTemplate
-
     override fun beforeEach(context: ExtensionContext?) {
-        mongo.db.listCollectionNames()
-                .forEach(mongo::dropCollection)
+        val applicationContext = getApplicationContext(context!!)
+        val mongo = applicationContext.getBean(MongoTemplate::class.java)
+        mongo.db.drop()
     }
 
     override fun afterAll(context: ExtensionContext?) {
