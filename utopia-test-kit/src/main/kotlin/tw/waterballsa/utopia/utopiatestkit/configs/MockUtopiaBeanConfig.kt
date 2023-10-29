@@ -5,13 +5,11 @@ import net.dv8tion.jda.api.entities.Guild
 import org.mockito.Mockito.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
 import tw.waterballsa.utopia.commons.config.WsaDiscordProperties
 import tw.waterballsa.utopia.jda.domains.EventPublisher
 import java.util.*
 import java.util.UUID.randomUUID
 
-@Configuration
 @ComponentScan(basePackages = ["tw.waterballsa.utopia"])
 open class MockUtopiaBeanConfig {
 
