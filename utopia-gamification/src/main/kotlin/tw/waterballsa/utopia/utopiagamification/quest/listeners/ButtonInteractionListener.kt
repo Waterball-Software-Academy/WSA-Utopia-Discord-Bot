@@ -6,6 +6,9 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Mission
+import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
+import tw.waterballsa.utopia.utopiagamification.quest.extensions.LevelSheet.Companion.toLevelRange
+import tw.waterballsa.utopia.utopiagamification.quest.extensions.LevelSheet.LevelRange.Companion.LEVEL_ONE
 import tw.waterballsa.utopia.utopiagamification.quest.extensions.publishToUser
 import tw.waterballsa.utopia.utopiagamification.quest.usecase.ClaimMissionRewardUsecase
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
@@ -45,11 +48,12 @@ class UtopiaGamificationQuestListener(
             val request = ClaimMissionRewardUsecase.Request(player, questId)
             val presenter = object : ClaimMissionRewardUsecase.Presenter {
                 override fun presentPlayerExpNotification(mission: Mission) {
+
                     publishMessage(
                         """
-                        ${player.name} 已獲得 ${mission.quest.reward.exp} exp！！
-                        目前等級：${player.level}
-                        目前經驗值：${player.exp} / ${player.currentLevelExpLimit}
+                        ${mission.player.name} 已獲得 ${mission.quest.reward.exp} exp！！
+                        目前等級：${mission.player.level}
+                        目前經驗值：${mission.player.currentExp()}/${mission.player.level.toLevelRange().expLimit}
                         """.trimIndent()
                     )
                 }
@@ -66,6 +70,9 @@ class UtopiaGamificationQuestListener(
             claimMissionRewardUsecase.execute(request, presenter)
         }
     }
+
+    private fun Player.currentExp(): ULong =
+        if (level == LEVEL_ONE.level.toUInt()) exp else exp - level.toLevelRange().previous!!.accExp
 
     private fun ButtonInteractionEvent.splitButtonId(delimiters: String): List<String> {
         val result = button.id?.split(delimiters) ?: return emptyList()
