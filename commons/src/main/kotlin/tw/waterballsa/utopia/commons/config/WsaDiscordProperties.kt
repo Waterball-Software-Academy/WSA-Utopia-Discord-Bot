@@ -33,6 +33,8 @@ open class WsaDiscordProperties(properties: Properties) {
     val waterBallJournalPostId: String
     val waterBallLoseWeightPostId: String
     val wsaGuideLineChannelId: String
+    val wsaLongArticleRoleId: String
+    val wsaTopicMasterRoleId: String
 
     init {
         properties.run {
@@ -61,6 +63,8 @@ open class WsaDiscordProperties(properties: Properties) {
             waterBallJournalPostId = getProperty("water-ball-journal-post-id")
             waterBallLoseWeightPostId = getProperty("water-ball-lose-weight-post-id")
             wsaGuideLineChannelId = getProperty("wsa-guideline-channel-id")
+            wsaLongArticleRoleId = getProperty("wsa-long-article-role-id")
+            wsaTopicMasterRoleId = getProperty("wsa-topic-master-role-id")
         }
     }
 }

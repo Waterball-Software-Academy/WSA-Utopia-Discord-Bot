@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.testcontainers.containers.MongoDBContainer
-import java.lang.System.setProperty
+import java.lang.System.*
 
 @Configuration
 open class MongoDbTestContainerConfig : BeforeEachCallback, AfterAllCallback {

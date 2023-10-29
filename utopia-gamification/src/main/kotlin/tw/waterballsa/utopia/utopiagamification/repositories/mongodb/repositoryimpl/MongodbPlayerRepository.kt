@@ -24,7 +24,8 @@ class MongodbPlayerRepository(
         level.toUInt(),
         joinDate,
         latestActivateDate,
-        levelUpgradeDate
+        levelUpgradeDate,
+        jdaRoles ?: mutableListOf()
     )
 
     private fun Player.toDocument(): PlayerDocument = PlayerDocument(
@@ -34,7 +35,8 @@ class MongodbPlayerRepository(
         level.toInt(),
         joinDate,
         latestActivateDate,
-        levelUpgradeDate
+        levelUpgradeDate,
+        jdaRoles
     )
 }
 
@@ -47,4 +49,5 @@ data class PlayerDocument(
     val joinDate: OffsetDateTime,
     val latestActivateDate: OffsetDateTime,
     val levelUpgradeDate: OffsetDateTime,
+    val jdaRoles: MutableList<String>? = mutableListOf()
 )

@@ -21,12 +21,11 @@
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>mongo-gateway-impl</artifactId>
-            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
-            <artifactId>mongo-gateway</artifactId>
-            <version>${revision}</version>
+            <artifactId>utopia-test-kit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
