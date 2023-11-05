@@ -5,12 +5,10 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import org.springframework.stereotype.Component
-import tw.waterballsa.utopia.utopiagamification.quest.domain.Mission
-import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
-import tw.waterballsa.utopia.utopiagamification.quest.extensions.LevelSheet.Companion.toLevelRange
-import tw.waterballsa.utopia.utopiagamification.quest.extensions.LevelSheet.LevelRange.Companion.LEVEL_ONE
 import tw.waterballsa.utopia.utopiagamification.quest.extensions.publishToUser
 import tw.waterballsa.utopia.utopiagamification.quest.listeners.presenters.AssignPlayerQuestPresenter
+import tw.waterballsa.utopia.utopiagamification.quest.listeners.presenters.ClaimMissionRewardPresenter
+import tw.waterballsa.utopia.utopiagamification.quest.usecase.AssignPlayerQuestUsecase
 import tw.waterballsa.utopia.utopiagamification.quest.usecase.ClaimMissionRewardUsecase
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
 
@@ -30,6 +28,7 @@ class UtopiaGamificationQuestListener(
     guild: Guild,
     playerRepository: PlayerRepository,
     private val claimMissionRewardUsecase: ClaimMissionRewardUsecase,
+    private val assignPlayerQuestUsecase: AssignPlayerQuestUsecase
 ) : UtopiaGamificationListener(guild, playerRepository) {
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
@@ -44,38 +43,27 @@ class UtopiaGamificationQuestListener(
                 editButton(button("null", "已領取", style = ButtonStyle.SUCCESS).asDisabled()).queue()
             }
 
+            //TODO 這個 toPlayer 會有副作用，會註冊玩家，之後會發 pr 解決這個問題
             val player = user.toPlayer() ?: return
 
-            val request = ClaimMissionRewardUsecase.Request(player, questId)
-            val presenter = object : ClaimMissionRewardUsecase.Presenter {
-                override fun presentPlayerExpNotification(mission: Mission) {
-
-                    publishMessage(
-                        """
-                        ${mission.player.name} 已獲得 ${mission.quest.reward.exp} exp！！
-                        目前等級：${mission.player.level}
-                        目前經驗值：${mission.player.currentExp()}/${mission.player.level.toLevelRange().expLimit}
-                        """.trimIndent()
-                    )
-                }
-
-                override fun presentNextMission(mission: Mission) {
-                    val presenter = AssignPlayerQuestPresenter()
-                    presenter.presentMission(mission)
-                    presenter.viewModel?.publishToUser(user)
-                }
-
-                override fun presentRewardsNotAllowed(mission: Mission) {
-                    publishMessage("已經領取過 ${mission.quest.title} 的任務獎勵了，不能再領了")
-                }
-            }
+            val request = ClaimMissionRewardUsecase.Request(user.id, questId.toInt())
+            val presenter = ClaimMissionRewardPresenter()
 
             claimMissionRewardUsecase.execute(request, presenter)
+
+            val viewModel = presenter.viewModel ?: return
+            hook.editOriginal(viewModel.message).queue()
+
+            if (viewModel.nextQuestId != null) {
+                val assignNextQuestRequest = AssignPlayerQuestUsecase.Request(user.id, viewModel.nextQuestId)
+                val assignNextQuestPresenter = AssignPlayerQuestPresenter()
+
+                assignPlayerQuestUsecase.execute(assignNextQuestRequest, assignNextQuestPresenter)
+
+                assignNextQuestPresenter.viewModel?.publishToUser(user)
+            }
         }
     }
-
-    private fun Player.currentExp(): ULong =
-        if (level == LEVEL_ONE.level.toUInt()) exp else exp - level.toLevelRange().previous!!.accExp
 
     private fun ButtonInteractionEvent.splitButtonId(delimiters: String): List<String> {
         val result = button.id?.split(delimiters) ?: return emptyList()
@@ -84,6 +72,4 @@ class UtopiaGamificationQuestListener(
         }
         return result
     }
-
-    private fun ButtonInteractionEvent.publishMessage(message: String) = hook.editOriginal(message).queue()
 }
