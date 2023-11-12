@@ -3,6 +3,7 @@ package tw.waterballsa.utopia.utopiagamification.quest.it
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import tw.waterballsa.utopia.utopiagamification.quest.domain.*
@@ -41,8 +42,15 @@ class ClaimMissionRewardUsecaseTest @Autowired constructor(
         playerRepository.savePlayer(playerA)
     }
 
+    @DisplayName(
+        """
+        given completed mission, 
+        |when claim reward to playerA, 
+        then playerA gain exp, and mission is claimed
+        """
+    )
     @Test
-    fun `given completed mission, when claim reward to playerA, then playerA gain exp, and mission is claimed`() {
+    fun `test player claims mission rewards`() {
         //given
         val completedMission = Mission(playerA, quest, COMPLETED)
         missionRepository.saveMission(completedMission)
@@ -58,15 +66,22 @@ class ClaimMissionRewardUsecaseTest @Autowired constructor(
         val mission = missionRepository.findPlayerMissionByQuestId(playerA.id, quest.id)
 
         assertThat(player).isNotNull
-        assertThat(player?.exp).isEqualTo(quest.reward.exp)
-        assertThat(player?.level).isEqualTo(2u)
+        assertThat(player!!.exp).isEqualTo(quest.reward.exp)
+        assertThat(player.level).isEqualTo(2u)
 
         assertThat(mission).isNotNull
-        assertThat(mission?.state).isEqualTo(CLAIMED)
+        assertThat(mission!!.state).isEqualTo(CLAIMED)
     }
 
+    @DisplayName(
+        """
+        given in-progress mission,
+        |when claim reward to playerA,
+        |then should be fail.
+        """
+    )
     @Test
-    fun `when claim in-progress mission, then should be fail`() {
+    fun `test player cannot claim incomplete mission rewards`() {
         val mission = Mission(playerA, quest)
         missionRepository.saveMission(mission)
 
@@ -79,8 +94,15 @@ class ClaimMissionRewardUsecaseTest @Autowired constructor(
 
     }
 
+    @DisplayName(
+        """
+        given claimed mission,
+        |when claim reward to playerA,
+        |then should be fail.
+        """
+    )
     @Test
-    fun `when claim claimed mission, then should be fail`() {
+    fun `test players cannot claim mission rewards repeatedly`() {
         val mission = Mission(playerA, quest, CLAIMED)
         missionRepository.saveMission(mission)
 
