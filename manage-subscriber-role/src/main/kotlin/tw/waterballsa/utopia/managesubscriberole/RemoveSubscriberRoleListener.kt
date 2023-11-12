@@ -17,7 +17,7 @@ class RemoveSubscriberRoleListener(wsa : WsaDiscordProperties) : AbstractManageS
         manageSubscriberRole(event) { guild, user, role ->
             guild.removeRoleFromMember(user, role)
                     .queue {
-                        logger.info { "[Remove Role] {\"userId\":\"${user.id}\", \"roleName\":\"${role.name}\" }" }
+                        logger.info { """[Remove Role] {"userId":"${user.id}", "roleName":"${role.name}" }""" }
                     }
         }
     }
