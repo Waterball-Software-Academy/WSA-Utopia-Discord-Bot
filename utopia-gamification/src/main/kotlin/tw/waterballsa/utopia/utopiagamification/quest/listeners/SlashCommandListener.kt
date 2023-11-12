@@ -9,6 +9,7 @@ import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Com
 import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.unlockAcademyQuestId
 import tw.waterballsa.utopia.utopiagamification.quest.extensions.publishToUser
 import tw.waterballsa.utopia.utopiagamification.quest.listeners.presenters.AssignPlayerQuestPresenter
+import tw.waterballsa.utopia.utopiagamification.quest.listeners.presenters.PlayerFulfillMissionPresenter
 import tw.waterballsa.utopia.utopiagamification.quest.usecase.AssignPlayerQuestUsecase
 import tw.waterballsa.utopia.utopiagamification.repositories.MissionRepository
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
@@ -68,7 +69,9 @@ class SlashCommandListener(
 
         with(mission) {
             if (state == COMPLETED) {
-                user.claimMissionRewardPresenter.presentClaimMissionReward(mission)
+                val presenter = PlayerFulfillMissionPresenter()
+                presenter.present(mission)
+                presenter.viewModel?.publishToUser(user)
             }
 
             if (state == IN_PROGRESS) {

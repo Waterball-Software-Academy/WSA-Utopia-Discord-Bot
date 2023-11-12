@@ -11,11 +11,13 @@ import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamification.activity.domain.Activity
 import tw.waterballsa.utopia.utopiagamification.activity.domain.Activity.State.*
 import tw.waterballsa.utopia.utopiagamification.activity.extensions.DateTimeRange
+import tw.waterballsa.utopia.utopiagamification.quest.extensions.publishToUser
 import tw.waterballsa.utopia.utopiagamification.quest.extensions.toTaipeiLocalDateTime
 import tw.waterballsa.utopia.utopiagamification.quest.listeners.UtopiaGamificationListener
+import tw.waterballsa.utopia.utopiagamification.quest.listeners.presenters.PlayerFulfillMissionPresenter
+import tw.waterballsa.utopia.utopiagamification.quest.usecase.PlayerFulfillMissionsUsecase
 import tw.waterballsa.utopia.utopiagamification.repositories.ActivityRepository
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
-import tw.waterballsa.utopia.utopiagamification.quest.usecase.PlayerFulfillMissionsUsecase
 import java.time.LocalDateTime.now
 
 private val log = KotlinLogging.logger {}
@@ -41,9 +43,11 @@ class EventJoiningListener(
 
             channelLeft?.let {
                 val stayActivity = activityRepository.findAudienceStayActivity(it.id, player.id) ?: return@let
-                val action = stayActivity.leave(player) ?: return
-                playerFulfillMissionsUsecase.execute(action, user.claimMissionRewardPresenter)
+                val action = stayActivity.leave(user.id) ?: return
+                val presenter = PlayerFulfillMissionPresenter()
+                playerFulfillMissionsUsecase.execute(action, presenter)
                 activityRepository.save(stayActivity)
+                presenter.viewModel?.publishToUser(user)
             }
         }
     }

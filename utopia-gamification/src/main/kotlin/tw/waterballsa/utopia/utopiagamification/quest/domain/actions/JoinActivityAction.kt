@@ -1,14 +1,14 @@
 package tw.waterballsa.utopia.utopiagamification.quest.domain.actions
 
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Action
-import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
 
+// TODO join是參加的意思，不是家入的意思，join 容易被誤會成加入的意思，應該要換成其他英文字
 class JoinActivityAction(
-    player: Player,
+    playerId: String,
     val eventName: String,
     val maxMemberCount: Int,
     val stayDuration: Int,
-) : Action(player) {
+) : Action(playerId) {
 
     override fun match(criteria: Criteria): Boolean = criteria is JoinActivityCriteria
 }

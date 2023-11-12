@@ -1,10 +1,9 @@
 package tw.waterballsa.utopia.utopiagamification.quest.domain.actions
 
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Action
-import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
 
 class MessageReactionAction(
-    player: Player,
+    player: String,
     val messageId: String,
     val emoji: String
 ) : Action(player) {

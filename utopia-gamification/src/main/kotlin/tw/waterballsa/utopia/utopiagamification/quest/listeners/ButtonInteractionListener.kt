@@ -3,6 +3,7 @@ package tw.waterballsa.utopia.utopiagamification.quest.listeners
 import dev.minn.jda.ktx.interactions.components.button
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamification.quest.extensions.publishToUser
@@ -20,6 +21,8 @@ class RewardButton {
         const val LABEL: String = "領取獎勵"
 
         fun id(questId: Int): String = "$BUTTON_QUEST_TAG-$NAME-$questId"
+
+        fun toJdaButton(questId: Int): Button = button(id(questId), LABEL)
     }
 }
 

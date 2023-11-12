@@ -1,17 +1,16 @@
 package tw.waterballsa.utopia.utopiagamification.quest.domain.actions
 
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Action
-import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
 
 
 class MessageSentAction(
-    player: Player,
+    playerId: String,
     val channelId: String,
     val context: String,
     val hasReplied: Boolean,
     val hasImage: Boolean,
     val numberOfVoiceChannelMembers: Int,
-) : Action(player) {
+) : Action(playerId) {
 
     override fun match(criteria: Criteria): Boolean = criteria is MessageSentCriteria
 }

@@ -1,12 +1,11 @@
 package tw.waterballsa.utopia.utopiagamification.quest.domain.actions
 
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Action
-import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
 
 class PostAction(
-    player: Player,
+    playerId: String,
     val channelId: String
-) : Action(player) {
+) : Action(playerId) {
 
     override fun match(criteria: Criteria): Boolean = criteria is PostCriteria
 }
