@@ -2,9 +2,6 @@ package tw.waterballsa.utopia.utopiagamification.quest.listeners
 
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.build.CommandData
-import net.dv8tion.jda.api.interactions.commands.build.Commands
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamification.quest.domain.State.*
 import tw.waterballsa.utopia.utopiagamification.quest.domain.exception.AssignedQuestException
@@ -27,14 +24,6 @@ class SlashCommandListener(
     private val assignPlayerQuestUsecase: AssignPlayerQuestUsecase,
     private val missionRepository: MissionRepository
 ) : UtopiaGamificationListener(guild, playerRepository) {
-
-    override fun commands(): List<CommandData> = listOf(
-        Commands.slash(UTOPIA_COMMAND_NAME, "utopia command")
-            .addSubcommands(
-                SubcommandData(FIRST_QUEST_COMMAND_NAME, "get first quest"),
-                SubcommandData(REVIEW_COMMAND_NAME, "re-render in_progress/completed quest"),
-            )
-    )
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         with(event) {
