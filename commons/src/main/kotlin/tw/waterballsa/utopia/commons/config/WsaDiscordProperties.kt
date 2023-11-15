@@ -36,11 +36,17 @@ open class WsaDiscordProperties(properties: Properties) {
     val wsaCitizenRoleId: String
     val wsaAlphaRoleId: String
     val wsaGaaSMemberRoleId: String
+    val wsaSECSubsriberMemberRoleId: String
+    val wsaGaaSSubscriberRoleId: String
+    val wsaPurefuncSubscriberRoleId: String
+    val wsaTTMSubscriberRoleId: String
+    val wsaCSLabSubscriberRoleId: String
     val wsaLongArticleRoleId: String
     val wsaTopicMasterRoleId: String
 
     // Message ID
     val unlockEntryMessageId: String
+    val manageSubscriberRoleMessageId : String
 
     // Forum ID
     val flagPostGuideId: String
@@ -80,11 +86,17 @@ open class WsaDiscordProperties(properties: Properties) {
             wsaCitizenRoleId = getProperty("wsa-citizen-role-id")
             wsaAlphaRoleId = getProperty("wsa-alpha-role-id")
             wsaGaaSMemberRoleId = getProperty("wsa-gaas-member-role-id")
+            wsaSECSubsriberMemberRoleId = getProperty("wsa-sec-subscriber-role-id")
+            wsaGaaSSubscriberRoleId = getProperty("wsa-gaas-subscriber-role-id")
+            wsaPurefuncSubscriberRoleId = getProperty("wsa-purefunc-subscriber-role-id")
+            wsaTTMSubscriberRoleId = getProperty("wsa-ttm-subscriber-role-id")
+            wsaCSLabSubscriberRoleId = getProperty("wsa-cslab-subscriber-role-id")
             wsaLongArticleRoleId = getProperty("wsa-long-article-role-id")
             wsaTopicMasterRoleId = getProperty("wsa-topic-master-role-id")
 
             // Message ID
             unlockEntryMessageId = getProperty("unlock-entry-message-id")
+            manageSubscriberRoleMessageId = getProperty("manage-subscriber-role-message-id")
 
             // Forum ID
             flagPostGuideId = getProperty("flag-post-guide-id")

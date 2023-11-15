@@ -9,7 +9,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>unsubscribe-role</artifactId>
+    <artifactId>manage-subscriber-role</artifactId>
 
     <dependencies>
         <dependency>
