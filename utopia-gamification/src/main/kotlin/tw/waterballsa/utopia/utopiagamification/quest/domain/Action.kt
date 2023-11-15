@@ -11,8 +11,6 @@ abstract class Action(
     abstract class Criteria {
 
         abstract fun meet(action: Action): Boolean
-
-        open val link: String = ""
     }
 }
 

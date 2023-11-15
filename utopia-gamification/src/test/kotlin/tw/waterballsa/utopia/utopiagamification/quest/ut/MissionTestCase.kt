@@ -1,4 +1,4 @@
-package tw.waterballsa.utopia.utopiagmification.quest
+package tw.waterballsa.utopia.utopiagamification.quest.ut
 
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Action
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Player

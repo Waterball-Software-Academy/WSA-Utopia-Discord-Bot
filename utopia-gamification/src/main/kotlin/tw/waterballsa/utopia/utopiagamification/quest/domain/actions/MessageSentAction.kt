@@ -46,8 +46,6 @@ class MessageSentCriteria(
         ${numberOfVoiceChannelMembersRule.toString("人")}
         """.trimIndent()
 
-    override val link: String
-        get() = channelIdRule.toString()
 }
 
 class ChannelIdRule(private val channelId: String) {

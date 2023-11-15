@@ -1,4 +1,4 @@
-package tw.waterballsa.utopia.utopiagmification.quest
+package tw.waterballsa.utopia.utopiagamification.quest.ut
 
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Assertions.*

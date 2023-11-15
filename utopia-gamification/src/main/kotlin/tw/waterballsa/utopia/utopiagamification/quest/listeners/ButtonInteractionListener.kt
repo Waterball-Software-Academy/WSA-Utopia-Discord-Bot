@@ -10,6 +10,7 @@ import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
 import tw.waterballsa.utopia.utopiagamification.quest.extensions.LevelSheet.Companion.toLevelRange
 import tw.waterballsa.utopia.utopiagamification.quest.extensions.LevelSheet.LevelRange.Companion.LEVEL_ONE
 import tw.waterballsa.utopia.utopiagamification.quest.extensions.publishToUser
+import tw.waterballsa.utopia.utopiagamification.quest.listeners.presenters.AssignPlayerQuestPresenter
 import tw.waterballsa.utopia.utopiagamification.quest.usecase.ClaimMissionRewardUsecase
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
 
@@ -59,7 +60,9 @@ class UtopiaGamificationQuestListener(
                 }
 
                 override fun presentNextMission(mission: Mission) {
-                    mission.publishToUser(user)
+                    val presenter = AssignPlayerQuestPresenter()
+                    presenter.presentMission(mission)
+                    presenter.viewModel?.publishToUser(user)
                 }
 
                 override fun presentRewardsNotAllowed(mission: Mission) {

@@ -50,6 +50,9 @@ class MongodbMissionRepository(
         return mission
     }
 
+    override fun existMission(playerId: String, questId: Int): Boolean =
+        findPlayerMissionByQuestId(playerId, questId) != null
+
     // TODO 等到 @DBRef 功能上線後，將 playerId 改成 player，讓 MongoDB 協助 join
     private fun MissionDocument.toDomain(): Mission {
         val player = playerRepository.findPlayerById(playerId)

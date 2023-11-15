@@ -1,4 +1,4 @@
-package tw.waterballsa.utopia.utopiagmification.achievement.it
+package tw.waterballsa.utopia.utopiagamification.achievement.it
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach

@@ -1,4 +1,4 @@
-package tw.waterballsa.utopia.utopiagmification.achievement.ut
+package tw.waterballsa.utopia.utopiagamification.achievement.ut
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.*

@@ -9,4 +9,5 @@ interface MissionRepository {
     fun findAllByPlayerId(playerId: String): List<Mission>
     fun findAllByQuestId(questId: Int): List<Mission>
     fun saveMission(mission: Mission): Mission
+    fun existMission(playerId: String, questId: Int): Boolean
 }

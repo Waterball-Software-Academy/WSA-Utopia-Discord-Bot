@@ -20,7 +20,4 @@ class PostCriteria(
     private fun meetCriteria(action: PostAction): Boolean = channelIdRule.meet(action.channelId)
 
     override fun toString(): String = "發一則貼文"
-
-    override val link: String
-        get() = channelIdRule.toString()
 }
