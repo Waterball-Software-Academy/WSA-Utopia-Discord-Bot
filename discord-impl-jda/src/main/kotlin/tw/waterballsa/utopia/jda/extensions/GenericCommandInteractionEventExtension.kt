@@ -2,8 +2,7 @@ package tw.waterballsa.utopia.jda.extensions
 
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
-import net.dv8tion.jda.api.interactions.commands.Command
-import net.dv8tion.jda.api.interactions.commands.Command.*
+import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
@@ -75,16 +74,22 @@ fun <T> GenericCommandInteractionEvent.getOptionWithValidation(name: String,
     return null
 }
 
+fun SlashCommandData.addOptionalOption(type: OptionType, name: String, description: String, vararg choices: Choice) =
+    addOption(type, name, description, false, *choices)
+
 fun SlashCommandData.addRequiredOption(type: OptionType, name: String, description: String, vararg choices: Choice) =
-    addOptions(
-        OptionData(type, name, description, true)
-            .addChoices(*choices)
-    )
+    addOption(type, name, description, true, *choices)
+
+fun SlashCommandData.addOption(type: OptionType, name: String, description: String, isRequired: Boolean, vararg choices: Choice) =
+    addOptions(OptionData(type, name, description, isRequired).addChoices(*choices))
+
+fun SubcommandData.addOptionalOption(type: OptionType, name: String, description: String, vararg choices: Choice) =
+    addOption(type, name, description, false, *choices)
 
 fun SubcommandData.addRequiredOption(type: OptionType, name: String, description: String, vararg choices: Choice) =
-    addOptions(
-        OptionData(type, name, description, true)
-            .addChoices(*choices)
-    )
+    addOptions(OptionData(type, name, description, true).addChoices(*choices))
+
+fun SubcommandData.addOption(type: OptionType, name: String, description: String, isRequired: Boolean, vararg choices: Choice) =
+    addOptions(OptionData(type, name, description, isRequired).addChoices(*choices))
 
 fun IReplyCallback.replyEphemerally(message: String) = reply(message).setEphemeral(true).queue()

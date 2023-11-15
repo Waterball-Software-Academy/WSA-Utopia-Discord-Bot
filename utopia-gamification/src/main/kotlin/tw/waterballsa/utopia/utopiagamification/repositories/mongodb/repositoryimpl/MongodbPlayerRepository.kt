@@ -17,11 +17,14 @@ class MongodbPlayerRepository(
 
     override fun savePlayer(player: Player): Player = playerRepository.save(player.toDocument()).toDomain()
 
+    override fun findAll(): List<Player> = playerRepository.findAll().map { it.toDomain() }
+
     private fun PlayerDocument.toDomain(): Player = Player(
         id,
         name,
         exp.toULong(),
         level.toUInt(),
+        bounty?.toUInt() ?: 0u,
         joinDate,
         latestActivateDate,
         levelUpgradeDate,
@@ -33,6 +36,7 @@ class MongodbPlayerRepository(
         name,
         exp.toInt(),
         level.toInt(),
+        bounty.toInt(),
         joinDate,
         latestActivateDate,
         levelUpgradeDate,
@@ -46,6 +50,7 @@ data class PlayerDocument(
     val name: String,
     val exp: Int,
     val level: Int,
+    val bounty: Int? = 0,
     val joinDate: OffsetDateTime,
     val latestActivateDate: OffsetDateTime,
     val levelUpgradeDate: OffsetDateTime?,

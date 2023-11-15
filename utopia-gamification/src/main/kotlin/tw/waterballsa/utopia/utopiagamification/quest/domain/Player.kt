@@ -1,5 +1,6 @@
 package tw.waterballsa.utopia.utopiagamification.quest.domain
 
+
 import tw.waterballsa.utopia.utopiagamification.quest.extensions.LevelSheet.Companion.toLevel
 import java.time.OffsetDateTime
 import java.time.OffsetDateTime.now
@@ -9,6 +10,7 @@ class Player(
     var name: String,
     exp: ULong = 0uL,
     level: UInt = 1u,
+    var bounty: UInt = 0u,
     val joinDate: OffsetDateTime = now(),
     latestActivateDate: OffsetDateTime = now(),
     levelUpgradeDate: OffsetDateTime? = null,
@@ -26,6 +28,10 @@ class Player(
 
     var latestActivateDate = latestActivateDate
         private set
+
+    init {
+        this.level = exp.toLevel()
+    }
 
     fun gainExp(rewardExp: ULong) {
         exp += rewardExp
