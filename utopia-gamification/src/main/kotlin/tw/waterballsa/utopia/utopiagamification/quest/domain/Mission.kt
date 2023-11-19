@@ -10,11 +10,14 @@ class Mission(
     val id: UUID,
     val player: Player,
     val quest: Quest,
-    var state: State,
+    state: State,
     var completedTime: LocalDateTime?
 ) {
 
     constructor(player: Player, quest: Quest) : this(randomUUID(), player, quest, IN_PROGRESS, null)
+
+    var state: State = state
+        private set
 
     fun match(action: Action): Boolean = action.match(quest.criteria)
 

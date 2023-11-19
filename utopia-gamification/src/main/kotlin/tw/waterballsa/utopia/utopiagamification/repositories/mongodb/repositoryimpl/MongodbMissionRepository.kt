@@ -56,9 +56,9 @@ class MongodbMissionRepository(
     // TODO 等到 @DBRef 功能上線後，將 playerId 改成 player，讓 MongoDB 協助 join
     private fun MissionDocument.toDomain(): Mission {
         val player = playerRepository.findPlayerById(playerId)
-            ?: throw notFound(Player::class).id(playerId).message("mission to domain").build()
+            ?: throw notFound(Player::class).id(playerId).message("mission document to domain").build()
         val quest = questRepository.findById(questId)
-            ?: throw notFound(Quest::class).id(questId).message("mission to domain").build()
+            ?: throw notFound(Quest::class).id(questId).message("mission document to domain").build()
         return Mission(fromString(id), player, quest, state, completedTime)
     }
 
