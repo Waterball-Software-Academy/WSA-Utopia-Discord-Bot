@@ -22,7 +22,7 @@ class ClaimMissionRewardPresenter : ClaimMissionRewardUsecase.Presenter {
         )
     }
 
-    class ViewModel(
+    data class ViewModel(
         val message: String,
         val nextQuestId: Int?
     )
