@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamification.quest.domain.actions.MessageSentAction
+import tw.waterballsa.utopia.utopiagamification.quest.extensions.publishToUser
+import tw.waterballsa.utopia.utopiagamification.quest.listeners.presenters.PlayerFulfillMissionPresenter
 import tw.waterballsa.utopia.utopiagamification.quest.usecase.PlayerFulfillMissionsUsecase
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
 
@@ -23,19 +25,22 @@ class MessageSentListener(
                 return
             }
 
-            val user = author
-            val player = user.toPlayer() ?: return
+            //TODO 這個 toPlayer 會有副作用，會註冊玩家，之後會發 pr 解決這個問題
+            val player = author.toPlayer() ?: return
 
             val action = MessageSentAction(
-                player,
+                author.id,
                 (channel as? ThreadChannel)?.parentChannel?.id ?: channel.id,
                 message.contentDisplay,
                 message.referencedMessage != null,
                 message.attachments.any { it.isImage },
                 (channel as? VoiceChannel)?.members?.size ?: 0
             )
+            val presenter = PlayerFulfillMissionPresenter()
 
-            playerFulfillMissionsUsecase.execute(action, user.claimMissionRewardPresenter)
+            playerFulfillMissionsUsecase.execute(action, presenter)
+
+            presenter.viewModel?.publishToUser(author)
         }
     }
 
@@ -45,11 +50,12 @@ class MessageSentListener(
                 return
             }
 
+            //TODO 這個 toPlayer 會有副作用，會註冊玩家，之後會發 pr 解決這個問題
             val user = author
             val player = user.toPlayer() ?: return
 
             val action = MessageSentAction(
-                player,
+                user.id,
                 (channel as? ThreadChannel)?.parentChannel?.id ?: channel.id,
                 message.contentDisplay,
                 message.referencedMessage != null,
@@ -57,7 +63,11 @@ class MessageSentListener(
                 (channel as? VoiceChannel)?.members?.size ?: 0
             )
 
-            playerFulfillMissionsUsecase.execute(action, user.claimMissionRewardPresenter)
+            val presenter = PlayerFulfillMissionPresenter()
+
+            playerFulfillMissionsUsecase.execute(action, presenter)
+
+            presenter.viewModel?.publishToUser(user)
         }
     }
 }

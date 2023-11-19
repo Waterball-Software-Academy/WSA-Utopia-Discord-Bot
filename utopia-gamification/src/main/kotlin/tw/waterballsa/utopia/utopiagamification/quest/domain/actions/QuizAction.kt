@@ -2,15 +2,14 @@ package tw.waterballsa.utopia.utopiagamification.quest.domain.actions
 
 import mu.KotlinLogging
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Action
-import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
 
 private val log = KotlinLogging.logger {}
 
 class QuizAction(
-    player: Player,
+    playerId: String,
     val quizName: String,
     val correctCount: Int
-) : Action(player) {
+) : Action(playerId) {
 
     override fun match(criteria: Criteria): Boolean = criteria is QuizCriteria
 }

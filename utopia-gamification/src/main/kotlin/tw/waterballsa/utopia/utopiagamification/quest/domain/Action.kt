@@ -1,7 +1,7 @@
 package tw.waterballsa.utopia.utopiagamification.quest.domain
 
 abstract class Action(
-    val player: Player
+    val playerId: String
 ) {
 
     abstract fun match(criteria: Criteria): Boolean

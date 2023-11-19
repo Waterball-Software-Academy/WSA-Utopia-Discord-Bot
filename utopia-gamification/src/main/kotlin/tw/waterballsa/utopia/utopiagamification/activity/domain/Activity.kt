@@ -32,14 +32,14 @@ class Activity(
 
     private fun Player.toAudience(): Audience = Audience(id)
 
-    fun leave(player: Player): JoinActivityAction? {
-        val audience = audiences[player.id] ?: return null
+    fun leave(playerId: String): JoinActivityAction? {
+        val audience = audiences[playerId] ?: return null
         val stayDuration = audience.leave()
 
-        log.info(""" [leave activity] { "userId" = "${player.id}", "activityName" = $eventName, "stayDuration" = "$stayDuration"} """)
+        log.info(""" [leave activity] { "userId" = "$playerId", "activityName" = $eventName, "stayDuration" = "$stayDuration"} """)
 
         return JoinActivityAction(
-            player,
+            playerId,
             eventName,
             audiences.size,
             stayDuration.toMinutes().toInt()

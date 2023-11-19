@@ -2,7 +2,6 @@ package tw.waterballsa.utopia.utopiagamification.quest.usecase
 
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Mission
-import tw.waterballsa.utopia.utopiagamification.quest.domain.State
 import tw.waterballsa.utopia.utopiagamification.quest.domain.exception.ClaimInProgressMissionException
 import tw.waterballsa.utopia.utopiagamification.quest.domain.exception.ClaimedMissionException
 import tw.waterballsa.utopia.utopiagamification.repositories.MissionRepository
@@ -39,9 +38,6 @@ class ClaimMissionRewardUsecase(
             presenter.presentPlayerExpNotification(mission)
         }
     }
-
-    private fun Mission.isInProgress() = state == State.IN_PROGRESS
-    private fun Mission.isClaimed() = state == State.CLAIMED
 
     data class Request(
         val playerId: String,

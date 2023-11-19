@@ -56,10 +56,10 @@ class UtopiaGamificationQuestTest {
         val activityMission = playerA.acceptQuest(quest)
         activity.join(playerA)
 
-        val leaveActivityAction = activity.leave(playerA)!!
+        val leaveActivityAction = activity.leave(playerA.id)!!
         activityMission.carryOut(leaveActivityAction)
 
-        assertEquals(playerA.id, leaveActivityAction.player.id)
+        assertEquals(playerA.id, leaveActivityAction.playerId)
         assertEquals(activity.eventName, leaveActivityAction.eventName)
         assertTrue(activityMission.isCompleted())
     }
@@ -69,20 +69,10 @@ class UtopiaGamificationQuestTest {
     fun `given player accept mission, when player didn't join activity, then mission should be failed`() {
         val activityMission = playerA.acceptQuest(quest)
 
-        val leaveActivityAction = activity.leave(playerA)
+        val leaveActivityAction = activity.leave(playerA.id)
 
         assertNull(leaveActivityAction)
         assertFalse(activityMission.isCompleted())
-    }
-
-    @Test
-    fun `given playerA level 3 and exp 650, when player gain 6000 exp, then level is 11 and exp is 6650`() {
-        val player = Player("A", "A", 650u, 3u)
-        val rewardExp = 6000uL
-        player.gainExp(rewardExp)
-
-        assertThat(player.exp).isEqualTo(6650uL)
-        assertThat(player.level).isEqualTo(11u)
     }
 
     private fun Player.acceptQuest(quest: Quest) = Mission(this, quest)

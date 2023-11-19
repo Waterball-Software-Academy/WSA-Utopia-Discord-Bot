@@ -37,7 +37,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     reward = Reward(100u, 100u, 1.0f),
                     criteria = QuizCriteria("紳士考題", 4, 5)
                 ),
-                QuizAction(player, "紳士考題", 5),
+                QuizAction(player.id, "紳士考題", 5),
                 isMatchAction = true,
                 isMissionCompleted = true
             ),
@@ -55,7 +55,43 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     reward = Reward(100u, 100u, 1.0f),
                     criteria = QuizCriteria("紳士考題", 4, 5),
                 ),
-                QuizAction(player, "紳士考題", 0),
+                QuizAction(player.id, "紳士考題", 0),
+                isMatchAction = true,
+                isMissionCompleted = false
+            ),
+
+            MissionTestCase(
+                """
+                    given player accept mission '參與院長主持的學院節目', 
+                    when player was stay ten min,
+                    then mission should be completed""".trimIndent(),
+                player,
+                quest = Quest(
+                    id = 9,
+                    title = "參與院長主持的學院節目",
+                    description = "",
+                    reward = Reward(100u, 100u, 1.0f),
+                    criteria = JoinActivityCriteria("遊戲微服務計畫：水球實況", 1, 5)
+                ),
+                JoinActivityAction(player.id, "遊戲微服務計畫：水球實況", 1, 10),
+                isMatchAction = true,
+                isMissionCompleted = true
+            ),
+
+            MissionTestCase(
+                """
+                    given player accept mission '參與院長主持的學院節目', 
+                    when player was stay two min,
+                    then mission should be failed""".trimIndent(),
+                player,
+                quest = Quest(
+                    id = 9,
+                    title = "參與院長主持的學院節目",
+                    description = "",
+                    reward = Reward(100u, 100u, 1.0f),
+                    criteria = JoinActivityCriteria("遊戲微服務計畫：水球實況", 1, 5)
+                ),
+                JoinActivityAction(player.id, "遊戲微服務計畫：水球實況", 1, 2),
                 isMatchAction = true,
                 isMissionCompleted = false
             ),
@@ -77,7 +113,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     )
                 ),
                 MessageSentAction(
-                    player,
+                    player.id,
                     "eatWatermelonEveryWhere",
                     "hello watermelon",
                     hasReplied = false,
@@ -105,7 +141,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     )
                 ),
                 MessageSentAction(
-                    player,
+                    player.id,
                     "test",
                     "",
                     hasReplied = false,
@@ -130,7 +166,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     criteria = PostCriteria(ChannelIdRule("flagPostChannelId"))
                 ),
                 PostAction(
-                    player,
+                    player.id,
                     "flagPostChannelId",
                 ),
                 isMatchAction = true,
@@ -151,7 +187,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     criteria = PostCriteria(ChannelIdRule("flagPostChannelId"))
                 ),
                 PostAction(
-                    player,
+                    player.id,
                     "featuredVideosChannelId",
                 ),
                 isMatchAction = true,
@@ -172,7 +208,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     criteria = MessageSentCriteria(ChannelIdRule("featuredVideosChannelId"))
                 ),
                 MessageSentAction(
-                    player,
+                    player.id,
                     "featuredVideosChannelId",
                     "good video",
                     hasReplied = false,
@@ -197,7 +233,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     criteria = MessageSentCriteria(ChannelIdRule("featuredVideosChannelId"))
                 ),
                 MessageSentAction(
-                    player,
+                    player.id,
                     "flagPostChannelId",
                     "good video",
                     hasReplied = false,
@@ -225,7 +261,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     )
                 ),
                 MessageSentAction(
-                    player,
+                    player.id,
                     "careerAdvancementTopicChannelId",
                     "I want to go to good company",
                     hasReplied = true,
@@ -254,7 +290,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     )
                 ),
                 MessageSentAction(
-                    player,
+                    player.id,
                     "careerAdvancementTopicChannelId",
                     "I want to go to good company",
                     hasReplied = false,
@@ -283,7 +319,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     )
                 ),
                 MessageSentAction(
-                    player,
+                    player.id,
                     "engineerLifeChannelId",
                     "I believe I can fly",
                     hasReplied = false,
@@ -311,7 +347,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     )
                 ),
                 MessageSentAction(
-                    player,
+                    player.id,
                     "engineerLifeChannelId",
                     "I believe I can fly",
                     hasReplied = false,
@@ -336,7 +372,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     criteria = MessageSentCriteria(ChannelIdRule("discussionAreaChannelId"))
                 ),
                 MessageSentAction(
-                    player,
+                    player.id,
                     "discussionAreaChannelId",
                     "I am waterBall bot",
                     hasReplied = false,
@@ -361,7 +397,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     criteria = MessageSentCriteria(ChannelIdRule("discussionAreaChannelId"))
                 ),
                 MessageSentAction(
-                    player,
+                    player.id,
                     "careerAdvancementTopicChannelId",
                     "I am waterBall bot",
                     hasReplied = true,
@@ -388,7 +424,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                         regexRule = """【(.|\n)*】(.|\n)*工作職位：?(.|\n)*((公司產業：?(:)?(.|\n)*))?專長：?(.|\n)*興趣：?(.|\n)*簡介：?.(.|\n)*((三件關於我的事，猜猜哪一件是假的：?(:)?(.|\n)*))?""".toRegexRule()
                     )
                 ), MessageSentAction(
-                    player,
+                    player.id,
                     "selfIntroChannelId",
                     """三件關於我的事，猜猜哪一件是假的：""",
                     hasReplied = false,
@@ -415,7 +451,8 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                         regexRule = """【(.|\n)*】(.|\n)*工作職位：?(.|\n)*((公司產業：?(:)?(.|\n)*))?專長：?(.|\n)*興趣：?(.|\n)*簡介：?.(.|\n)*((三件關於我的事，猜猜哪一件是假的：?(:)?(.|\n)*))?""".toRegexRule()
                     )
                 ), MessageSentAction(
-                    player, "selfIntroChannelId", """
+                    player.id,
+                    "selfIntroChannelId", """
                         【 playerA 】 
                         工作職位： <工作職位>
                         公司產業： <工作所在公司的產業類型>
@@ -453,7 +490,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     )
                 ),
                 MessageReactionAction(
-                    player,
+                    player.id,
                     "unlockEntryMessageId",
                     "🍒"
                 ),
@@ -479,7 +516,7 @@ class MissionTestInvocationContextProvider : TestTemplateInvocationContextProvid
                     )
                 ),
                 MessageReactionAction(
-                    player,
+                    player.id,
                     "unlockEntryMessageId",
                     "🔑"
                 ),

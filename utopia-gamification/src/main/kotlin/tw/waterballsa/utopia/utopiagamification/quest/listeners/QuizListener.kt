@@ -9,6 +9,8 @@ import tw.waterballsa.utopia.jda.domains.QuizPreparationStartEvent
 import tw.waterballsa.utopia.jda.domains.UtopiaEvent
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Quest
 import tw.waterballsa.utopia.utopiagamification.quest.domain.actions.QuizAction
+import tw.waterballsa.utopia.utopiagamification.quest.extensions.publishToUser
+import tw.waterballsa.utopia.utopiagamification.quest.listeners.presenters.PlayerFulfillMissionPresenter
 import tw.waterballsa.utopia.utopiagamification.quest.usecase.PlayerFulfillMissionsUsecase
 import tw.waterballsa.utopia.utopiagamification.repositories.MissionRepository
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
@@ -60,18 +62,22 @@ class QuizListener(
 
     private fun onQuizEnd(event: QuizEndEvent) {
         with(event) {
+            //TODO 這個 toPlayer 會有副作用，會註冊玩家，之後會發 pr 解決這個問題
             val user = jda.retrieveUserById(quizTakerId).complete() ?: return
             val player = user.toPlayer() ?: return
 
             val action = QuizAction(
-                player,
+                user.id,
                 quizName,
                 correctCount
             )
+            val presenter = PlayerFulfillMissionPresenter()
 
             log.info { """[quiz end] { quizTakerId : "$quizTakerId", quizName : "$quizName", correctCount : "$correctCount" } """ }
 
-            playerFulfillMissionsUsecase.execute(action, user.claimMissionRewardPresenter)
+            playerFulfillMissionsUsecase.execute(action, presenter)
+
+            presenter.viewModel?.publishToUser(user)
         }
     }
 }

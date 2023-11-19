@@ -12,7 +12,7 @@ class PlayerFulfillMissionsUsecase(
 
     fun execute(action: Action, presenter: Presenter) {
         with(action) {
-            val missions = missionRepository.findInProgressMissionsByPlayerId(player.id)
+            val missions = missionRepository.findInProgressMissionsByPlayerId(playerId)
 
             fulfillMissions(missions, presenter)
         }
@@ -24,11 +24,11 @@ class PlayerFulfillMissionsUsecase(
             .filter { mission -> mission.isCompleted() }
             .onEach { mission ->
                 missionRepository.saveMission(mission)
-                presenter.presentClaimMissionReward(mission)
+                presenter.present(mission)
             }
     }
 
     interface Presenter {
-        fun presentClaimMissionReward(mission: Mission)
+        fun present(mission: Mission)
     }
 }

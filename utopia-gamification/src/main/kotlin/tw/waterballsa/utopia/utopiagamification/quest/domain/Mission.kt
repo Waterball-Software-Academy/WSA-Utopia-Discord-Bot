@@ -28,7 +28,10 @@ class Mission(
         }
     }
 
+    //TODO 現在還想不到好的方法名
     fun isCompleted(): Boolean = state == COMPLETED
+    fun isInProgress(): Boolean = state == IN_PROGRESS
+    fun isClaimed(): Boolean = state == CLAIMED
 
     fun rewardPlayer() {
         player.gainExp(quest.reward.exp)
