@@ -18,7 +18,6 @@ class ClaimMissionRewardPresenter : ClaimMissionRewardUsecase.Presenter {
             目前等級：${mission.player.level}
             目前經驗值：${mission.player.currentExp()}/${mission.player.level.toLevelRange().expLimit}
             """.trimIndent(),
-
             mission.nextQuestId()
         )
     }

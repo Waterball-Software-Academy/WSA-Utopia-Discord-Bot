@@ -16,6 +16,7 @@ import tw.waterballsa.utopia.utopiagamification.quest.usecase.ClaimMissionReward
 import tw.waterballsa.utopia.utopiagamification.repositories.MissionRepository
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
 import tw.waterballsa.utopia.utopiatestkit.annotations.UtopiaTest
+import java.util.*
 
 @UtopiaTest
 class ClaimMissionRewardUsecaseTest @Autowired constructor(
@@ -36,6 +37,8 @@ class ClaimMissionRewardUsecaseTest @Autowired constructor(
             1.0f
         )
     )
+    private val completedMission = Mission(UUID.randomUUID(), playerA, quest, COMPLETED, null)
+    private val claimedMission = Mission(UUID.randomUUID(), playerA, quest, CLAIMED, null)
 
     @BeforeEach
     fun setup() {
@@ -52,7 +55,6 @@ class ClaimMissionRewardUsecaseTest @Autowired constructor(
     @Test
     fun `test player claims mission rewards`() {
         //given
-        val completedMission = Mission(playerA, quest, COMPLETED)
         missionRepository.saveMission(completedMission)
 
         val request = ClaimMissionRewardUsecase.Request(playerA.id, quest.id)
@@ -103,8 +105,7 @@ class ClaimMissionRewardUsecaseTest @Autowired constructor(
     )
     @Test
     fun `test players cannot claim mission rewards repeatedly`() {
-        val mission = Mission(playerA, quest, CLAIMED)
-        missionRepository.saveMission(mission)
+        missionRepository.saveMission(claimedMission)
 
         val request = ClaimMissionRewardUsecase.Request(playerA.id, quest.id)
         val presenter = ClaimMissionRewardPresenter()

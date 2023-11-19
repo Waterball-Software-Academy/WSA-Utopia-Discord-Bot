@@ -15,7 +15,6 @@ class Mission(
 ) {
 
     constructor(player: Player, quest: Quest) : this(randomUUID(), player, quest, IN_PROGRESS, null)
-    constructor(player: Player, quest: Quest, state: State) : this(randomUUID(), player, quest, state, null)
 
     var state: State = state
         private set
