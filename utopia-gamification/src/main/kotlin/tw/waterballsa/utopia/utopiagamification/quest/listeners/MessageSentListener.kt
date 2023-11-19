@@ -26,11 +26,10 @@ class MessageSentListener(
             }
 
             //TODO 這個 toPlayer 會有副作用，會註冊玩家，之後會發 pr 解決這個問題
-            val user = author
-            val player = user.toPlayer() ?: return
+            val player = author.toPlayer() ?: return
 
             val action = MessageSentAction(
-                user.id,
+                author.id,
                 (channel as? ThreadChannel)?.parentChannel?.id ?: channel.id,
                 message.contentDisplay,
                 message.referencedMessage != null,
@@ -41,7 +40,7 @@ class MessageSentListener(
 
             playerFulfillMissionsUsecase.execute(action, presenter)
 
-            presenter.viewModel?.publishToUser(user)
+            presenter.viewModel?.publishToUser(author)
         }
     }
 
