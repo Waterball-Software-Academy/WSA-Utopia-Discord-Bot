@@ -54,8 +54,8 @@ class UtopiaGamificationQuestListener(
             val viewModel = presenter.viewModel ?: return
             hook.editOriginal(viewModel.message).queue()
 
-            if (viewModel.nextQuestId != null) {
-                val assignNextQuestRequest = AssignPlayerQuestUsecase.Request(user.id, viewModel.nextQuestId)
+            if (viewModel.hasNextQuest()) {
+                val assignNextQuestRequest = AssignPlayerQuestUsecase.Request(user.id, viewModel.nextQuestId!!)
                 val assignNextQuestPresenter = AssignPlayerQuestPresenter()
 
                 assignPlayerQuestUsecase.execute(assignNextQuestRequest, assignNextQuestPresenter)
@@ -64,6 +64,8 @@ class UtopiaGamificationQuestListener(
             }
         }
     }
+
+    private fun ClaimMissionRewardPresenter.ViewModel.hasNextQuest() = nextQuestId != null
 
     private fun ButtonInteractionEvent.splitButtonId(delimiters: String): List<String> {
         val result = button.id?.split(delimiters) ?: return emptyList()

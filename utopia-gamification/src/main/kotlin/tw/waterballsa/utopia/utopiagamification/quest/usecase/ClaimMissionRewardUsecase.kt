@@ -23,11 +23,11 @@ class ClaimMissionRewardUsecase(
                     .message("can't claim reward to player")
                     .build()
 
-            if (mission.state == State.IN_PROGRESS) {
+            if (mission.isInProgress()) {
                 throw ClaimInProgressMissionException(mission.quest.title)
             }
 
-            if (mission.state == State.CLAIMED) {
+            if (mission.isClaimed()) {
                 throw ClaimedMissionException(mission.quest.title)
             }
 
@@ -40,7 +40,10 @@ class ClaimMissionRewardUsecase(
         }
     }
 
-    class Request(
+    private fun Mission.isInProgress() = state == State.IN_PROGRESS
+    private fun Mission.isClaimed() = state == State.CLAIMED
+
+    data class Request(
         val playerId: String,
         val questId: Int
     )
