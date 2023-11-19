@@ -6,7 +6,7 @@ import tw.waterballsa.utopia.utopiagamification.quest.usecase.PlayerFulfillMissi
 
 class PlayerFulfillMissionPresenter : PlayerFulfillMissionsUsecase.Presenter {
 
-    var viewModel: ViewModel? = null
+    lateinit var viewModel: ViewModel
         private set
 
     override fun present(mission: Mission) {

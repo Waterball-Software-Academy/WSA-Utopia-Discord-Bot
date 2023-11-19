@@ -3,7 +3,6 @@ package tw.waterballsa.utopia.utopiagamification.quest.listeners
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import org.springframework.stereotype.Component
-import tw.waterballsa.utopia.utopiagamification.quest.domain.State.*
 import tw.waterballsa.utopia.utopiagamification.quest.domain.exception.AssignedQuestException
 import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.quizQuestId
 import tw.waterballsa.utopia.utopiagamification.quest.domain.quests.QuestIds.Companion.unlockAcademyQuestId
@@ -68,20 +67,20 @@ class SlashCommandListener(
         val mission = missionRepository.findAllByPlayerId(user.id).last()
 
         with(mission) {
-            if (state == COMPLETED) {
+            if (isCompleted()) {
                 val presenter = PlayerFulfillMissionPresenter()
                 presenter.present(mission)
                 presenter.viewModel?.publishToUser(user)
             }
 
-            if (state == IN_PROGRESS) {
+            if (isInProgress()) {
                 result = "執行結束，已獲得上個任務的獎勵"
                 val presenter = AssignPlayerQuestPresenter()
                 presenter.presentMission(mission)
                 presenter.viewModel?.publishToUser(user)
             }
 
-            if (state == CLAIMED) {
+            if (isClaimed()) {
                 result = if (quest.id == quizQuestId) {
                     "你已完成全部的新手任務！"
                 } else {
