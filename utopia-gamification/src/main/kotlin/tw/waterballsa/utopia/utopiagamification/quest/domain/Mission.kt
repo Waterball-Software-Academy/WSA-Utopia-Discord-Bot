@@ -29,8 +29,8 @@ class Mission(
     }
 
     fun isCompleted(): Boolean = state == COMPLETED
-    fun isInProgress() = state == IN_PROGRESS
-    fun isClaimed() = state == CLAIMED
+    fun isInProgress(): Boolean = state == IN_PROGRESS
+    fun isClaimed(): Boolean = state == CLAIMED
 
 
     fun rewardPlayer() {
