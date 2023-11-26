@@ -1,4 +1,4 @@
-package tw.waterballsa.utopia.utopiagmification.leaderboard.it
+package tw.waterballsa.utopia.utopiagamification.leaderboard.it
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
