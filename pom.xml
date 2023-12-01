@@ -37,6 +37,7 @@
         <module>message-cherry-pick</module>
         <module>weekly-messages-volume</module>
         <module>utopia-test-kit</module>
+        <module>mini-games</module>
         <module>top-post</module>
     </modules>
 
@@ -287,6 +288,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>utopia-test-kit</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>mini-games</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
