@@ -27,6 +27,10 @@ class Reward(
     constructor(exp: ULong, coin: ULong, bonus: Float) : this(exp, coin, bonus, null)
     constructor(exp: ULong, role: RoleType) : this(exp, 0uL, 0f, role)
 
+    fun rewardExp(player: Player){
+        player.gainExp(exp)
+    }
+
     fun reward(player: Player) {
         player.gainExp(exp)
         player.addRole(role!!.name)
