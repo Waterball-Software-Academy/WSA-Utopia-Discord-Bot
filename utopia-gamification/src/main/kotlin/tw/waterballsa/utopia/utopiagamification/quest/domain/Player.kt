@@ -47,8 +47,16 @@ class Player(
 
     fun hasRole(role: String): Boolean = jdaRoles.contains(role)
 
-    fun addRole(role: String){
+    fun addRole(role: String) {
         jdaRoles.add(role)
+    }
+
+    fun gainBounty(bounty: UInt) {
+        this.bounty += bounty
+    }
+
+    fun lossBounty(bounty: UInt) {
+        this.bounty -= bounty
     }
 
     private fun activate() {

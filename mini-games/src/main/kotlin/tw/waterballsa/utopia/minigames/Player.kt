@@ -1,6 +1,6 @@
 package tw.waterballsa.utopia.minigames
 
 data class Player(
-    val id: String
-// TODO: add required fields
+    val id: String,
+    val bounty: UInt = 0u
 )

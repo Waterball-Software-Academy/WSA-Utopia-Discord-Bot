@@ -1,15 +1,16 @@
 package tw.waterballsa.utopia.utopiagamification.repositories
 
+import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.minigames.Player
 import tw.waterballsa.utopia.minigames.PlayerFinder
 
-class PlayerFinderAdapter : PlayerFinder {
+@Component
+class PlayerFinderAdapter(
+    private val playerRepository: PlayerRepository
+) : PlayerFinder {
 
-    // TODO: we need a important repository here, please add it
-
-    override fun findById(id: String): Player {
-        TODO("Not yet implemented")
-        // TODO: we need to find player by id and transform it into the player dto which we need.
-        // TODO: please keep this in mind: the model in utopia gamification can't be access by other module from outside.
+    override fun findById(id: String): Player? {
+        val player = playerRepository.findPlayerById(id) ?: return null
+        return Player(player.id, player.bounty)
     }
 }
