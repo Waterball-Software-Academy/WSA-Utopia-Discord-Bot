@@ -44,7 +44,8 @@ class SendMessageMission(
             progressCount++;
         }
         return if (isComplete()){
-            return CompletedMissionEvent()
+            reward.rewardExp(sendMessageAction.player)
+            return CompletedMissionEvent(reward)
         } else null
     }
 
@@ -59,9 +60,12 @@ class SendMessageMission(
 
     fun isValidChannelId(channelId: String):Boolean = this.channelId == channelId
 
-    fun isSendImage(hasImage: Boolean):Boolean = this.hasImage == hasImage
+    fun isSendImage(hasImage: Boolean):Boolean =
+         if(this.hasImage) hasImage else true
 
-    fun isWriteTag(isTag: Boolean): Boolean = this.isTag==isTag
+
+    fun isWriteTag(isTag: Boolean): Boolean =
+            if(this.isTag) isTag else true
 
     fun contentWordRequirement(content: String) :Boolean = this.wordLength <= content.length
 

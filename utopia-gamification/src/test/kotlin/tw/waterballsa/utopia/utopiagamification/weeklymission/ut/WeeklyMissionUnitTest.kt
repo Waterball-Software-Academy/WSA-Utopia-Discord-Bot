@@ -95,6 +95,6 @@ class WeeklyMissionUnitTest {
 
     
     private fun Player.sendMessage(channelId: String, hasImage: Boolean, isTag: Boolean,content: String) : SendMessageAction
-        = SendMessageAction(channelId, hasImage, isTag, content)
+        = SendMessageAction(channelId, hasImage, this, isTag, content)
     
 }
