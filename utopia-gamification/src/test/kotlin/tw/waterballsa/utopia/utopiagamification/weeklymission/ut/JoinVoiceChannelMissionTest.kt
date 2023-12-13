@@ -1,14 +1,14 @@
 package tw.waterballsa.utopia.utopiagamification.weeklymission.ut
 
-import dev.minn.jda.ktx.messages.SendDefaults.content
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
+import tw.waterballsa.utopia.utopiagamification.weeklymission.domain.JoinVoiceChannelAction
 import tw.waterballsa.utopia.utopiagamification.weeklymission.domain.JoinVoiceChannelMission
-import tw.waterballsa.utopia.utopiagamification.weeklymission.domain.SendMessageAction
+import java.time.Duration
+import java.time.Instant
 import java.util.*
 
 class JoinVoiceChannelMissionTest {
@@ -39,14 +39,16 @@ class JoinVoiceChannelMissionTest {
     )
     fun `gentleman completed the join voice channel weekly mission`() {
         // Given
+        val startTime: Instant = Instant.now().minus(Duration.ofMinutes(30))
+        var voiceChannelId = "學院閃電秀"
         var joinVoiceChannelMission = JoinVoiceChannelMission(
                 gentlemanA.id,
-                "學院閃電秀",
+                voiceChannelId,
                 leastHeadCount = 47,
                 timeRange = 25
         )
         // When
-
+        gentlemanA.joinVoiceChannel(voiceChannelId, 50, startTime)
         // Then
         assertThat(gentlemanA.exp).isEqualTo(5260)
     }
@@ -81,7 +83,6 @@ class JoinVoiceChannelMissionTest {
         assertThat(gentlemanA.exp).isEqualTo(5000)
     }
 
-//    private fun Player.joinVoiceChannel(voiceChannelId: String, leastHeadCount: Int, timeRange: Int)
-//            = SendMessageAction(channelId, hasImage, isTag, content)
+    private fun Player.joinVoiceChannel(voiceChannelId: String, accumulator: Int, startTime: Instant) = JoinVoiceChannelAction(voiceChannelId, accumulator, startTime)
 
 }

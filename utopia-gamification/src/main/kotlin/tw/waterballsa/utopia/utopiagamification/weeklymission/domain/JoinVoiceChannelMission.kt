@@ -1,12 +1,14 @@
 package tw.waterballsa.utopia.utopiagamification.weeklymission.domain
 
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Reward
+import java.time.Duration
+import java.time.Instant
 
 class JoinVoiceChannelMission(
         val gentlemanId : String,
         val voiceChannelId: String,
         val leastHeadCount: Int,
-        val timeRange: Int
+        val timeRange: Long
 ): WeeklyMission() {
 
     init {
@@ -30,16 +32,23 @@ class JoinVoiceChannelMission(
         )
     }
 
+    fun progress(joinVoiceChannelAction: JoinVoiceChannelAction): CompletedMissionEvent? {
+        if (!isValidVoiceChannelId(joinVoiceChannelAction.voiceChannelId)) {
+            return null
+        }
+        val duration = Duration.between(joinVoiceChannelAction.startTime, Instant.now()).toMinutes()
+        if (isReachedHeadCount(joinVoiceChannelAction.accumulatedHeadCount) && isReachedTimeRange(duration)) {
+            return CompletedMissionEvent(reward)
+        }
+        return null
+    }
+
 
     fun isValidVoiceChannelId(voiceChannelId: String): Boolean = this.voiceChannelId == voiceChannelId
 
-    fun isReachedHeadCount(maximumHeadCount: Int): Boolean = this.leastHeadCount <= maximumHeadCount
+    fun isReachedHeadCount(accumulatedHeadCount: Int): Boolean = this.leastHeadCount <= accumulatedHeadCount
 
-    fun isReachedTimeRange(voiceChannelDuration: Int): Boolean = this.timeRange <= voiceChannelDuration
-
-    fun isComplete(): Boolean {
-        return false
-    }
+    fun isReachedTimeRange(voiceChannelDuration: Long): Boolean = this.timeRange <= voiceChannelDuration
 
 
 }
