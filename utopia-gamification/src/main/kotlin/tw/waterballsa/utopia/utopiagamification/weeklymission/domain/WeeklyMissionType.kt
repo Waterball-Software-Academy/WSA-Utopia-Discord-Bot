@@ -7,14 +7,16 @@ enum class WeeklyMissionType(
 
     companion object {
         private val typeMap = mutableMapOf<Int, WeeklyMissionType>()
+
+        fun getWeeklyMissionType(id : Int): WeeklyMissionType {
+            return typeMap[id] ?: throw  RuntimeException()
+        }
     }
 
     init {
         values().forEach {
-            typeMap.put(it.id, it)
+            typeMap[it.id] = it
         }
     }
 
-    fun isType(id : Int) : WeeklyMissionType =
-            typeMap.get(id) ?: throw RuntimeException()
 }
