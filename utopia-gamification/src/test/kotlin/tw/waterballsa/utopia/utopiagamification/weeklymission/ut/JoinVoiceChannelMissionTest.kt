@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
 import tw.waterballsa.utopia.utopiagamification.weeklymission.domain.JoinVoiceChannelAction
 import tw.waterballsa.utopia.utopiagamification.weeklymission.domain.JoinVoiceChannelMission
+import tw.waterballsa.utopia.utopiagamification.weeklymission.domain.WeeklyMission
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -39,18 +40,22 @@ class JoinVoiceChannelMissionTest {
     )
     fun `gentleman completed the join voice channel weekly mission`() {
         // Given
-        val startTime: Instant = Instant.now().minus(Duration.ofMinutes(30))
-        var voiceChannelId = "學院閃電秀"
-        var joinVoiceChannelMission = JoinVoiceChannelMission(
+        val joinTime: Instant = Instant.now().minus(Duration.ofMinutes(30))
+        val voiceChannelId = "學院閃電秀"
+        val joinVoiceChannelMission = JoinVoiceChannelMission(
                 gentlemanA.id,
                 voiceChannelId,
                 leastHeadCount = 47,
-                timeRange = 25
+                timeRange = 25,
+                joinTime
         )
         // When
-        gentlemanA.joinVoiceChannel(voiceChannelId, 50, startTime)
+        val leaveVoiceChannel = gentlemanA.leaveVoiceChannel(voiceChannelId, 50)
+        joinVoiceChannelMission.progress(leaveVoiceChannel)
         // Then
-        assertThat(gentlemanA.exp).isEqualTo(5260)
+        val expectedExp = 5260u
+        assertThat(gentlemanA.exp).isEqualTo(expectedExp.toULong())
+        assertThat(joinVoiceChannelMission.status).isEqualTo(WeeklyMission.Status.COMPLETE)
     }
 
     @Test
@@ -71,18 +76,23 @@ class JoinVoiceChannelMissionTest {
     )
     fun `gentleman hasn't completed the join voice channel weekly mission`() {
         // Given
-        var joinVoiceChannelMission = JoinVoiceChannelMission(
+        val startTime: Instant = Instant.now().minus(Duration.ofMinutes(5))
+        val joinVoiceChannelMission = JoinVoiceChannelMission(
                 gentlemanA.id,
                 "學院閃電秀",
                 leastHeadCount = 47,
-                timeRange = 25
+                timeRange = 25,
+                startTime
         )
         // When
-
+        val leaveVoiceChannel = gentlemanA.leaveVoiceChannel("學院閃電秀", 50)
+        leaveVoiceChannel.progress(joinVoiceChannelMission)
         // Then
-        assertThat(gentlemanA.exp).isEqualTo(5000)
+        val expectedExp = 5000u
+        assertThat(gentlemanA.exp).isEqualTo(expectedExp.toULong())
+        assertThat(joinVoiceChannelMission.status).isEqualTo(WeeklyMission.Status.PROGRESS)
     }
 
-    private fun Player.joinVoiceChannel(voiceChannelId: String, accumulator: Int, startTime: Instant) = JoinVoiceChannelAction(voiceChannelId, accumulator, startTime)
+    private fun Player.leaveVoiceChannel(voiceChannelId: String, accumulator: Int) = JoinVoiceChannelAction(this, voiceChannelId, accumulator)
 
 }

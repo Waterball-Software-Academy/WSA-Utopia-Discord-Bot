@@ -8,7 +8,8 @@ class JoinVoiceChannelMission(
         val gentlemanId : String,
         val voiceChannelId: String,
         val leastHeadCount: Int,
-        val timeRange: Long
+        val timeRange: Long,
+        var joinTime: Instant?
 ): WeeklyMission() {
 
     init {
@@ -36,19 +37,21 @@ class JoinVoiceChannelMission(
         if (!isValidVoiceChannelId(joinVoiceChannelAction.voiceChannelId)) {
             return null
         }
-        val duration = Duration.between(joinVoiceChannelAction.startTime, Instant.now()).toMinutes()
+        val duration = Duration.between(joinTime, Instant.now()).toMinutes()
         if (isReachedHeadCount(joinVoiceChannelAction.accumulatedHeadCount) && isReachedTimeRange(duration)) {
+            reward.rewardExp(joinVoiceChannelAction.player)
+            status = Status.COMPLETE
             return CompletedMissionEvent(reward)
         }
         return null
     }
 
 
-    fun isValidVoiceChannelId(voiceChannelId: String): Boolean = this.voiceChannelId == voiceChannelId
+    private fun isValidVoiceChannelId(voiceChannelId: String): Boolean = this.voiceChannelId == voiceChannelId
 
-    fun isReachedHeadCount(accumulatedHeadCount: Int): Boolean = this.leastHeadCount <= accumulatedHeadCount
+    private fun isReachedHeadCount(accumulatedHeadCount: Int): Boolean = this.leastHeadCount <= accumulatedHeadCount
 
-    fun isReachedTimeRange(voiceChannelDuration: Long): Boolean = this.timeRange <= voiceChannelDuration
+    private fun isReachedTimeRange(voiceChannelDuration: Long): Boolean = this.timeRange <= voiceChannelDuration
 
 
 }
