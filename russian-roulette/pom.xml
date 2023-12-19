@@ -26,6 +26,10 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>discord-impl-jda</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>mini-games</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

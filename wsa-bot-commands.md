@@ -1,9 +1,19 @@
 # Commands Document
 
+## random
+|    Commands    | Arguments                                                                                                  | Description |
+|:--------------:| ---------------------------------------------------------------------------------------------------------- | ----------- |
+| random lottery | number(INTEGER): Number of choose members per room.<br>role(ROLE): Only select specific role in this round | Lottery     |
+
 ## 1a2b
 | Commands | Arguments | Description                 |
 |:--------:| --------- | --------------------------- |
 |   1a2b   |           | Start a new guess num game. |
+
+## rock-paper-scissors
+|      Commands       | Arguments | Description                           |
+|:-------------------:| --------- | ------------------------------------- |
+| rock-paper-scissors |           | start a new rock paper scissors game! |
 
 ## gaas
 |        Commands        | Arguments                                                                                          | Description                                          |
@@ -22,21 +32,23 @@
 |:--------:| --------- | ----------- |
 |   ping   |           | sends pong  |
 
+## utopia
+|      Commands      | Arguments                | Description                           |
+|:------------------:| ------------------------ | ------------------------------------- |
+| utopia first-quest |                          | get first quest                       |
+|  utopia re-render  |                          | re-render in_progress/completed quest |
+| utopia leaderboard | options(STRING): my-rank | leaderboard                           |
+
 ## mute
 |    Commands    | Arguments                                                             | Description    |
 |:--------------:| --------------------------------------------------------------------- | -------------- |
 | mute audiences | audience(USER): Allow who to voice<br>role(ROLE): Allow role to voice | Mute Audiences |
 |  mute revoked  |                                                                       | Unmute         |
 
-## random
-|    Commands    | Arguments                                                                                                  | Description |
-|:--------------:| ---------------------------------------------------------------------------------------------------------- | ----------- |
-| random lottery | number(INTEGER): Number of choose members per room.<br>role(ROLE): Only select specific role in this round | Lottery     |
-
-## rock-paper-scissors
-|      Commands       | Arguments | Description                           |
-|:-------------------:| --------- | ------------------------------------- |
-| rock-paper-scissors |           | start a new rock paper scissors game! |
+## audience
+|     Commands     | Arguments                                            | Description                                    |
+|:----------------:| ---------------------------------------------------- | ---------------------------------------------- |
+| audience counter | time-length(INTEGER): Time is calculated in minutes. | count the resent voice channel audience amount |
 
 ## roulette
 | Commands | Arguments | Description     |
@@ -58,14 +70,3 @@
 |        Commands        | Arguments                                                            | Description                                    |
 |:----------------------:| -------------------------------------------------------------------- | ---------------------------------------------- |
 | weekly-messages-volume | channel-name(STRING): The channel to show the weekly messages volume | Show the weekly messages volume of the channel |
-
-## audience
-|     Commands     | Arguments                                            | Description                                    |
-|:----------------:| ---------------------------------------------------- | ---------------------------------------------- |
-| audience counter | time-length(INTEGER): Time is calculated in minutes. | count the resent voice channel audience amount |
-
-## utopia
-|      Commands      | Arguments | Description                           |
-|:------------------:| --------- | ------------------------------------- |
-| utopia first-quest |           | get first quest                       |
-|  utopia re-render  |           | re-render in_progress/completed quest |

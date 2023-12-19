@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.UtopiaListener
 import java.util.concurrent.TimeUnit.*
 
+//TODO:
+// 1. 繼承 UtopiaListenerImpl 並覆寫方法
+
 private const val COMMAND_NAME = "roulette"
 private const val BUTTON_ID = "trigger"
 

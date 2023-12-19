@@ -1,6 +1,6 @@
 package tw.waterballsa.utopia.minigames
 
-data class Player(
+data class MiniGamePlayer(
     val id: String,
-    val bounty: UInt = 0u
+    var bounty: UInt
 )
