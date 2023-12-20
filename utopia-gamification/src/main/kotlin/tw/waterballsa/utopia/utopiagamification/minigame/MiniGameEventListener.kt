@@ -1,6 +1,7 @@
 package tw.waterballsa.utopia.utopiagamification.minigame
 
 import tw.waterballsa.utopia.jda.UtopiaListener
+import tw.waterballsa.utopia.jda.domains.UtopiaEvent
 import tw.waterballsa.utopia.minigames.GameSettledEvent
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
@@ -9,11 +10,10 @@ import tw.waterballsa.utopia.utopiagamification.repositories.exceptions.NotFound
 class MiniGameEventListener(
     private val playerRepository: PlayerRepository
 ) : UtopiaListener() {
-
-    //TODO:
-    // 1. 用 UtopiaListener 的 onUtopiaEvent 接收結算事件
-    private fun onMiniGamePlayerRewarded(event: GameSettledEvent) {
-        with(event) {
+    override fun onUtopiaEvent(event: UtopiaEvent) {
+        if (event is GameSettledEvent) {
+            val playerId = event.playerId
+            val bounty = event.bounty
             val player = findPlayer(playerId)
             player.gainBounty(bounty)
             playerRepository.savePlayer(player)
