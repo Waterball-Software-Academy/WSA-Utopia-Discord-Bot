@@ -2,36 +2,39 @@ package tw.waterballsa.utopia.rockpaperscissors
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.build.CommandData
-import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import org.springframework.stereotype.Component
-import tw.waterballsa.utopia.jda.UtopiaListener
+import tw.waterballsa.utopia.jda.domains.EventPublisher
+import tw.waterballsa.utopia.minigames.MiniGamePlayer
+import tw.waterballsa.utopia.minigames.PlayerFinder
+import tw.waterballsa.utopia.minigames.UtopiaListenerImpl
 import tw.waterballsa.utopia.rockpaperscissors.domain.Punch
+import tw.waterballsa.utopia.rockpaperscissors.domain.PunchResult
 import tw.waterballsa.utopia.rockpaperscissors.domain.RockPaperScissors
 
-private const val ROCK_PAPER_SCISSORS_COMMAND = "rock-paper-scissors"
+private const val ROCK_PAPER_SCISSORS_COMMAND = "rock"
 
 @Component
-class RockPaperScissorsListener() : UtopiaListener() {
-
+class RockPaperScissorsListener(
+    publisher: EventPublisher,
+    playerFinder: PlayerFinder
+) : UtopiaListenerImpl<RockPaperScissors>(publisher, playerFinder) {
+    private val discordUserIdToMiniPlayerId = hashMapOf<String, String>()
     private val game = RockPaperScissors()
 
-    override fun commands(): List<CommandData> {
-        return listOf(
-            Commands.slash(ROCK_PAPER_SCISSORS_COMMAND, "start a new rock paper scissors game!")
-        )
+    override fun SlashCommandInteractionEvent.startGame(miniGamePlayer: MiniGamePlayer) {
+        registerGame(miniGamePlayer.id, game)
+        discordUserIdToMiniPlayerId[user.id] = miniGamePlayer.id
+        reply("請猜拳!").setEphemeral(true)
+            .addActionRow(Punch.BUTTONS).queue()
     }
 
-    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        with(event) {
-            if (fullCommandName != ROCK_PAPER_SCISSORS_COMMAND) {
-                return
-            }
+    override fun getCommandName(): String {
+        return ROCK_PAPER_SCISSORS_COMMAND
+    }
 
-            reply("請猜拳!").setEphemeral(true)
-                .addActionRow(Punch.BUTTONS).queue()
-        }
+    override fun getCommandDescription(): String {
+        return "Start a new rock paper scissor game."
     }
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
@@ -43,6 +46,12 @@ class RockPaperScissorsListener() : UtopiaListener() {
             val playerPunch = button.id!!.toPunch()
             val botPunch = Punch.randomPunch()
             val punchResult = game.punch(playerPunch, botPunch)
+            val miniGamePlayer = findPlayer(user.id)
+            var miniGamePlayerBet = findBet(user.id)
+
+            if (punchResult == PunchResult.LOSE) {
+                miniGamePlayerBet = 0u - miniGamePlayerBet
+            }
 
             reply(
                 """
@@ -53,7 +62,15 @@ class RockPaperScissorsListener() : UtopiaListener() {
                     ----------------
                     🎯結果 -> $punchResult
                 """.trimIndent()
-            ).queue()
+            ).queue {
+                discordUserIdToMiniPlayerId[user.id]?.let { miniGamePlayerId -> unRegisterGame(miniGamePlayerId) }
+                discordUserIdToMiniPlayerId[user.id]?.let { miniGamePlayerID ->
+                    gameOver(
+                        miniGamePlayerID,
+                        miniGamePlayerBet
+                    )
+                }
+            }
         }
     }
 }

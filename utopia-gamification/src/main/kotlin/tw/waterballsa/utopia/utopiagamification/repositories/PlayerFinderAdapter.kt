@@ -12,13 +12,8 @@ class PlayerFinderAdapter(
 ) : PlayerFinder {
 
     override fun findById(id: String): MiniGamePlayer? {
-        val player = findPlayer(id)
-        return player.toMiniGamePlayer()
+        return playerRepository.findPlayerById(id)?.toMiniGamePlayer()
     }
-
-    private fun findPlayer(playerId: String): Player =
-        playerRepository.findPlayerById(playerId) ?: throw NotFoundException.notFound(Player::class).id(playerId)
-            .build()
 
     private fun Player.toMiniGamePlayer(): MiniGamePlayer = MiniGamePlayer(id,  bounty)
 

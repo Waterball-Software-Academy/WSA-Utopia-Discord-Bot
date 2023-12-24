@@ -31,6 +31,7 @@ abstract class UtopiaListenerImpl<T>(
     }
 
     open val playerIdToGame = hashMapOf<String, T>()
+    open val playerBet = hashMapOf<String, UInt>()
 
     final override fun commands(): List<CommandData> = listOf(
         Commands.slash(getCommandName(), getCommandDescription())
@@ -44,10 +45,11 @@ abstract class UtopiaListenerImpl<T>(
             }
 
             //TODO: 尚未註冊成遊戲玩家的成員如何處理
-            val miniGamePlayer =
-                playerFinder.findById(player.id) ?: throw NotFoundException("請先執行烏托邦任務。輸入指令：utopia-first-quest")
+            val miniGamePlayer = findPlayer(player.id)
+//            playerFinder.findById(player.id)
+//                ?: throw NotFoundException("請先執行烏托邦任務。輸入指令：utopia-first-quest")
 
-            if(validatePlayerBet(miniGamePlayer)){
+            if (validatePlayerBet(miniGamePlayer)) {
                 startGame(miniGamePlayer)
             }
         }
@@ -57,7 +59,15 @@ abstract class UtopiaListenerImpl<T>(
 
     protected abstract fun getCommandDescription(): String
 
-    private fun SlashCommandInteractionEvent.validatePlayerBet(miniGamePlayer: MiniGamePlayer):Boolean {
+    fun findPlayer(playerId: String): MiniGamePlayer {
+        return playerFinder.findById(playerId) ?: throw NotFoundException("請先執行烏托邦任務。輸入指令：utopia-first-quest")
+    }
+
+    fun findBet(playerId: String): UInt {
+        return playerBet[playerId]!!
+    }
+
+    private fun SlashCommandInteractionEvent.validatePlayerBet(miniGamePlayer: MiniGamePlayer): Boolean {
         val bet = getOptionAsPositiveInt(OPTION_AMOUNT)!!.toUInt()
 
         if (bet > MAX_BET) {
@@ -69,6 +79,7 @@ abstract class UtopiaListenerImpl<T>(
             reply("${player.asMention}，你擁有的金幣不足。").queue()
             return false
         }
+        playerBet[player.id] = bet
         return true
     }
 
@@ -80,6 +91,7 @@ abstract class UtopiaListenerImpl<T>(
 
     protected fun unRegisterGame(playerId: String) {
         playerIdToGame.remove(playerId)
+        playerBet.remove(playerId)
     }
 
     protected fun gameOver(playerId: String, bounty: UInt) {
