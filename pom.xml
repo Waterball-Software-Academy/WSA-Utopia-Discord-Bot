@@ -37,6 +37,7 @@
         <module>message-cherry-pick</module>
         <module>weekly-messages-volume</module>
         <module>utopia-test-kit</module>
+        <module>manage-subscriber-role</module>
     </modules>
 
     <properties>
@@ -281,6 +282,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>weekly-messages-volume</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>manage-subscriber-role</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
