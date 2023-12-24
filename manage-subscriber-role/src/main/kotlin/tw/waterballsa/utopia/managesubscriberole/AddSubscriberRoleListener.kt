@@ -14,11 +14,10 @@ class AddSubscriberRoleListener(wsa: WsaDiscordProperties) : AbstractManageSubsc
      * 移除表情時，新增對應訂閱者身份組
      */
     override fun onMessageReactionRemove(event: MessageReactionRemoveEvent) {
-        manageSubscriberRole(event) { guild, user, role ->
-            guild.addRoleToMember(user, role)
-                    .queue {
-                        logger.info { """[Add Role] {"userId":"${user.id}", "roleName":"${role.name}" }""" }
-                    }
+        with(event) {
+            manageSubscriberRole(guild::addRoleToMember)?.queue {
+                logger.info { "[Add Role] {\"userId\":\"${userId}\", \"roleName\":\"${it.name}\" }" }
+            }
         }
     }
 }
