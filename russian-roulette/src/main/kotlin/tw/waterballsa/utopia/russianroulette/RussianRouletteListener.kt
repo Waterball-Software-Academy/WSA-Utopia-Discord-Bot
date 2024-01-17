@@ -2,40 +2,46 @@ package tw.waterballsa.utopia.russianroulette
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.build.CommandData
-import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.components.buttons.Button.primary
 import org.springframework.stereotype.Component
-import tw.waterballsa.utopia.jda.UtopiaListener
+import tw.waterballsa.utopia.jda.domains.EventPublisher
+import tw.waterballsa.utopia.minigames.MiniGamePlayer
+import tw.waterballsa.utopia.minigames.PlayerFinder
+import tw.waterballsa.utopia.minigames.UtopiaListenerImpl
 import java.util.concurrent.TimeUnit.*
-
-//TODO:
-// 1. 繼承 UtopiaListenerImpl 並覆寫方法
 
 private const val COMMAND_NAME = "roulette"
 private const val BUTTON_ID = "trigger"
 
 @Component
-class RussianRouletteListener : UtopiaListener() {
-    private val playerIdToGame = hashMapOf<String, RouletteGame>()
+class RussianRouletteListener(
+    publisher: EventPublisher,
+    playerFinder: PlayerFinder
+) : UtopiaListenerImpl<RouletteGame>(publisher, playerFinder) {
+    override var playerIdToGame = hashMapOf<String, RouletteGame>()
+    private var memberIdToMiniGamePlayer = hashMapOf<String, MiniGamePlayer>()
 
-    override fun commands(): List<CommandData> = listOf(
-        Commands.slash(COMMAND_NAME, "Start the game.")
-    )
-
-    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        with(event) {
-            if (fullCommandName != COMMAND_NAME) {
-                return
-            }
-
-            playerIdToGame[player.id] = RouletteGame()
-
-            reply("${player.asMention}，俄羅斯輪盤開始")
-                .addActionRow(primary(BUTTON_ID, "Shoot"))
-                .timeout(1, MINUTES)
-                .queue()
+    override fun SlashCommandInteractionEvent.startGame(miniGamePlayer: MiniGamePlayer) {
+        if (playerIdToGame[miniGamePlayer.id] != null) {
+            return
         }
+        registerGame(miniGamePlayer.id, RouletteGame())
+
+        playerIdToGame[miniGamePlayer.id] = RouletteGame()
+        memberIdToMiniGamePlayer[player.id] = miniGamePlayer
+
+        reply("${player.asMention}，俄羅斯輪盤開始")
+            .addActionRow(primary(BUTTON_ID, "Shoot"))
+            .timeout(1, MINUTES)
+            .queue()
+    }
+
+    override fun getCommandName(): String {
+        return COMMAND_NAME
+    }
+
+    override fun getCommandDescription(): String {
+        return "Start a new biu biu biu game"
     }
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
@@ -43,29 +49,32 @@ class RussianRouletteListener : UtopiaListener() {
             if (BUTTON_ID != button.id) {
                 return
             }
-            val rouletteGame = playerIdToGame[player.id] ?: return
 
-            handlePlayerShoot(rouletteGame)
-            handleBotShoot(rouletteGame)
+            val miniGamePlayer = memberIdToMiniGamePlayer[player.id] ?: return
+            val rouletteGame = playerIdToGame[miniGamePlayer.id] ?: return
+
+            reply("biubiubiu").queue{
+                handlePlayerShoot(rouletteGame, miniGamePlayer)         }
         }
     }
 
-    private fun ButtonInteractionEvent.handlePlayerShoot(rouletteGame: RouletteGame) {
-        handleShoot(rouletteGame, "你已中彈，遊戲結束")
-        channel.sendMessage("你成功躲過一輪，輪到我開槍").queue()
-    }
-
-    private fun ButtonInteractionEvent.handleBotShoot(rouletteGame: RouletteGame) {
-        handleShoot(rouletteGame, "我已中彈，遊戲結束")
-        reply("我成功躲過一輪，輪到你開槍").queue()
-    }
-
-    private fun ButtonInteractionEvent.handleShoot(rouletteGame: RouletteGame, hint: String) {
+    private fun ButtonInteractionEvent.handlePlayerShoot(rouletteGame: RouletteGame, miniGamePlayer: MiniGamePlayer) {
         rouletteGame.pullTrigger()
         if (rouletteGame.isGameOver()) {
-            reply(hint).queue { playerIdToGame.remove(player.id) }
+            val playerBet = findBet(miniGamePlayer.id).toInt()
+            val playerGetBounty = rouletteGame.handleBounty(playerBet).toUInt()
+
+            miniGamePlayer.bounty += playerGetBounty
+
+            channel.sendMessage("你已中彈，遊戲結束，獲得 $playerGetBounty 賞金").queue {
+                playerIdToGame.remove(miniGamePlayer.id)
+                unRegisterGame(miniGamePlayer.id)
+                gameOver(miniGamePlayer.id, miniGamePlayer.bounty)
+            }
             return
         }
+        rouletteGame.survivalCount()
+        channel.sendMessage("你成功躲過這一回，請繼續開槍射擊").queue()
     }
 }
 

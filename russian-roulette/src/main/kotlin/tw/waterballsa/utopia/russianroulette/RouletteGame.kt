@@ -1,26 +1,30 @@
 package tw.waterballsa.utopia.russianroulette
 
-/**
- * 從輪盤遊戲中存活並得到獎金。
- * 使用 6 發子彈 :gun: 存活次數越多，獲得的獎金就越多（如果你在 5 次射擊中存活下來，則獲得 4 倍）。
- * 點擊 Pull the trigger 按鈕以繼續使用相同的 :gun: 並增加你的獎金風險自負。
- * 獎勵區間：依照進行回合數，決定獎金一倍至四倍
- * 第 1 回合 = 4 倍
- * 第 2 回合 = 3 倍
- * 第 3 回合 = 2 倍
- * 第 4 回合 = 1 倍
- */
-
-//TODO:
-// 1. 遊戲結束時依照上述規則計算遊戲獎勵，需扣除賭金後結算
+import kotlin.random.Random.Default.nextInt
 
 class RouletteGame() {
-    private val roulette = listOf(false, false, false, false, false, true).shuffled()
-    private var currentTurn = 5
+    private var currentTurn = 6
+    private var survivalRound = 0
+    private val betRule = mapOf<Int, Int>(0 to 0, 1 to 1, 2 to 1, 3 to 2, 4 to 3, 5 to 4, 6 to 8)
 
     fun pullTrigger() {
         currentTurn--
     }
 
-    fun isGameOver(): Boolean = roulette[currentTurn]
+    fun isGameOver(): Boolean {
+        if (survivalRound < 5) {
+            return nextInt(0, currentTurn) == 0
+        } else if (nextInt(0, 1) != 0) {
+            survivalCount()
+        }
+        return true
+    }
+
+    fun survivalCount() {
+        survivalRound++
+    }
+
+    fun handleBounty(playerBet: Int): Int {
+        return betRule[survivalRound]!!.times(playerBet)
+    }
 }
