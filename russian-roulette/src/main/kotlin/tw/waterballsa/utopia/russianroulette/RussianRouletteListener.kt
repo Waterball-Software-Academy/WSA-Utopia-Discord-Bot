@@ -18,8 +18,8 @@ class RussianRouletteListener(
     publisher: EventPublisher,
     playerFinder: PlayerFinder
 ) : UtopiaListenerImpl<RouletteGame>(publisher, playerFinder) {
-    override var playerIdToGame = hashMapOf<String, RouletteGame>()
-    private var memberIdToMiniGamePlayer = hashMapOf<String, MiniGamePlayer>()
+    override val playerIdToGame = hashMapOf<String, RouletteGame>()
+    private val memberIdToMiniGamePlayer = hashMapOf<String, MiniGamePlayer>()
 
     override fun SlashCommandInteractionEvent.startGame(miniGamePlayer: MiniGamePlayer) {
         if (playerIdToGame[miniGamePlayer.id] != null) {
@@ -27,7 +27,6 @@ class RussianRouletteListener(
         }
         registerGame(miniGamePlayer.id, RouletteGame())
 
-        playerIdToGame[miniGamePlayer.id] = RouletteGame()
         memberIdToMiniGamePlayer[player.id] = miniGamePlayer
 
         reply("${player.asMention}，俄羅斯輪盤開始")
@@ -62,7 +61,7 @@ class RussianRouletteListener(
         rouletteGame.pullTrigger()
         if (rouletteGame.isGameOver()) {
             val playerBet = findBet(miniGamePlayer.id).toInt()
-            val playerGetBounty = rouletteGame.handleBounty(playerBet).toUInt()
+            val playerGetBounty = rouletteGame.calculateBounty(playerBet).toUInt()
 
             miniGamePlayer.bounty += playerGetBounty
 
