@@ -4,5 +4,5 @@ import tw.waterballsa.utopia.jda.domains.UtopiaEvent
 
 data class GameSettledEvent(
     val playerId: String,
-    val bounty: UInt
+    val bounty: Int
 ) : UtopiaEvent

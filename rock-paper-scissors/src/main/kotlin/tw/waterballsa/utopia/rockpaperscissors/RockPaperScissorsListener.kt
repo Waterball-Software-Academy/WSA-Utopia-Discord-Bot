@@ -12,7 +12,7 @@ import tw.waterballsa.utopia.rockpaperscissors.domain.Punch
 import tw.waterballsa.utopia.rockpaperscissors.domain.PunchResult
 import tw.waterballsa.utopia.rockpaperscissors.domain.RockPaperScissors
 
-private const val ROCK_PAPER_SCISSORS_COMMAND = "rock"
+private const val ROCK_PAPER_SCISSORS_COMMAND = "rps"
 
 @Component
 class RockPaperScissorsListener(
@@ -23,7 +23,7 @@ class RockPaperScissorsListener(
     private val game = RockPaperScissors()
 
     override fun SlashCommandInteractionEvent.startGame(miniGamePlayer: MiniGamePlayer) {
-        registerGame(miniGamePlayer.id, game)
+        registerGame(miniGamePlayer.id, RockPaperScissors())
         discordUserIdToMiniPlayerId[user.id] = miniGamePlayer.id
         reply("請猜拳!").setEphemeral(true)
             .addActionRow(Punch.BUTTONS).queue()
@@ -46,11 +46,13 @@ class RockPaperScissorsListener(
             val playerPunch = button.id!!.toPunch()
             val botPunch = Punch.randomPunch()
             val punchResult = game.punch(playerPunch, botPunch)
-            val miniGamePlayer = findPlayer(user.id)
-            var miniGamePlayerBet = findBet(user.id)
+            val miniGamePlayerBet = findBet(user.id).toInt()
+            var miniGameBountyResult = 0
 
-            if (punchResult == PunchResult.LOSE) {
-                miniGamePlayerBet = 0u - miniGamePlayerBet
+            if (punchResult == PunchResult.WIN) {
+                miniGameBountyResult += miniGamePlayerBet
+            } else if (punchResult == PunchResult.LOSE) {
+                miniGameBountyResult -= miniGamePlayerBet
             }
 
             reply(
@@ -61,6 +63,7 @@ class RockPaperScissorsListener(
                     🖥️系統 -> $botPunch
                     ----------------
                     🎯結果 -> $punchResult
+                    💵賞金 -> $miniGameBountyResult
                 """.trimIndent()
             ).queue {
                 discordUserIdToMiniPlayerId[user.id]?.let { miniGamePlayerId -> unRegisterGame(miniGamePlayerId) }

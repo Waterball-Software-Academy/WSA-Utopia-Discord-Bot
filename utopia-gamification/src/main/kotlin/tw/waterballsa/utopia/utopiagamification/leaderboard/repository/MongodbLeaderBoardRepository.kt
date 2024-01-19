@@ -29,10 +29,10 @@ private fun Collection<Player>.rank(): List<LeaderBoardItem> =
     sortedWith(rankOrder)
         .mapIndexed { index, it -> LeaderBoardItem(it.id, it.name, it.exp, it.level, it.bounty.toUInt(), index + 1) }
 
-private val rankOrder : Comparator<Player> =
+private val rankOrder: Comparator<Player> =
     compareByDescending<Player> { it.level }
-    .thenByDescending { it.exp }
-    .thenByDescending { it.bounty }
-    .thenBy { it.levelUpgradeDate }
-    .thenBy { it.joinDate }
-    .thenBy { it.id }
+        .thenByDescending { it.exp }
+        .thenByDescending { it.bounty }
+        .thenBy { it.levelUpgradeDate }
+        .thenBy { it.joinDate }
+        .thenBy { it.id }

@@ -1,6 +1,5 @@
 package tw.waterballsa.utopia.utopiagamification.quest.ut
 
-import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -10,7 +9,6 @@ import tw.waterballsa.utopia.utopiagamification.activity.domain.Activity
 import tw.waterballsa.utopia.utopiagamification.activity.domain.Activity.State.ACTIVE
 import tw.waterballsa.utopia.utopiagamification.quest.domain.*
 import tw.waterballsa.utopia.utopiagamification.quest.domain.actions.JoinActivityCriteria
-import java.util.*
 import java.util.UUID.randomUUID
 
 class UtopiaGamificationQuestTest {

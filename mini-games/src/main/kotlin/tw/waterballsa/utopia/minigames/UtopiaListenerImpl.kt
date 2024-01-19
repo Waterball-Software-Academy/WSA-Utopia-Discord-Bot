@@ -94,7 +94,7 @@ abstract class UtopiaListenerImpl<T>(
         playerBet.remove(playerId)
     }
 
-    protected fun gameOver(playerId: String, bounty: UInt) {
+    protected fun gameOver(playerId: String, bounty: Int) {
         publisher.broadcastEvent(GameSettledEvent(playerId, bounty))
     }
 

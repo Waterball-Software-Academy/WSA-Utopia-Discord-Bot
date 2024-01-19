@@ -10,7 +10,7 @@ class Player(
     var name: String,
     exp: ULong = 0uL,
     level: UInt = 1u,
-    var bounty: UInt = 0u,
+    var bounty: Int = 0,
     val joinDate: OffsetDateTime = now(),
     latestActivateDate: OffsetDateTime = now(),
     levelUpgradeDate: OffsetDateTime? = null,
@@ -51,12 +51,8 @@ class Player(
         jdaRoles.add(role)
     }
 
-    fun gainBounty(bounty: UInt) {
+    fun settleBounty(bounty: Int) {
         this.bounty += bounty
-    }
-
-    fun lossBounty(bounty: UInt) {
-        this.bounty -= bounty
     }
 
     private fun activate() {

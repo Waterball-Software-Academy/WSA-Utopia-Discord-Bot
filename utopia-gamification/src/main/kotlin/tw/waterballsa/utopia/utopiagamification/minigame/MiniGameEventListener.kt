@@ -15,7 +15,7 @@ class MiniGameEventListener(
             val playerId = event.playerId
             val bounty = event.bounty
             val player = findPlayer(playerId)
-            player.gainBounty(bounty)
+            player.settleBounty(bounty)
             playerRepository.savePlayer(player)
         }
     }

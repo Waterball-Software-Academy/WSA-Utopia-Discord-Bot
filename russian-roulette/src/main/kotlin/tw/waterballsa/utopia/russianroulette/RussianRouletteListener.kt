@@ -52,8 +52,9 @@ class RussianRouletteListener(
             val miniGamePlayer = memberIdToMiniGamePlayer[player.id] ?: return
             val rouletteGame = playerIdToGame[miniGamePlayer.id] ?: return
 
-            reply("biubiubiu").queue{
-                handlePlayerShoot(rouletteGame, miniGamePlayer)         }
+            reply("biu biu biu").queue {
+                handlePlayerShoot(rouletteGame, miniGamePlayer)
+            }
         }
     }
 
