@@ -61,14 +61,15 @@ class RussianRouletteListener(
         rouletteGame.pullTrigger()
         if (rouletteGame.isGameOver()) {
             val playerBet = findBet(miniGamePlayer.id).toInt()
-            val playerGetBounty = rouletteGame.calculateBounty(playerBet).toUInt()
+            val playerGetBounty = rouletteGame.calculateBounty(playerBet)
 
-            miniGamePlayer.bounty += playerGetBounty
+            var playerBounty = miniGamePlayer.bounty.toInt()
+            playerBounty += playerGetBounty
 
             channel.sendMessage("你已中彈，遊戲結束，獲得 $playerGetBounty 賞金").queue {
                 playerIdToGame.remove(miniGamePlayer.id)
                 unRegisterGame(miniGamePlayer.id)
-                gameOver(miniGamePlayer.id, miniGamePlayer.bounty)
+                gameOver(miniGamePlayer.id, playerBounty)
             }
             return
         }

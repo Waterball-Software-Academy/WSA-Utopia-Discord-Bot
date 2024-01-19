@@ -27,7 +27,7 @@ class MongodbLeaderBoardRepository(
 
 private fun Collection<Player>.rank(): List<LeaderBoardItem> =
     sortedWith(rankOrder)
-        .mapIndexed { index, it -> LeaderBoardItem(it.id, it.name, it.exp, it.level, it.bounty, index + 1) }
+        .mapIndexed { index, it -> LeaderBoardItem(it.id, it.name, it.exp, it.level, it.bounty.toUInt(), index + 1) }
 
 private val rankOrder : Comparator<Player> =
     compareByDescending<Player> { it.level }

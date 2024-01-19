@@ -5,7 +5,7 @@ import kotlin.random.Random.Default.nextInt
 class RouletteGame {
     private var currentTurn = 6
     private var survivalRound = 0
-    private val bountyRatios = mapOf(0 to 0, 1 to 1, 2 to 1, 3 to 2, 4 to 3, 5 to 4, 6 to 8)
+    private val bountyRatios = mapOf(0 to -1, 1 to 1, 2 to 1, 3 to 2, 4 to 3, 5 to 4, 6 to 8)
 
     fun pullTrigger() {
         currentTurn--
