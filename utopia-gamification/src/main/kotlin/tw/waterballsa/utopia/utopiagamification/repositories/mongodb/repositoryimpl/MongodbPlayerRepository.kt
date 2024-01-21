@@ -24,7 +24,7 @@ class MongodbPlayerRepository(
         name,
         exp.toULong(),
         level.toUInt(),
-        bounty?.toUInt() ?: 0u,
+        bounty?: 0,
         joinDate,
         latestActivateDate,
         levelUpgradeDate,
