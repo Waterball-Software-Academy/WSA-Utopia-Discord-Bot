@@ -27,11 +27,11 @@ abstract class UtopiaListenerImpl<T>(
     private val playerFinder: PlayerFinder
 ) : UtopiaListener() {
     companion object {
-        const val MAX_BET = 240u
+        const val MAX_BET = 240
     }
 
     open val playerIdToGame = hashMapOf<String, T>()
-    open val playerBet = hashMapOf<String, UInt>()
+    open val playerBet = hashMapOf<String, Int>()
 
     final override fun commands(): List<CommandData> = listOf(
         Commands.slash(getCommandName(), getCommandDescription())
@@ -44,10 +44,15 @@ abstract class UtopiaListenerImpl<T>(
                 return
             }
 
-            //TODO: 尚未註冊成遊戲玩家的成員如何處理
             val miniGamePlayer = findPlayer(player.id)
-//            playerFinder.findById(player.id)
-//                ?: throw NotFoundException("請先執行烏托邦任務。輸入指令：utopia-first-quest")
+
+            //TODO: 輸入不同遊戲指令也需要加入檢查，是否正在遊戲中
+            if (playerIdToGame.containsKey(miniGamePlayer.id))
+            {
+                val gameCommandName = getCommandName();
+                reply("${player.asMention}，正在玩${gameCommandName}遊戲中。").queue()
+                return;
+            }
 
             if (validatePlayerBet(miniGamePlayer)) {
                 startGame(miniGamePlayer)
@@ -59,16 +64,16 @@ abstract class UtopiaListenerImpl<T>(
 
     protected abstract fun getCommandDescription(): String
 
-    fun findPlayer(playerId: String): MiniGamePlayer {
+   private fun findPlayer(playerId: String): MiniGamePlayer {
         return playerFinder.findById(playerId) ?: throw NotFoundException("請先執行烏托邦任務。輸入指令：utopia-first-quest")
     }
 
-    fun findBet(playerId: String): UInt {
+    fun findBet(playerId: String): Int {
         return playerBet[playerId]!!
     }
 
     private fun SlashCommandInteractionEvent.validatePlayerBet(miniGamePlayer: MiniGamePlayer): Boolean {
-        val bet = getOptionAsPositiveInt(OPTION_AMOUNT)!!.toUInt()
+        val bet = getOptionAsPositiveInt(OPTION_AMOUNT)!!.toInt()
 
         if (bet > MAX_BET) {
             reply("${player.asMention}，下注金額不可超過 $MAX_BET 元。").queue()

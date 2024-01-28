@@ -36,7 +36,7 @@ class MongodbPlayerRepository(
         name,
         exp.toInt(),
         level.toInt(),
-        bounty.toInt(),
+        bounty,
         joinDate,
         latestActivateDate,
         levelUpgradeDate,

@@ -11,6 +11,7 @@ class MiniGameEventListener(
     private val playerRepository: PlayerRepository
 ) : UtopiaListener() {
     override fun onUtopiaEvent(event: UtopiaEvent) {
+        //TODO: 檢查資料庫 bounty 為什麼沒有變化
         if (event is GameSettledEvent) {
             val playerId = event.playerId
             val bounty = event.bounty
