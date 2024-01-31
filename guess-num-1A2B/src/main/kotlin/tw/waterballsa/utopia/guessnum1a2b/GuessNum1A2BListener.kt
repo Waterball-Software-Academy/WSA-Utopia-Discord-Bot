@@ -27,6 +27,7 @@ class GuessNum1A2BListener(
     override val playerIdToGame = hashMapOf<String, GuessNum1A2B>()
     private val discordUserIdToMiniPlayerId = hashMapOf<String, String>()
     private val gameManager = GameManager()
+    private var guessedRound = 1
 
     override fun getCommandName(): String {
         return GUESS_NUM_1A2B_COMMAND_NAME
@@ -112,18 +113,42 @@ class GuessNum1A2BListener(
     }
 
     private fun ThreadChannel.handleAnsweredEvent(event: AnsweredEvent) {
-        sendMessage(event.answer).queue()
+        sendMessage(event.answer).queue {
+            guessedRound += 1
+        }
     }
 
     private fun ThreadChannel.handleGameOverEvent(event: GameOverEvent) {
-        sendMessage("恭喜猜對，遊戲結束!!").complete()
+        val miniGamePlayerBet = findBet(event.gameId.playerId).toInt()
+        val miniGameBountyResult = when (guessedRound) {
+            in 1..3 -> {
+                (miniGamePlayerBet * 1.25).toInt()
+            }
+
+            in 4..6 -> {
+                miniGamePlayerBet
+            }
+
+            else -> {
+                miniGamePlayerBet / 2
+            }
+        }
+        sendMessage(
+            """
+                恭喜猜對，遊戲結束!!
+                賞金：$miniGameBountyResult
+                $guessedRound
+            """.trimIndent()
+        ).complete()
         gameManager.unregister(event.gameId)
         unRegisterGame(discordUserIdToMiniPlayerId[event.gameId.playerId]!!)
         closeRoom()
     }
 
     private fun ThreadChannel.closeRoom() {
-        sendMessage("遊戲房間將於10秒後關閉").queue()
+        sendMessage("遊戲房間將於10秒後關閉").queue {
+            guessedRound = 1
+        }
         retrieveParentMessage().queueAfter(10, TimeUnit.SECONDS) { startMessage ->
             startMessage.delete().queue()
             delete().queue()

@@ -1,7 +1,6 @@
 package tw.waterballsa.utopia.guessnum1a2b.domain
 
 
-
 class GuessNum1A2B(
     private val gameId: Id,
     private val answer: String = generateAnswer()
