@@ -115,6 +115,10 @@
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>roll-the-dice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>top-post</artifactId>
         </dependency>
     </dependencies>

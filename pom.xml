@@ -38,6 +38,7 @@
         <module>weekly-messages-volume</module>
         <module>utopia-test-kit</module>
         <module>mini-games</module>
+        <module>roll-the-dice</module>
         <module>top-post</module>
     </modules>
 
@@ -293,6 +294,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>mini-games</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>roll-the-dice</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>

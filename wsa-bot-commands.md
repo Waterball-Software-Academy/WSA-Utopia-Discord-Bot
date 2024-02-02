@@ -1,9 +1,9 @@
 # Commands Document
 
 ## 1a2b
-| Commands | Arguments | Description                 |
-|:--------:| --------- | --------------------------- |
-|   1a2b   |           | Start a new guess num game. |
+| Commands | Arguments                             | Description                 |
+|:--------:| ------------------------------------- | --------------------------- |
+|   1a2b   | amount(INTEGER): 請輸入下注金額。(最多只能下注 240) | Start a new guess num game. |
 
 ## gaas
 |        Commands        | Arguments                                                                                          | Description                                          |
@@ -66,7 +66,12 @@
 |  utopia re-render  |                          | re-render in_progress/completed quest |
 | utopia leaderboard | options(STRING): my-rank | leaderboard                           |
 
-## rock
+## rps
 | Commands | Arguments                             | Description                          |
 |:--------:| ------------------------------------- | ------------------------------------ |
-|   rock   | amount(INTEGER): 請輸入下注金額。(最多只能下注 240) | Start a new rock paper scissor game. |
+|   rps    | amount(INTEGER): 請輸入下注金額。(最多只能下注 240) | Start a new rock paper scissor game. |
+
+## dice
+| Commands | Arguments                             | Description  |
+|:--------:| ------------------------------------- | ------------ |
+|   dice   | amount(INTEGER): 請輸入下注金額。(最多只能下注 240) | 骰兩顆骰子比骰子總和大小 |
