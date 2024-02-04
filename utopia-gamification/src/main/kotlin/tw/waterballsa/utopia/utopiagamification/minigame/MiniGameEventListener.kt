@@ -1,5 +1,6 @@
 package tw.waterballsa.utopia.utopiagamification.minigame
 
+import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.jda.domains.UtopiaEvent
 import tw.waterballsa.utopia.minigames.GameSettledEvent
@@ -7,6 +8,7 @@ import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
 import tw.waterballsa.utopia.utopiagamification.repositories.exceptions.NotFoundException
 
+@Component
 class MiniGameEventListener(
     private val playerRepository: PlayerRepository
 ) : UtopiaListener() {
