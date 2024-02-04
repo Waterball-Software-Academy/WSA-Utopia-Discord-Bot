@@ -1,6 +1,5 @@
 package tw.waterballsa.utopia.rollthedice.domain
 
-import kotlin.random.Random
 
 class DiceGame {
     private var playerDice = mutableListOf<Int>()
@@ -32,11 +31,10 @@ class DiceGame {
             if (playerDice[0] == playerDice[1]) {
                 if (playerDice[0] == 6 && playerDice[1] == 6) {
                     playerBet * 3
-                }
-                else {
+                } else {
                     playerBet * 2
                 }
-            }  else {
+            } else {
                 playerBet
             }
         } else if (result == "loss") {

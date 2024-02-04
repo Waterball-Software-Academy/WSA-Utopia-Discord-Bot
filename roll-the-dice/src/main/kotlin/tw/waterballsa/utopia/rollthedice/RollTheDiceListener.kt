@@ -44,7 +44,6 @@ class RollTheDiceListener(
     }
 
     private fun endGame(diceGame: DiceGame, miniGamePlayer: MiniGamePlayer): String {
-        val playerGetBounty = diceGame.calculateBounty(miniGamePlayer.bounty.toInt())
         val playerDice = diceGame.getPlayerDice()
         val computerDice = diceGame.getComputerDice()
         val result = diceGame.gameResult()
@@ -54,7 +53,7 @@ class RollTheDiceListener(
                     "電腦的骰子：${computerDice[0]}, ${computerDice[1]}\n賞金結果：${bounty}"
 
         unRegisterGame(miniGamePlayer.id)
-        gameOver(miniGamePlayer.id, playerGetBounty)
+        gameOver(miniGamePlayer.id, bounty)
 
         return message
     }
