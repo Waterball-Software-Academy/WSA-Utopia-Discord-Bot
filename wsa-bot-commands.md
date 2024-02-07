@@ -75,3 +75,8 @@
 | Commands | Arguments                             | Description  |
 |:--------:| ------------------------------------- | ------------ |
 |   dice   | amount(INTEGER): 請輸入下注金額。(最多只能下注 240) | 骰兩顆骰子比骰子總和大小 |
+
+## guess
+| Commands | Arguments                             | Description                           |
+|:--------:| ------------------------------------- | ------------------------------------- |
+|  guess   | amount(INTEGER): 請輸入下注金額。(最多只能下注 240) | Start to play the Da Vanci Code game. |
