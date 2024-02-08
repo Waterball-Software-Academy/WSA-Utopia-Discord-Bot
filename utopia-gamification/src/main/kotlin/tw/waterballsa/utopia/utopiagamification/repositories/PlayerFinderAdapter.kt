@@ -15,6 +15,6 @@ class PlayerFinderAdapter(
         return playerRepository.findPlayerById(id)?.toMiniGamePlayer()
     }
 
-    private fun Player.toMiniGamePlayer(): MiniGamePlayer = MiniGamePlayer(id,  bounty.toUInt())
+    private fun Player.toMiniGamePlayer(): MiniGamePlayer = MiniGamePlayer(id,  bounty)
 
 }
