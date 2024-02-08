@@ -1,5 +1,7 @@
 package tw.waterballsa.utopia.rollthedice
 
+import dev.minn.jda.ktx.messages.Embed
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.domains.EventPublisher
@@ -33,29 +35,65 @@ class RollTheDiceListener(
         }
         registerGame(miniGamePlayer.id, DiceGame())
         val diceGame = playerIdToGame[miniGamePlayer.id]!!
-
         memberIdToMiniGamePlayer[player.id] = miniGamePlayer
 
 
-        reply("${player.asMention} 你的賭注是 $${findBet(player.id)}，開始擲骰子了喔喔喔喔喔").queue {
+        reply("${player.asMention} 你的賭注是 $${findBet(player.id)} 🪙，開始擲骰子了喔喔喔喔喔").queue {
             diceGame.rollTheDice()
-            channel.sendMessage("${player.asMention}\n${endGame(diceGame, miniGamePlayer)}").queue()
+
+            val gameMessageId = this.messageChannel.id
+            Thread.sleep(2000)
+            channel.editMessageById(
+                gameMessageId,
+                "${player.asMention} 骰到了 ${diceGame.getPlayerDice()[0]} 和 ${diceGame.getPlayerDice()[1]}"
+            ).queue()
+            Thread.sleep(2000)
+            channel.editMessageById(
+                gameMessageId,
+                "${player.asMention} 你的對手骰到了 ${diceGame.getComputerDice()[0]} 和 ${diceGame.getComputerDice()[1]}"
+            ).queue()
+            Thread.sleep(2000)
+            channel.editMessageById(
+                gameMessageId,
+                player.asMention
+            ).queue()
+            channel.editMessageEmbedsById(
+                gameMessageId,
+                endGame(diceGame, miniGamePlayer)
+            ).queue()
         }
     }
 
-    private fun endGame(diceGame: DiceGame, miniGamePlayer: MiniGamePlayer): String {
+    private fun endGame(diceGame: DiceGame, miniGamePlayer: MiniGamePlayer): MessageEmbed {
         val playerDice = diceGame.getPlayerDice()
         val computerDice = diceGame.getComputerDice()
         val result = diceGame.gameResult()
-        val bounty = diceGame.calculateBounty(findBet(miniGamePlayer.id).toInt())
-        val message =
-            "**這局遊戲的結果是：${result}**\n你的骰子：${playerDice[0]}, ${playerDice[1]}\n" +
-                    "電腦的骰子：${computerDice[0]}, ${computerDice[1]}\n賞金結果：${bounty}"
+        val bounty = diceGame.calculateBounty(findBet(miniGamePlayer.id))
+        val embedMessage =
+            Embed {
+                title = "遊戲結果"
+                description = result
+                color = 14712612
+                field {
+                    name = "你的骰子 🎲"
+                    value = "${playerDice[0]} 和 ${playerDice[1]}"
+                    inline = true
+                }
+                field {
+                    name = "電腦的骰子 🎲"
+                    value = "${computerDice[0]} 和 ${computerDice[1]}"
+                }
+                field {
+                    name = "賞金結果 🪙"
+                    value = "$bounty"
+                    inline = false
+                }
+            }
 
         unRegisterGame(miniGamePlayer.id)
         gameOver(miniGamePlayer.id, bounty)
 
-        return message
+        return embedMessage
     }
 }
 
