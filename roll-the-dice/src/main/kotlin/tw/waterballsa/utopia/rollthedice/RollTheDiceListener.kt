@@ -41,7 +41,7 @@ class RollTheDiceListener(
         reply("${player.asMention} 你的賭注是 $${findBet(player.id)} 🪙，開始擲骰子了喔喔喔喔喔").queue {
             diceGame.rollTheDice()
 
-            val gameMessageId = this.messageChannel.id
+            val gameMessageId = this.messageChannel.latestMessageId
             Thread.sleep(2000)
             channel.editMessageById(
                 gameMessageId,
