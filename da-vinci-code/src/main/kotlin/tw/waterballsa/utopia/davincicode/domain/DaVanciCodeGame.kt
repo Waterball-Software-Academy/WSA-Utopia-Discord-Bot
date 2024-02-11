@@ -2,8 +2,8 @@ package tw.waterballsa.utopia.davincicode.domain
 
 import kotlin.random.Random.Default.nextInt
 
-class DaVanciCodeGame {
-    private val finalNumber = nextInt(1, 100)
+class DaVanciCodeGame(finalNumber: Int? = null) {
+    private val finalNumber = finalNumber ?: nextInt(1, 100)
     private var remainingAttempts = 5
     private var states = "loss"
     private var isGameOver = false
@@ -21,7 +21,7 @@ class DaVanciCodeGame {
         }
     }
 
-    fun gameEnd(playerGuessNumber: Int): String {
+    private fun gameEnd(playerGuessNumber: Int): String {
         isGameOver = true
 
         if (playerGuessNumber != finalNumber) {

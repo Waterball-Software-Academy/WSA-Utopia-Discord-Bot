@@ -30,5 +30,10 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>mini-games</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>utopia-test-kit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

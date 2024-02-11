@@ -8,8 +8,6 @@ import tw.waterballsa.utopia.jda.domains.EventPublisher
 import tw.waterballsa.utopia.minigames.MiniGamePlayer
 import tw.waterballsa.utopia.minigames.PlayerFinder
 import tw.waterballsa.utopia.minigames.UtopiaListenerImpl
-import java.awt.SystemColor.text
-import java.lang.reflect.Member
 
 private const val COMMAND_NAME = "guess"
 
