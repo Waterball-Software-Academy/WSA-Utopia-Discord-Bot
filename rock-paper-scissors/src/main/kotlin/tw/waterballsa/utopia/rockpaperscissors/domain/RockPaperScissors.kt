@@ -1,6 +1,6 @@
 package tw.waterballsa.utopia.rockpaperscissors.domain
 
-class RockPaperScissors() {
+class RockPaperScissors(myPunch: Punch? = null, enemyPunch: Punch? = null) {
     fun punch(myPunch: Punch, enemyPunch: Punch): PunchResult {
         return when {
             // 剪刀->石頭->布，後者贏前者

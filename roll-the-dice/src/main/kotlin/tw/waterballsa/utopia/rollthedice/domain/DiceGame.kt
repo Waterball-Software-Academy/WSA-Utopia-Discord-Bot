@@ -1,9 +1,9 @@
 package tw.waterballsa.utopia.rollthedice.domain
 
 
-class DiceGame {
-    private var playerDice = mutableListOf<Int>()
-    private var computerDice = mutableListOf<Int>()
+class DiceGame(playerDice: MutableList<Int> ?= null, computerDice: MutableList<Int> ?= null) {
+    private var playerDice = playerDice?: mutableListOf()
+    private var computerDice = computerDice?: mutableListOf()
 
     fun rollTheDice() {
         for (i in 0..1) {
@@ -19,7 +19,7 @@ class DiceGame {
         return if (playerDiceSum > computerDiceSum) {
             "win"
         } else if (playerDiceSum < computerDiceSum) {
-            "loss"
+            "lose"
         } else {
             "draw"
         }
@@ -37,7 +37,7 @@ class DiceGame {
             } else {
                 playerBet
             }
-        } else if (result == "loss") {
+        } else if (result == "lose") {
             -playerBet
         } else {
             playerBet

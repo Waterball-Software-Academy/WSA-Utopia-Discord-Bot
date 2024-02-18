@@ -15,9 +15,9 @@ class DaVanciCodeGame(finalNumber: Int? = null) {
         return if (remainingAttempts == 0 || playerGuessNumber == finalNumber) {
             gameEnd(playerGuessNumber)
         } else if (playerGuessNumber > finalNumber) {
-            return "最終數字小於 ${playerGuessNumber}，你還有 ${remainingAttempts} 次機會。"
+            return "最終數字小於 ${playerGuessNumber}，你還有 $remainingAttempts 次機會。"
         } else {
-            return "最終數字大於 ${playerGuessNumber}，你還有 ${remainingAttempts} 次機會。"
+            return "最終數字大於 ${playerGuessNumber}，你還有 $remainingAttempts 次機會。"
         }
     }
 
