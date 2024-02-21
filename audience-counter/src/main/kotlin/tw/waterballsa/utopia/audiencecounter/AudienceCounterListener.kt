@@ -12,7 +12,9 @@ import tw.waterballsa.utopia.commons.extensions.onStart
 import tw.waterballsa.utopia.commons.extensions.toDate
 import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.jda.extensions.getOptionAsPositiveInt
-import java.time.LocalDateTime
+import tw.waterballsa.utopia.jda.extensions.replyEphemerally
+import net.dv8tion.jda.api.entities.Member
+import java.time.LocalDateTime.now
 import java.time.temporal.ChronoUnit
 import java.util.*
 import kotlin.concurrent.timerTask
@@ -41,17 +43,23 @@ class AudienceCounterListener(private val wsa: WsaDiscordProperties) : UtopiaLis
                 return
             }
 
-            val recordPeriodTime =
-                getOptionAsPositiveInt(TIME_LENGTH)!!.toLong() // period time between startTime and endTime
-            val currentTime = LocalDateTime.now() // now time
-            val startRecordTime = currentTime.truncatedTo(ChronoUnit.MINUTES).toDate() // start time
-            val endRecordTime = currentTime.plusMinutes(recordPeriodTime).toDate() // end time
+            if (member.isAlpha()) {
+                val recordPeriodTime =
+                    getOptionAsPositiveInt(TIME_LENGTH)!!.toLong()
+                val currentTime = now()
+                val startRecordTime = currentTime.truncatedTo(ChronoUnit.MINUTES).toDate()
+                val endRecordTime = currentTime.plusMinutes(recordPeriodTime).toDate()
 
-            reply("counter start!!!").queue {
-                scheduledRecordHighestAudience(startRecordTime, endRecordTime)
+                reply("counter start!!!").queue {
+                    scheduledRecordHighestAudience(startRecordTime, endRecordTime)
+                }
+            } else {
+                replyEphemerally("You should be the Alpha!")
             }
         }
     }
+
+    private fun Member?.isAlpha(): Boolean = this?.roles?.any { it.id == wsa.wsaAlphaRoleId } ?: false
 }
 
 private fun SlashCommandInteractionEvent.scheduledRecordHighestAudience(startRecordTime: Date, endRecordTime: Date) {
