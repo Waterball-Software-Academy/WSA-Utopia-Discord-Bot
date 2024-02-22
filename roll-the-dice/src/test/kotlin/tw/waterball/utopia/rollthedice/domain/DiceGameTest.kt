@@ -28,14 +28,11 @@ class DiceGameTest {
         """
     )
     fun `roll the true size and range of the dice`() {
-        // Given
-        var playerDice = mutableListOf<Int>()
-        var computerDice = mutableListOf<Int>()
 
         // When
         game.rollTheDice()
-        playerDice = game.getPlayerDice()
-        computerDice = game.getComputerDice()
+        val playerDice: MutableList<Int> = game.getPlayerDice()
+        val computerDice: MutableList<Int> = game.getComputerDice()
 
         // Then
         assertThat(playerDice).hasSize(2)
