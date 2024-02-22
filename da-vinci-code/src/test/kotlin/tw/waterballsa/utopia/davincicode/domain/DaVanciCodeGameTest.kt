@@ -1,17 +1,18 @@
 package tw.waterballsa.utopia.davincicode.domain
 
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities.Private
 
 
 class DaVanciCodeGameTest {
     private lateinit var game: DaVanciCodeGame
+    private val fixedFinalNumber = 50
 
     @BeforeEach
     fun setup() {
-        game = DaVanciCodeGame(50)
+        game = DaVanciCodeGame(fixedFinalNumber)
     }
 
     @Test
@@ -30,8 +31,8 @@ class DaVanciCodeGameTest {
         """
     )
     fun `test game over or not when lose`() {
-        println(game.guessNumber(25))
-        println(game.isGameOver())
+        assertThat(game.guessNumber(25)).isEqualTo("最終數字大於 25，你還有 4 次機會。")
+        assertThat(game.isGameOver()).isFalse()
     }
 
     @Test
@@ -49,8 +50,8 @@ class DaVanciCodeGameTest {
         """
     )
     fun `test game over or not when win`() {
-        println(game.guessNumber(50))
-        println(game.isGameOver())
+        assertThat(game.guessNumber(50)).isEqualTo("恭喜答對了，最終數字為 ${fixedFinalNumber}，獲得賞金 $")
+        assertThat(game.isGameOver()).isTrue()
     }
 
     @Test
@@ -70,8 +71,8 @@ class DaVanciCodeGameTest {
         for (i in 1..4){
             game.guessNumber(2)
         }
-        println(game.guessNumber(25))
-        println(game.isGameOver())
+        assertThat(game.guessNumber(25)).isEqualTo("你沒有找到最終數字，最終數字為 ${fixedFinalNumber}，賞金 ")
+        assertThat(game.isGameOver()).isTrue()
     }
 
     @Test
@@ -92,6 +93,6 @@ class DaVanciCodeGameTest {
     )
     fun `test bounty calculation`() {
         game.guessNumber(50)
-        println(game.calculateBounty(100))
+        assertThat(game.calculateBounty(100)).isEqualTo(1000)
     }
 }
