@@ -125,6 +125,10 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>top-post</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>games-info</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

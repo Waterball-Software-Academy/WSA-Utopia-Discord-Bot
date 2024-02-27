@@ -41,6 +41,7 @@
         <module>roll-the-dice</module>
         <module>da-vinci-code</module>
         <module>top-post</module>
+        <module>games-info</module>
     </modules>
 
     <properties>
@@ -310,6 +311,11 @@
             <dependency>
                 <groupId>tw.waterballsa.utopia</groupId>
                 <artifactId>top-post</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>tw.waterballsa.utopia</groupId>
+                <artifactId>games-info</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>
