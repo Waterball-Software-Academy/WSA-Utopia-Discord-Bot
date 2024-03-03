@@ -9,7 +9,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>games-info</artifactId>
+    <artifactId>usage-information</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

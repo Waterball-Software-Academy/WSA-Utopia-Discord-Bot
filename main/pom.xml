@@ -127,7 +127,7 @@
         </dependency>
         <dependency>
             <groupId>tw.waterballsa.utopia</groupId>
-            <artifactId>games-info</artifactId>
+            <artifactId>usage-information</artifactId>
         </dependency>
     </dependencies>
 

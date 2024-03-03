@@ -1,4 +1,4 @@
-package tw.waterballsa.utopia.gamesinfo
+package tw.waterballsa.utopia.usageinformation.gamesinfo
 
 import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.entities.Guild
@@ -8,9 +8,9 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import org.springframework.stereotype.Component
-import tw.waterballsa.utopia.gamesinfo.domain.GamesInfo
 import tw.waterballsa.utopia.jda.UtopiaListener
-
+import tw.waterballsa.utopia.usageinformation.*
+import tw.waterballsa.utopia.usageinformation.gamesinfo.domain.GamesInfo
 
 private const val GAMES_INFO_COMMAND_NAME = "games"
 private const val DICE_GAME_COMMAND_NAME = "dice"
@@ -19,7 +19,6 @@ private const val ROCK_PAPER_SCISSORS_COMMAND_NAME = "rps"
 private const val ROULETTE_GAME_COMMAND_NAME = "roulette"
 private const val GUESS_1A2B_COMMAND_NAME = "1a2b"
 private const val OPTION_NAME = "games-option"
-
 
 @Component
 class GamesInfoListener(guild: Guild) : UtopiaListener() {
@@ -62,6 +61,24 @@ class GamesInfoListener(guild: Guild) : UtopiaListener() {
             }
 
             val optionName = getOption(OPTION_NAME)?.asString
+            var gameInfoCommandId = ""
+            val commandsDataList = guild?.retrieveCommands()?.complete()
+            commandsDataList?.filter {
+                it.name == GAMES_INFO_COMMAND_NAME
+            }?.forEach {
+                gameInfoCommandId = it.id
+            }
+
+            if (optionName == null) {
+                replyEmbeds(Embed {
+                    title = "遊戲資訊！"
+                    description = """
+                        每個遊戲最多都可以下 240 🪙 的賭注
+                        （輸入 </$GAMES_INFO_COMMAND_NAME:${gameInfoCommandId}> `<$OPTION_NAME:>`會有更詳細的小遊戲資訊喔 ☺️）
+                        """.trimIndent()
+                }).setEphemeral(true).queue()
+            }
+
             val commandId = commandNameToId[optionName] ?: return
 
             when (optionName) {
@@ -85,13 +102,6 @@ class GamesInfoListener(guild: Guild) : UtopiaListener() {
                     .setEphemeral(true)
                     .queue()
 
-                null -> replyEmbeds(Embed {
-                    title = "遊戲資訊！"
-                    description = """
-                        每個遊戲最多都可以下 240 🪙 的賭注
-                        """.trimIndent()
-
-                }).setEphemeral(true).queue()
                 else -> reply("請輸入目前有的小遊戲名稱").setEphemeral(true).queue()
             }
         }

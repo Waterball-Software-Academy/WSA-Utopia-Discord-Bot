@@ -1,4 +1,4 @@
-package tw.waterballsa.utopia.gamesinfo.domain
+package tw.waterballsa.utopia.usageinformation.gamesinfo.domain
 
 import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.entities.MessageEmbed

@@ -70,7 +70,7 @@ class RockPaperScissorsListener(
                 discordUserIdToMiniPlayerId[user.id]?.let { miniGamePlayerID ->
                     gameOver(
                         miniGamePlayerID,
-                        miniGamePlayerBet
+                        miniGameBountyResult
                     )
                 }
             }
