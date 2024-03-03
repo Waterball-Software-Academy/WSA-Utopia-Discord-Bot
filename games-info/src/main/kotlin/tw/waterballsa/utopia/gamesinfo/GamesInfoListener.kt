@@ -85,7 +85,13 @@ class GamesInfoListener(guild: Guild) : UtopiaListener() {
                     .setEphemeral(true)
                     .queue()
 
-                null -> replyEmbeds(Embed { title = "cool" }).setEphemeral(true).queue()
+                null -> replyEmbeds(Embed {
+                    title = "遊戲資訊！"
+                    description = """
+                        每個遊戲最多都可以下 240 🪙 的賭注
+                        """.trimIndent()
+
+                }).setEphemeral(true).queue()
                 else -> reply("請輸入目前有的小遊戲名稱").setEphemeral(true).queue()
             }
         }
