@@ -12,9 +12,10 @@ class PlayerFinderAdapter(
 ) : PlayerFinder {
 
     override fun findById(id: String): MiniGamePlayer? {
-        return playerRepository.findPlayerById(id)?.toMiniGamePlayer()
+        return playerRepository.findPlayerById(id)
+            ?.toMiniGamePlayer()
     }
 
-    private fun Player.toMiniGamePlayer(): MiniGamePlayer = MiniGamePlayer(id,  bounty)
-
+    private fun Player.toMiniGamePlayer(): MiniGamePlayer =
+        MiniGamePlayer(id, bounty, lastSignInTime, continuousSignInDays)
 }

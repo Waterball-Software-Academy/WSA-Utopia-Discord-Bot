@@ -17,7 +17,7 @@ class WorkListener : UtopiaListener() {
         return listOf(
             Commands.slash(WORK_COMMAND_NAME, "工作打卡")
                 .addOptions(
-                    OptionData(OptionType.STRING, OPTION_NAME, "", false)
+                    OptionData(OptionType.STRING, OPTION_NAME, "claim amount", false)
                 )
         )
     }

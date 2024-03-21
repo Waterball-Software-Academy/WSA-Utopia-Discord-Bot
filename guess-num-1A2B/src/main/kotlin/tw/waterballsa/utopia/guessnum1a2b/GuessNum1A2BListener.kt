@@ -5,11 +5,8 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.interactions.commands.build.CommandData
-import net.dv8tion.jda.api.interactions.commands.build.Commands
 import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.guessnum1a2b.domain.*
-import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.minigames.MiniGamePlayer
 import tw.waterballsa.utopia.minigames.PlayerFinder
 import tw.waterballsa.utopia.minigames.UtopiaListenerImpl

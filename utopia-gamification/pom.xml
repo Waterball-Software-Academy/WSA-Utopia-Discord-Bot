@@ -31,5 +31,9 @@
             <groupId>tw.waterballsa.utopia</groupId>
             <artifactId>mini-games</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tw.waterballsa.utopia</groupId>
+            <artifactId>usage-information</artifactId>
+        </dependency>
     </dependencies>
 </project>

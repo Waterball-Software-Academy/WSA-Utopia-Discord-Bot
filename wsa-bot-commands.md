@@ -80,3 +80,23 @@
 | Commands | Arguments                             | Description                           |
 |:--------:| ------------------------------------- | ------------------------------------- |
 |  guess   | amount(INTEGER): 請輸入下注金額。(最多只能下注 240) | Start to play the Da Vanci Code game. |
+
+## games
+| Commands | Arguments                                              | Description                  |
+|:--------:| ------------------------------------------------------ | ---------------------------- |
+|  games   | games-option(STRING): The mini games you want to know. | The mini games introduction. |
+
+## daily
+| Commands | Arguments | Description  |
+|:--------:| --------- | ------------ |
+|  daily   |           | daily bounty |
+
+## richest
+| Commands | Arguments | Description  |
+|:--------:| --------- | ------------ |
+| richest  |           | richest rank |
+
+## work
+| Commands | Arguments                   | Description |
+|:--------:| --------------------------- | ----------- |
+|   work   | claim(STRING): claim amount | 工作打卡        |

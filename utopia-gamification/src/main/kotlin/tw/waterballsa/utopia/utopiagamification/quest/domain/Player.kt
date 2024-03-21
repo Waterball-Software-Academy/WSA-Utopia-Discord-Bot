@@ -14,7 +14,9 @@ class Player(
     val joinDate: OffsetDateTime = now(),
     latestActivateDate: OffsetDateTime = now(),
     levelUpgradeDate: OffsetDateTime? = null,
-    val jdaRoles: MutableList<String> = mutableListOf()
+    val jdaRoles: MutableList<String> = mutableListOf(),
+    var lastSignInTime: OffsetDateTime? = null,
+    var continuousSignInDays: Int = 0
 ) {
 
     var exp = exp
@@ -53,6 +55,11 @@ class Player(
 
     fun settleBounty(bounty: Int) {
         this.bounty += bounty
+    }
+
+    fun signIn(continuousSignInDays: Int) {
+        this.lastSignInTime = now()
+        this.continuousSignInDays = continuousSignInDays
     }
 
     private fun activate() {

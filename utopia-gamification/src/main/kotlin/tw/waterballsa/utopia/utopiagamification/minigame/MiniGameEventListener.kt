@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component
 import tw.waterballsa.utopia.jda.UtopiaListener
 import tw.waterballsa.utopia.jda.domains.UtopiaEvent
 import tw.waterballsa.utopia.minigames.GameSettledEvent
+import tw.waterballsa.utopia.usageinformation.daily.SignInEvent
 import tw.waterballsa.utopia.utopiagamification.quest.domain.Player
 import tw.waterballsa.utopia.utopiagamification.repositories.PlayerRepository
 import tw.waterballsa.utopia.utopiagamification.repositories.exceptions.NotFoundException
@@ -19,6 +20,18 @@ class MiniGameEventListener(
             val bounty = event.bounty
             val player = findPlayer(playerId)
             player.settleBounty(bounty)
+            playerRepository.savePlayer(player)
+        }
+
+        if (event is SignInEvent) {
+            val playerId = event.playerId
+            val bounty = event.bounty
+            val player = findPlayer(playerId)
+            val continuousSignInDays = event.continuousSignInDays
+
+            player.settleBounty(bounty)
+            player.signIn(continuousSignInDays)
+
             playerRepository.savePlayer(player)
         }
     }
